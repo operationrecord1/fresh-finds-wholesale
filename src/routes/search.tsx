@@ -3,7 +3,7 @@ import { PRODUCTS } from "@/data/catalog";
 import { Banner, ProductListing } from "@/components/store/ProductListing";
 
 export const Route = createFileRoute("/search")({
-  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : "" }),
+  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? s["q"] : "" }),
   head: () => ({ meta: [
     { title: "Search Results | Artisan Mart" }, { name: "description", content: "Search the Artisan Mart wholesale catalog by keyword or item number." },
     { property: "og:title", content: "Search | Artisan Mart" }, { property: "og:description", content: "Search the Artisan Mart catalog." },

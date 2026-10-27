@@ -55,7 +55,7 @@ export const PRODUCTS: Product[] = [
 
   // New Arrivals screenshot (Newest Descending order)
   ...["AW314", "AW313", "AW312", "AW311"].map((sku, i) => p({ sku, title: "Jamie Love I Am Beautiful Mini Childrens Backpack in", titleTruncated: true, price: 4.4,
-      stock: [1948, 1944, 1996, 2092][i], badges: ["new", "closeout"], collections: ["new-arrivals", "closeouts"], newestRank: 10 + i })),
+      stock: [1948, 1944, 1996, 2092][i] ?? null, badges: ["new", "closeout"], collections: ["new-arrivals", "closeouts"], newestRank: 10 + i })),
   p({ sku: "AV955", title: 'Avocatt 10" Brown Hedgehog Plush Toy', price: 3.85, stock: 216, badges: ["new", "closeout"], collections: ["new-arrivals", "closeouts"], newestRank: 14 }),
   p({ sku: "AV949", title: 'Avocatt 10" Blue Rhino Plush Toy', price: 3.85, stock: 408, badges: ["new", "closeout"], collections: ["new-arrivals", "closeouts"], newestRank: 15 }),
   p({ sku: "AV938", title: 'Avocatt 10" Fuzzy Sitting Sloth Plush Toy', price: 3.85, stock: 690, badges: ["new", "closeout"], collections: ["new-arrivals", "closeouts"], newestRank: 16 }),
