@@ -16,8 +16,8 @@ export function ExpressOrder({ open = false }: { open?: boolean }) {
     const errs: string[] = []; let added = 0;
     list.filter((r) => r.sku.trim()).forEach((r) => {
       const p = getProduct(r.sku.trim());
-      if (!p) return errs.push(`${r.sku}: item not found`);
-      if (!p.rules || p.price == null) return errs.push(`${p.sku}: purchasing data not verified`);
+      if (!p) { errs.push(`${r.sku}: item not found`); return; }
+      if (!p.rules || p.price == null) { errs.push(`${p.sku}: purchasing data not verified`); return; }
       const q = normalizePieces(Number(r.qty) || 0, p.rules); // round up to nearest quantity break
       add(p.sku, q); added++;
     });
@@ -25,7 +25,7 @@ export function ExpressOrder({ open = false }: { open?: boolean }) {
   };
   const onCsv = async (f: File) => {
     const text = await f.text();
-    const parsed = text.split(/\r?\n/).slice(1).map((l) => l.split(",")).filter((c) => c[0]).map(([sku, qty]) => ({ sku: sku.trim(), qty: (qty ?? "").trim() }));
+    const parsed = text.split(/\r?\n/).slice(1).map((l) => l.split(",")).filter((c) => c[0]).map(([sku, qty]) => ({ sku: (sku ?? "").trim(), qty: (qty ?? "").trim() }));
     submit(parsed);
   };
 

@@ -26,7 +26,7 @@ function sortProducts(list: Product[], sort: string) {
 
 const PAGE = 24;
 
-export function ProductListing({ products, banner, defaultSort = "position", initialPrice }: { products: Product[]; banner: ReactNode; defaultSort?: string; initialPrice?: string }) {
+export function ProductListing({ products, banner, defaultSort = "position", initialPrice }: { products: Product[]; banner: ReactNode; defaultSort?: string; initialPrice?: string | undefined }) {
   const [sort, setSort] = useState(defaultSort);
   const [price, setPrice] = useState<string | null>(initialPrice ?? null);
   const [sub, setSub] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
   useEffect(() => { setShown(PAGE); }, [price, sub, sort]);
   useEffect(() => {
     const el = sentinel.current; if (!el) return;
-    const io = new IntersectionObserver((e) => e[0].isIntersecting && setShown((s) => s + PAGE));
+    const io = new IntersectionObserver((e) => e[0]?.isIntersecting && setShown((s) => s + PAGE));
     io.observe(el); return () => io.disconnect();
   }, []);
 
@@ -81,5 +81,5 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
 
 export function Banner({ kind, title }: { kind: string; title: string }) {
   const cls: Record<string, string> = { new: "bg-sky text-sec-closeout", best: "bg-best-banner text-primary-foreground", closeout: "bg-promo text-hero", reduced: "bg-sec-reduced text-primary-foreground", imports: "bg-hero text-primary-foreground", plain: "bg-primary text-primary-foreground" };
-  return <div className={`rounded py-2 text-center font-display text-4xl font-bold uppercase italic tracking-wide md:text-5xl ${cls[kind] ?? cls.plain}`}>{title}</div>;
+  return <div className={`rounded py-2 text-center font-display text-4xl font-bold uppercase italic tracking-wide md:text-5xl ${cls[kind] ?? cls["plain"]}`}>{title}</div>;
 }

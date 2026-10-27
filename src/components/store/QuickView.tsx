@@ -5,7 +5,7 @@ import { money } from "@/lib/wholesale";
 import { Badges, ProductImage } from "./ProductCard";
 import { PurchasePanel } from "./PurchasePanel";
 
-export function QuickView({ p, onClose, initialPieces }: { p: Product | null; onClose: () => void; initialPieces?: number }) {
+export function QuickView({ p, onClose, initialPieces }: { p: Product | null; onClose: () => void; initialPieces?: number | undefined }) {
   if (!p) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4" onClick={onClose}>

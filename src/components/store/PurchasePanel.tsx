@@ -5,7 +5,7 @@ import type { Product } from "@/data/catalog";
 import { casesToPieces, lineTotal, money, normalizePieces, stepDown, stepUp, type BuyMode } from "@/lib/wholesale";
 import { useCart } from "@/lib/cart";
 
-export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart" }: { p: Product; initialPieces?: number; onDone?: () => void; label?: string }) {
+export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart" }: { p: Product; initialPieces?: number | undefined; onDone?: () => void; label?: string }) {
   const r = p.rules;
   const { add, set } = useCart();
   const [mode, setMode] = useState<BuyMode>("piece");

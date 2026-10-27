@@ -32,7 +32,7 @@ function Home() {
   const [i, setI] = useState(0);
   const [qv, setQv] = useState<Product | null>(null);
   useEffect(() => { const t = setInterval(() => setI((x) => (x + 1) % SLIDES.length), 6000); return () => clearInterval(t); }, []);
-  const s = SLIDES[i];
+  const s = SLIDES[i] ?? SLIDES[0]!;
   const pick = (slug: CollectionSlug) => {
     const list = PRODUCTS.filter((p) => p.collections.includes(slug) && p.price != null);
     return slug === "new-arrivals" ? list.sort((a, b) => (a.newestRank ?? 999) - (b.newestRank ?? 999)).slice(0, 3) : list.slice(0, 3);
