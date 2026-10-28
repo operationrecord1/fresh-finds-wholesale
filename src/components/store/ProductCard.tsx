@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ImageOff } from "lucide-react";
 import type { Badge, Product } from "@/data/catalog";
 import { money } from "@/lib/wholesale";
+import { PurchasePanel } from "./PurchasePanel";
 
 const BADGE: Record<Badge, [string, string]> = {
   new: ["NEW ITEM", "bg-sec-reduced"], closeout: ["CLOSEOUT", "bg-sec-closeout"],
@@ -30,7 +31,7 @@ export function ProductImage({ p, i = 0, className = "" }: { p: Product; i?: num
 
 export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: Product) => void }) {
   return (
-    <div className="relative flex h-full flex-col rounded-md bg-card p-3 text-center">
+    <div className="group relative flex h-full flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
       <Badges badges={p.badges} />
       <button onClick={() => onQuickView?.(p)} className="block aspect-square w-full" aria-label={`Quick view ${p.title}`}>
         <ProductImage p={p} />
@@ -41,6 +42,15 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
       <div className="mt-3 font-arial text-xs font-bold">Item # {p.sku}</div>
       <div className="font-arial text-sm">Qty Avail: {p.stock != null ? p.stock.toLocaleString() : "—"}</div>
       <div className="mt-3 font-arial text-lg font-bold text-price">Price: {p.price != null ? money(p.price) : "—"}</div>
+      {/* Kole Imports: hovering a card reveals a purchase box anchored below it (desktop only). */}
+      {p.rules && p.price != null && (
+        <div className="absolute left-1/2 top-full hidden w-[304px] -translate-x-1/2 pt-2 text-left lg:group-hover:block lg:group-focus-within:block">
+          <div className="rounded-lg border border-border bg-muted p-3 shadow-xl">
+            <PurchasePanel p={p} compact />
+            <p className="mt-2 text-center text-sm font-semibold">*Sold in Lots of {p.rules.lot}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
