@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Search, ShoppingCart, ChevronDown, Megaphone, AlertTriangle } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
+import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import { useCart } from "@/lib/cart";
 
 export function SiteHeader() {
@@ -29,7 +30,7 @@ export function SiteHeader() {
       </div>
       <div className="store-header-layout">
         <Link to="/cart" className="store-minimum bg-gradient-to-b from-minimum to-minimum-deep text-center font-bold text-primary-foreground">
-          Minimum<br />Order Amount<br />$500
+          Minimum <br />Order Amount <br />$500
         </Link>
         <div className="store-header-main">
           <div className="store-header-top">
@@ -37,13 +38,13 @@ export function SiteHeader() {
               <span className="store-brand-name block font-display font-bold tracking-tight text-primary">ARTISAN<span className="text-accent">MART</span></span>
               <span className="store-brand-caption block font-semibold text-title">WHOLESALE MERCHANDISE</span>
             </Link>
-            <form className="store-search relative" onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav({ to: "/search", search: { q: q.trim() } }); }}>
-              <input value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search" className="h-[54px] w-full rounded-[20px] border border-border bg-secondary px-5 pr-14 font-arial text-lg outline-none focus:ring-2 focus:ring-ring" />
+            <form role="search" className="store-search relative" onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav({ to: "/search", search: { q: q.trim() } }); }}>
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products or item numbers" autoComplete="off" name="q" aria-label="Search products" className="h-[54px] w-full rounded-[20px] border border-border bg-secondary px-5 pr-14 font-arial text-lg outline-none focus:ring-2 focus:ring-ring" />
               <button disabled={!q.trim()} aria-label="Search" className="absolute right-4 top-1/2 -translate-y-1/2 disabled:opacity-70"><Search className="h-7 w-7" /></button>
             </form>
             <div className="store-phone leading-tight">
               <div className="text-lg">CALL US TODAY</div>
-              <div className="text-2xl font-bold text-muted-foreground" title="Artisan Mart phone number not yet provided">(phone TBA)</div>
+              <a href={BUSINESS_PHONE_HREF} className="store-phone-number">{BUSINESS_PHONE}</a>
             </div>
           </div>
           <nav className="store-nav" aria-label="Main navigation">
@@ -60,7 +61,7 @@ export function SiteHeader() {
           <div className="store-utility-links">
             <Link to="/careers">Careers</Link><Link to="/contact">Contact Us</Link>
             <button aria-expanded={menu === "kc"} aria-controls="store-dropdown" onClick={() => toggle("kc")} className="flex items-center">Knowledge Center <ChevronDown className="h-4 w-4" /></button>
-            <span>EN</span>
+
           </div>
           <div className="store-account-links leading-tight">
             <Link to="/login">Login Or<br />Register</Link>

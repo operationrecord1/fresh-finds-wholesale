@@ -196,3 +196,50 @@
   .store-account-links svg { width: 28px; height: 28px; }
   .store-account-links { gap: 8px; }
 }
+
+/* Header: keep the order badge at the left edge and give search room to grow. */
+.store-header-layout { max-width:none; margin:0; grid-template-columns:140px minmax(0,1fr) 335px; gap:24px; padding-right:24px; }
+.store-header-top { grid-template-columns:245px minmax(200px,1fr) 185px; gap:20px; }
+.store-brand-name { font-size:38px; }
+.store-phone { display:block; white-space:nowrap; }
+.store-phone > div { font-size:12px; font-weight:600; letter-spacing:1px; color:#5d6c77; margin-bottom:5px; }
+.store-phone-number { font-size:19px; font-weight:700; color:#19445a; }
+.store-search input { border-radius:12px; background:#f7fafc; height:50px; font-size:16px; padding-left:16px; padding-right:55px; }
+.store-search button { display:grid; place-items:center; width:44px; height:44px; right:3px; border-radius:10px; color:#147daf; }
+.store-search button:hover:not(:disabled) { background:#e3f0f8; }
+.store-search button:focus-visible { outline:2px solid #147daf; }
+.store-search button svg { width:24px; height:24px; }
+@media (min-width:768px) and (max-width:1535px) {
+  .store-header-layout { grid-template-columns:110px minmax(0,1fr); gap:14px 20px; padding-right:20px; }
+  .store-header-main { display:contents; }
+  .store-header-top { grid-template-columns:220px minmax(160px,1fr) 180px; gap:16px; }
+  .store-brand-name { font-size:34px; }
+  .store-utilities { grid-column:1/-1; grid-row:2; display:flex; justify-content:space-between; align-items:center; gap:20px; border:0; padding:0 0 0 20px; }
+  .store-account-links { margin:0; gap:24px; }
+  .store-account-links svg { width:26px; height:26px; }
+  .store-account-links br { display:none; }
+  .store-nav { grid-column:1/-1; grid-row:3; flex-wrap:wrap; justify-content:center; gap:10px 24px; }
+}
+@media (min-width:768px) and (max-width:1000px) {
+  .store-header-top { grid-template-columns:220px minmax(0,1fr); }
+  .store-phone { grid-column:1/-1; text-align:right; }
+  .store-phone > div { display:inline; margin-right:8px; }
+  .store-utilities { flex-wrap:wrap; justify-content:center; }
+}
+@media (max-width:767px) {
+  .store-header-layout { gap:14px; padding:12px 16px; }
+  .store-minimum { display:block; margin:0; padding:6px 12px; border-radius:7px; font-size:12px; line-height:18px; letter-spacing:0; align-self:flex-start; }
+  .store-minimum br { display:none; }
+  .store-minimum br::after { content:' '; }
+  .store-header-top { gap:12px; }
+  .store-brand-name { font-size:30px; }
+  .store-phone { margin-left:auto; }
+  .store-phone-number { font-size:15px; }
+  .store-phone > div { font-size:10px; }
+  .store-search { order:3; }
+  .store-search input { height:48px; }
+  .store-utility-links { display:flex; flex-wrap:wrap; justify-content:center; gap:12px 20px; font-size:13px; margin-bottom:16px; }
+  .store-account-links { gap:10px; flex-wrap:wrap; font-size:13px; }
+  .store-account-links svg { width:24px; height:24px; }
+  .store-nav { font-size:13px; }
+}

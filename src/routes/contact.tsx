@@ -1,3 +1,4 @@
+import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, Mail, MessageSquare, Package, ArrowRight } from "lucide-react";
@@ -37,7 +38,7 @@ function Contact() {
     </form>
    </section>
    <aside className="contact-sidebar" aria-label="Business contact information">
-    <section className="contact-info-card"><span className="contact-icon"><MapPin aria-hidden="true"/></span><h2>Our business address</h2><p className="contact-company">ARTISAN MART LLC</p><address>7901 4TH ST N<br/>STE 18005<br/>ST. PETERSBURG, FL 33702<br/>United States</address><p className="contact-muted">Principal office &amp; mailing address</p></section>
+    <section className="contact-info-card"><span className="contact-icon"><MapPin aria-hidden="true"/></span><h2>Our business address</h2><p className="contact-company">ARTISAN MART LLC</p><address>7901 4TH ST N<br/>STE 18005<br/>ST. PETERSBURG, FL 33702<br/>United States</address><p className="contact-muted">Principal office &amp; mailing address</p><p><a className="contact-email" href={BUSINESS_PHONE_HREF}>{BUSINESS_PHONE}</a></p></section>
     <section className="contact-info-card"><span className="contact-icon"><Mail aria-hidden="true"/></span><h2>Have closeouts to sell?</h2><p>Share your product details and available quantities with our team.</p><a className="contact-email" href="mailto:offer@artisanmart.com">offer@artisanmart.com <ArrowRight size={16} aria-hidden="true"/></a></section>
     <section className="contact-help"><h2>Looking for a quick answer?</h2><Link to="/info/$page" params={{page:"shipping"}}>Shipping information <ArrowRight size={16}/></Link><Link to="/info/$page" params={{page:"sales"}}>Sales FAQ <ArrowRight size={16}/></Link></section>
    </aside>

@@ -1,3 +1,4 @@
+import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { meta } from "@/components/store/SimplePage";
 import "@/components/store/TermsPage.css";
@@ -10,5 +11,5 @@ function Privacy(){return <main className="terms-page privacy-page"><nav aria-la
 <section><h2>Do we disclose any information to outside parties?</h2><p>We do not sell, trade, or otherwise transfer to outside parties your personally identifiable information. This does not include trusted third parties who assist us in operating our website, conducting our business, or servicing you, so long as those parties agree to keep this information confidential. We may also release your information when we believe release is appropriate to comply with the law, enforce our site policies, or protect ours or others rights, property, or safety. However, non-personally identifiable visitor information may be provided to other parties for marketing, advertising, or other uses.</p></section>
 <section><h2>Childrens Online Privacy Protection Act Compliance</h2><p>We are in compliance with the requirements of COPPA (Childrens Online Privacy Protection Act), we do not collect any information from anyone under 13 years of age. Our website, products and services are all directed to people who are at least 13 years old or older.</p></section>
 <section><h2>Your Consent</h2><p>By using our site, you consent to our websites privacy policy.</p></section>
-<section><h2>Contacting Us</h2><p>If there are any questions regarding this privacy policy you may contact us using the information below.</p><address>7901 4TH ST N<br/>STE 18005<br/>ST. PETERSBURG, FL 33702<br/>United States<br/><a href="mailto:email@artisanmart.com">email@artisanmart.com</a><br/>18665828843167</address></section>
+<section><h2>Contacting Us</h2><p>If there are any questions regarding this privacy policy you may contact us using the information below.</p><address>7901 4TH ST N<br/>STE 18005<br/>ST. PETERSBURG, FL 33702<br/>United States<br/><a href="mailto:email@artisanmart.com">email@artisanmart.com</a><br/><a href={BUSINESS_PHONE_HREF}>{BUSINESS_PHONE}</a></address></section>
 </article></main>}

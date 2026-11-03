@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Store, Heart, BriefcaseBusiness, Phone, Megaphone, Facebook, Youtube, Star, ChevronDown, ArrowUp, X } from "lucide-react";
+import { Store, Heart, BriefcaseBusiness, Phone, Megaphone, Facebook, Youtube, ChevronDown, ArrowUp, X } from "lucide-react";
 import "./SiteFooter.css";
 
 const shortcuts = [
@@ -60,7 +60,6 @@ export function SiteFooter() {
       <div className="footer-wrap footer-bottom">
         <p>© {new Date().getFullYear()} Artisan Market. All rights reserved.</p>
         <nav aria-label="Legal"><FooterLink page="terms-of-sale">Terms of Sale</FooterLink><FooterLink page="privacy">Privacy Policy</FooterLink></nav>
-        <div className="footer-rating-preview" aria-label="Artisan Mart customer reviews"><div className="footer-rating-badge"><div className="footer-rating-emblem"><Star aria-hidden="true" fill="currentColor"/></div><div className="footer-rating-brand"><span>Artisan Mart</span><strong>CUSTOMER<br/>REVIEWS</strong></div></div></div>
       </div>
     </footer>
   );
