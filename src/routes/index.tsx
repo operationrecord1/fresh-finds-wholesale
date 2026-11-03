@@ -4,7 +4,7 @@ import { PackagePlus, Award, Tags, PackageOpen } from "lucide-react";
 import { PRODUCTS, type CollectionSlug, type Product } from "@/data/catalog";
 import { ProductCard } from "@/components/store/ProductCard";
 import { HeroCarousel } from "@/components/store/HeroCarousel";
-import { QuickView } from "@/components/store/QuickView";
+import { QuickView } from "@/components/store/LazyQuickView";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [

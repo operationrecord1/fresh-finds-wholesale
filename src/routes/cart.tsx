@@ -5,7 +5,7 @@ import { useState } from "react";
 import { getProduct, type Product } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { lineTotal, meetsMinimum, money, ORDER_MINIMUM } from "@/lib/wholesale";
-import { QuickView } from "@/components/store/QuickView";
+import { QuickView } from "@/components/store/LazyQuickView";
 import { ExpressOrder } from "@/components/store/ExpressOrder";
 
 export const Route = createFileRoute("/cart")({

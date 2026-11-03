@@ -19,10 +19,10 @@ export function Badges({ badges }: { badges: Badge[] }) {
   );
 }
 
-export function ProductImage({ p, i = 0, className = "" }: { p: Product; i?: number; className?: string }) {
+export function ProductImage({ p, i = 0, className = "", eager = false }: { p: Product; i?: number; className?: string; eager?: boolean }) {
   const [failed, setFailed] = useState<string | null>(null);
   const src = p.images[i];
-  if (src && failed !== src) return <img onError={() => setFailed(src)} src={src} alt={p.title} loading="lazy" decoding="async" className={`h-full w-full object-contain ${className}`} />;
+  if (src && failed !== src) return <img onError={() => setFailed(src)} src={src} alt={p.title} loading={eager ? "eager" : "lazy"} decoding="async" className={`h-full w-full object-contain ${className}`} />;
   return (
     <div className={`flex h-full w-full flex-col items-center justify-center gap-1 bg-muted text-muted-foreground ${className}`}>
       <ImageOff className="h-8 w-8" />

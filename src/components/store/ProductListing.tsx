@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { PRICE_BANDS, type Product, type Badge } from "@/data/catalog";
 import { ProductCard } from "./ProductCard";
-import { QuickView } from "./QuickView";
+import { QuickView } from "./LazyQuickView";
+
+import { useIncrementalProducts } from "@/lib/useIncrementalProducts";
 
 export const SORTS = [
   ["position", "Position Descending"], ["newest", "Newest Descending"], ["relevance", "Relevance"],
@@ -24,7 +26,6 @@ function sortProducts(list: Product[], sort: string) {
   }
 }
 
-const PAGE = 24;
 
 export function ProductListing({ products, banner, defaultSort = "position", initialPrice }: { products: Product[]; banner: ReactNode; defaultSort?: string; initialPrice?: string | undefined }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -32,22 +33,16 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
   const [price, setPrice] = useState<string | null>(initialPrice ?? null);
   const [special, setSpecial] = useState<Badge | null>(null);
   const [sub, setSub] = useState<string | null>(null);
-  const [shown, setShown] = useState(PAGE);
   const [qv, setQv] = useState<Product | null>(null);
-  const sentinel = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setPrice(initialPrice ?? null); setSub(null); setSpecial(null); setSort(defaultSort); }, [initialPrice, defaultSort, products]);
+  useEffect(() => { setPrice(initialPrice ?? null); setSub(null); setSpecial(null); setSort(defaultSort); }, [initialPrice, defaultSort]);
 
   const inBand = (p: Product, id: string) => { const b = PRICE_BANDS.find((x) => x.id === id)!; return p.price != null && p.price >= b.min && p.price <= b.max; };
   const subs = useMemo(() => { const m = new Map<string, number>(); products.forEach((p) => { const s = p.subcategory ?? p.category; if (s) m.set(s, (m.get(s) ?? 0) + 1); }); return [...m].sort(); }, [products]);
   const filtered = useMemo(() => sortProducts(products.filter((p) => (!price || inBand(p, price)) && (!sub || (p.subcategory ?? p.category) === sub) && (!special || p.badges.includes(special))), sort), [products, price, sub, special, sort]);
 
-  useEffect(() => { setShown(PAGE); }, [price, sub, special, sort, products]);
-  useEffect(() => {
-    const el = sentinel.current; if (!el) return;
-    const io = new IntersectionObserver((e) => e[0]?.isIntersecting && setShown((s) => s + PAGE));
-    io.observe(el); return () => io.disconnect();
-  }, []);
+  const resultKey = JSON.stringify([price, sub, special, sort, filtered.map(p => p.sku)]);
+  const { count: shown, hasMore, pending, sentinel, loadMore } = useIncrementalProducts(filtered.length, resultKey);
 
   const Radio = ({ on, label, onClick }: { on: boolean; label: string; onClick: () => void }) => (
     <label className="flex cursor-pointer items-center gap-2 py-1 text-sm"><input type="radio" checked={on} onChange={onClick} /> {label}</label>
@@ -78,12 +73,12 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
       </aside>
       <div className="min-w-0 flex-1">
         {banner}
-        <div className="store-catalog-grid mt-4 grid">
+        <div className="store-catalog-grid mt-4 grid" aria-busy={pending}>
           {filtered.slice(0, shown).map((p) => <ProductCard key={p.sku} p={p} onQuickView={setQv} />)}
         </div>
         {filtered.length === 0 && <p className="mt-8 text-center">No products match these filters.</p>}
         <div ref={sentinel} className="h-8" />
-        {shown < filtered.length && <button className="mx-auto block rounded border bg-white px-5 py-3" onClick={() => setShown(s => s + PAGE)}>Load more products</button>}
+        {hasMore && <button disabled={pending} className="mx-auto block rounded border bg-white px-5 py-3" onClick={loadMore}>{pending ? "Loading products..." : "Load more products"}</button>}
         <p className="my-4 text-center text-sm text-muted-foreground" role="status">Showing {Math.min(shown, filtered.length)} of {filtered.length} products</p>
       </div>
       <QuickView p={qv} onClose={() => setQv(null)} />
