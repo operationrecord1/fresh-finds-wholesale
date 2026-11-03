@@ -17,6 +17,7 @@ const aboutLinks: [string, string][] = [
 function FooterLink({ page, children }: { page: string; children: React.ReactNode }) {
   if (page === "careers") return <Link to="/about-us" hash="careers">{children}</Link>;
   if (page === "contact") return <Link to="/contact">{children}</Link>;
+  if (page === "privacy") return <Link to="/privacy">{children}</Link>;
   if (page === "terms-of-sale") return <Link to="/terms-of-sale">{children}</Link>;
   const section = ({ "industries-served": "industries-served", "community-outreach": "artisan-cares", shipping: "easy-shipping", blog: "blog" } as Record<string, string>)[page];
   if (section) return <Link to="/about-us" hash={section}>{children}</Link>;

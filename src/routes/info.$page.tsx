@@ -9,6 +9,7 @@ const PAGES: Record<string, string> = {
 
 export const Route = createFileRoute("/info/$page")({
   loader: ({ params }) => {
+    if (params.page === "privacy") throw redirect({ to: "/privacy" });
     if (params.page === "terms-of-sale") throw redirect({ to: "/terms-of-sale" });
     const section = ({ "artisan-mart": "about-us", "industries-served": "industries-served", "community-outreach": "artisan-cares", shipping: "easy-shipping", blog: "blog", careers: "careers", "artisan-cares": "artisan-cares", "easy-shipping": "easy-shipping" } as Record<string, string>)[params.page];
     if (section) throw redirect({ to: "/about-us", hash: section });

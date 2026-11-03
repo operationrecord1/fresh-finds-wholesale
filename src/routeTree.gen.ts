@@ -18,6 +18,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExpressOrderRouteImport } from './routes/express-order'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NewsletterRouteImport } from './routes/newsletter'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ShopByPriceRouteImport } from './routes/shop-by-price'
@@ -72,6 +73,11 @@ const NewsletterRoute = NewsletterRouteImport.update({
   path: '/newsletter',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/express-order': typeof ExpressOrderRoute
   '/login': typeof LoginRoute
   '/newsletter': typeof NewsletterRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/shop-by-price': typeof ShopByPriceRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/express-order': typeof ExpressOrderRoute
   '/login': typeof LoginRoute
   '/newsletter': typeof NewsletterRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/shop-by-price': typeof ShopByPriceRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/express-order': typeof ExpressOrderRoute
   '/login': typeof LoginRoute
   '/newsletter': typeof NewsletterRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/shop-by-price': typeof ShopByPriceRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/express-order'
     | '/login'
     | '/newsletter'
+    | '/privacy'
     | '/register'
     | '/search'
     | '/shop-by-price'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/express-order'
     | '/login'
     | '/newsletter'
+    | '/privacy'
     | '/register'
     | '/search'
     | '/shop-by-price'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/express-order'
     | '/login'
     | '/newsletter'
+    | '/privacy'
     | '/register'
     | '/search'
     | '/shop-by-price'
@@ -241,6 +253,7 @@ export interface RootRouteChildren {
   ExpressOrderRoute: typeof ExpressOrderRoute
   LoginRoute: typeof LoginRoute
   NewsletterRoute: typeof NewsletterRoute
+  PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
   SearchRoute: typeof SearchRoute
   ShopByPriceRoute: typeof ShopByPriceRoute
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsletterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -385,6 +405,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExpressOrderRoute: ExpressOrderRoute,
   LoginRoute: LoginRoute,
   NewsletterRoute: NewsletterRoute,
+  PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
   SearchRoute: SearchRoute,
   ShopByPriceRoute: ShopByPriceRoute,
