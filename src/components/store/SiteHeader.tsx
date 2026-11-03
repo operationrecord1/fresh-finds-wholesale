@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Phone, Search, ShoppingCart, ChevronDown, ChevronLeft, ChevronRight, Megaphone, AlertTriangle } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
@@ -8,7 +8,9 @@ import { useCart } from "@/lib/cart";
 
 export function SiteHeader() {
   const [q, setQ] = useState("");
-  const [menu, setMenu] = useState<null | "cat" | "price" | "kc">(null);
+  const [menu, updateMenu] = useState<null | "cat" | "price" | "kc">(null);
+  const activeMenu = useRef<typeof menu>(null);
+  const setMenu = (next: typeof menu) => { activeMenu.current = next; updateMenu(next); };
   const header = useRef<HTMLElement>(null);
   const catTrigger = useRef<HTMLButtonElement>(null);
   const priceTrigger = useRef<HTMLButtonElement>(null);
@@ -19,20 +21,18 @@ export function SiteHeader() {
     if (window.matchMedia("(hover: hover)").matches) setMenu(next);
   };
   useEffect(() => {
-    if (!menu) return;
-    const trigger = { cat: catTrigger, price: priceTrigger, kc: kcTrigger }[menu];
-    const contains = (node: HTMLElement | null, event: PointerEvent) => {
-      if (!node) return false;
-      const rect = node.getBoundingClientRect();
-      return event.clientX >= rect.left && event.clientX <= rect.right &&
-        event.clientY >= rect.top && event.clientY <= rect.bottom;
-    };
+    const triggers = { cat: catTrigger, price: priceTrigger, kc: kcTrigger };
     const leaveRegion = (event: PointerEvent) => {
-      if (event.pointerType === "mouse" && !contains(trigger.current, event) &&
-          !contains(dropdown.current, event)) setMenu(null);
+      if (event.pointerType !== "mouse") return;
+      const target = event.target as Node;
+      // Resolve the new trigger first; an old menu cannot close its replacement.
+      for (const key of ["cat", "price", "kc"] as const) {
+        if (triggers[key].current?.contains(target)) { setMenu(key); return; }
+      }
+      if (activeMenu.current && !dropdown.current?.contains(target)) setMenu(null);
     };
     const outside = (event: PointerEvent) => {
-      if (!trigger.current?.contains(event.target as Node) &&
+      if (!Object.values(triggers).some(ref => ref.current?.contains(event.target as Node)) &&
           !dropdown.current?.contains(event.target as Node)) setMenu(null);
     };
     document.addEventListener("pointermove", leaveRegion);
@@ -41,7 +41,7 @@ export function SiteHeader() {
       document.removeEventListener("pointermove", leaveRegion);
       document.removeEventListener("pointerdown", outside);
     };
-  }, [menu]);
+  }, []);
   const navigation = useRef<HTMLDivElement>(null);
   const navItems = useRef<HTMLElement>(null);
   const [overflow, setOverflow] = useState({ needed: false, left: false, right: false });
@@ -77,14 +77,15 @@ export function SiteHeader() {
     document.addEventListener("keydown", escape);
     return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", escape); };
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!menu) return;
     const position = () => {
       const h = header.current?.getBoundingClientRect();
       const trigger = ({ cat: catTrigger, price: priceTrigger, kc: kcTrigger }[menu]).current?.getBoundingClientRect();
       if (!h) return;
-      const left = Math.max(12, Math.min((trigger?.left ?? h.left + 12) - h.left, h.width - 240));
-      setAnchor({left, top: (trigger?.bottom ?? h.bottom) - h.top, width: Math.min(menu === "cat" ? 1100 : 370, h.width - left - 12)});
+      const width = Math.min(menu === "cat" ? 1100 : 370, h.width - 24);
+      const left = Math.max(12, Math.min((trigger?.left ?? h.left + 12) - h.left, h.width - width - 12));
+      setAnchor({ left, top: (trigger?.bottom ?? h.bottom) - h.top, width });
     };
     position();
     window.addEventListener("resize", position);

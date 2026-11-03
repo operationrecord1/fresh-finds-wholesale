@@ -139,3 +139,47 @@
 .store-cart-icon b { top:0; right:0; line-height:16px; min-height:18px; }
 .store-cart-button { line-height:1.4; }
 .store-utilities button[aria-expanded=true] { text-decoration:underline; text-underline-offset:5px; }
+
+/* Align the shopping header with the centered 1452px content container.
+   The minimum-order badge occupies a separate left gutter. */
+@media(min-width:1000px) {
+ .store-header-layout {
+  position:relative; width:100%; max-width:none; margin:0;
+  padding-left:max(164px, calc((100% - 1452px)/2));
+  padding-right:max(16px, calc((100% - 1452px)/2));
+  grid-template-columns:180px minmax(120px,1fr) 180px 350px;
+  gap:4px 18px;
+ }
+ .store-minimum { position:absolute; top:0; left:16px; width:132px; margin:0; }
+ .store-brand-contact {grid-column:1}
+ .store-search {grid-column:2}
+ .store-call-button {grid-column:3}
+ .store-utilities {grid-column:4; padding-left:18px}
+ .store-navigation-area {grid-column:1/4}
+ .store-nav {gap:clamp(18px,2vw,36px);font-size:15px}
+ .store-utility-links,.store-account-links {gap:14px;font-size:14px}
+}
+@media(min-width:1000px) and (max-width:1279px) {
+ .store-header-layout {
+  padding-left:148px; padding-right:16px;
+  grid-template-columns:150px minmax(90px,1fr) 160px 290px; gap:4px 10px;
+ }
+ .store-minimum {width:116px}
+ .store-utilities {padding-left:10px}
+ .store-utility-links,.store-account-links {font-size:13px;gap:8px}
+ .store-nav {gap:18px}
+ .store-call-button {padding:8px;gap:5px}
+ .store-call-button strong {font-size:13px}
+}
+@media(max-width:999px) {
+ .store-utilities {width:145px}
+ .store-brand-contact {padding-right:157px}
+ .store-account-links {gap:6px}
+ .store-cart-button {padding:4px}
+}
+@media(max-width:379px) {
+ .store-brand-name {font-size:20px}
+ .store-utilities {width:126px;padding-left:8px}
+ .store-brand-contact {padding-right:132px}
+ .store-cart-button > span:last-child {display:none}
+}
