@@ -1,17 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Globe2, Store, Heart, BriefcaseBusiness, Phone, Megaphone, Facebook, Youtube, Star, ChevronDown, ArrowUp, X } from "lucide-react";
+import { Store, Heart, BriefcaseBusiness, Phone, Megaphone, Facebook, Youtube, Star, ChevronDown, ArrowUp, X } from "lucide-react";
 import "./SiteFooter.css";
 
 const shortcuts = [
-  { title: "Global Presence", page: "global-presence", icon: Globe2 },
   { title: "Industries Served", page: "industries-served", icon: Store },
   { title: "Artisan Cares", page: "community-outreach", icon: Heart },
   { title: "Career Opportunities", page: "careers", icon: BriefcaseBusiness },
   { title: "Contact Us", page: "contact", icon: Phone },
 ];
 const aboutLinks: [string, string][] = [
-  ["Global Presence", "global-presence"], ["Industries Served", "industries-served"],
+  ["Industries Served", "industries-served"],
   ["Artisan Cares", "community-outreach"], ["Easy Shipping", "shipping"],
   ["Contact Us", "contact"], ["Artisan Market Careers", "careers"], ["Blog", "blog"],
 ];
@@ -31,9 +30,9 @@ export function SiteFooter() {
         <div className="footer-wrap footer-columns">
           <section className="footer-contact" aria-labelledby="footer-brand">
             <h2 id="footer-brand">Artisan Market</h2>
-            <address>24600 Main Street<br className="footer-address-break" /> Carson, CA 90745</address>
-            <span className="footer-sample">Sample address &amp; hours — to be updated</span>
-            <dl className="footer-hours"><div><dt>Hours:</dt><dd>Mon–Fri, 7:00 AM–4:00 PM PST<br />Sat–Sun: Closed</dd></div></dl>
+            <address>7901 4TH ST N, STE 18005<br />ST. PETERSBURG, FL 33702, US</address>
+            
+            
             <div className="footer-contact-links"><p>Customer Service: <a href="https://email.artisanmart.com">email.artisanmart.com</a></p><p>Sell Closeouts: <a href="mailto:offer@artisanmart.com">offer@artisanmart.com</a></p></div>
           </section>
           <section className="footer-about" aria-label="About Us">
