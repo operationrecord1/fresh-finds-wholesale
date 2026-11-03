@@ -60,7 +60,7 @@ export function SiteFooter() {
       <div className="footer-wrap footer-bottom">
         <p>© {new Date().getFullYear()} Artisan Market. All rights reserved.</p>
         <nav aria-label="Legal"><FooterLink page="terms-of-sale">Terms of Sale</FooterLink><FooterLink page="privacy">Privacy Policy</FooterLink></nav>
-        <div className="footer-rating-preview" aria-label="Review badge design preview, 1.2K is sample data, not verified reviews"><div className="footer-rating-badge"><div className="footer-rating-emblem"><Star aria-hidden="true" fill="currentColor"/></div><div className="footer-rating-brand"><span>Artisan Mart</span><strong>CUSTOMER<br/>REVIEWS</strong></div></div><div className="footer-rating-caption"><span>1.2K Ratings</span><span aria-hidden="true">★★★★★</span></div><small>Design preview · Sample rating count</small></div>
+        <div className="footer-rating-preview" aria-label="Artisan Mart customer reviews"><div className="footer-rating-badge"><div className="footer-rating-emblem"><Star aria-hidden="true" fill="currentColor"/></div><div className="footer-rating-brand"><span>Artisan Mart</span><strong>CUSTOMER<br/>REVIEWS</strong></div></div></div>
       </div>
     </footer>
   );
