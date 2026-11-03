@@ -35,7 +35,7 @@
  .store-account-links a { gap:5px; }
  .store-nav { font-size:13px; gap:18px; }
 }
-@media(max-width:767px) {
+@media(max-width:999px) {
  .store-header-layout { grid-template-columns:100px minmax(0,1fr); gap:10px 12px; padding:12px 14px 0; }
  .store-brand-contact { grid-column:1/-1; grid-row:1; padding-right:126px; }
  .store-brand-name { font-size:clamp(22px,6.5vw,29px); }
@@ -63,15 +63,45 @@
 .store-nav-controls { display:flex; justify-content:flex-end; gap:6px; position:absolute; top:0; right:0; }
 .store-nav-controls button { display:grid; place-items:center; width:32px; height:28px; border:1px solid #b6cad6; border-radius:6px; color:#17668c; background:#f5f9fc; }
 .store-nav-controls button:disabled { opacity:.35; }
-@media (min-width:768px) and (max-width:1100px) {
+@media (min-width:1000px) and (max-width:1100px) {
  .store-header-layout { grid-template-columns:70px 164px minmax(110px,1fr) 245px; gap:4px 10px; }
  .store-utilities { padding-left:10px; }
  .store-utility-links, .store-account-links { font-size:11px; gap:6px; }
  .store-account-links svg { width:20px; height:20px; }
  .store-nav { font-size:12px; gap:12px; }
 }
-@media(max-width:767px) {
+@media(max-width:999px) {
  .store-navigation-area { grid-column:1/-1; grid-row:3; }
  .store-nav { gap:18px; font-size:13px; }
  .store-search { width:100%; }
+}
+
+.store-call-button { grid-column:4; grid-row:1; display:flex; align-items:center; gap:8px; min-height:48px; padding:8px 10px; border:1px solid #b9d9e9; border-radius:10px; background:#f0f8fc; color:#125f85; white-space:nowrap; }
+.store-call-button small { display:block; font-size:10px; font-weight:700; letter-spacing:.5px; }
+.store-call-button strong { display:block; font-size:15px; font-weight:800; }
+.store-call-button:hover { background:#e0f0f8; }
+.store-cart-button { gap:10px; padding:8px 10px; border:1px solid #d2e3ec; border-radius:10px; background:#f5fafc; font-weight:700; min-height:44px!important; }
+.store-cart-icon { position:relative; display:flex; }
+.store-cart-icon b { position:absolute; top:-9px; right:-9px; min-width:18px; padding:1px 4px; border-radius:12px; background:#147eac; color:white; font-size:10px; text-align:center; }
+@media(min-width:1000px) {
+ .store-header-layout { grid-template-columns:80px 180px minmax(140px,1fr) 180px 300px; gap:4px 14px; }
+ .store-brand-name { font-size:30px; }
+ .store-brand-caption { font-size:8px; letter-spacing:1.5px; }
+ .store-utilities { grid-column:5; }
+ .store-navigation-area { grid-column:1/5; }
+}
+@media(min-width:1000px) and (max-width:1199px) {
+ .store-header-layout { grid-template-columns:70px 160px minmax(110px,1fr) 166px 245px; gap:4px 10px; }
+ .store-brand-name { font-size:27px; }
+ .store-call-button { padding:8px; gap:5px; }
+ .store-call-button strong { font-size:13px; }
+}
+@media(max-width:999px) {
+ .store-brand-contact { padding-bottom:43px; }
+ .store-call-button { grid-column:1/-1; grid-row:1; align-self:end; justify-self:start; min-height:34px; padding:5px 7px; gap:5px; }
+ .store-call-button small { display:none; }
+ .store-call-button strong { font-size:12px; }
+ .store-call-button svg { width:15px; height:15px; }
+ .store-utilities { align-self:start; }
+ .store-cart-button { padding:6px; gap:5px!important; }
 }

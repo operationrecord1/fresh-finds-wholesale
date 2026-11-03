@@ -1,0 +1,24 @@
+.cart-page { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:28px; max-width:1400px; margin:auto; padding:32px 20px; }
+.cart-page > * { min-width:0; }
+.cart-items { display:grid; gap:14px; }
+.cart-item { display:grid; grid-template-columns:minmax(0,1fr) 135px 125px; gap:20px; padding:24px; background:white; border:1px solid #dae4eb; border-radius:14px; }
+.cart-item-info { min-width:0; }
+.cart-item-info a { display:block; font-size:17px; font-weight:700; line-height:1.5; color:#164b66; overflow-wrap:anywhere; }
+.cart-item-info p, .cart-sku, .cart-quantity > span, .cart-line-total > span { font-size:12px; color:#61727e; }
+.cart-sku { display:block; margin-bottom:6px; letter-spacing:.6px; }
+.cart-item-info p { margin-top:8px; }
+.cart-quantity, .cart-line-total { display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
+.cart-line-total strong { font-size:19px; }
+.cart-item button { display:flex; align-items:center; gap:5px; min-height:44px; font-size:13px; color:#147eac; text-decoration:underline; }
+.cart-line-total button { color:#a13c3c; }
+.cart-summary { border:1px solid #d8e4ec; background:white; border-radius:16px; padding:24px; }
+.cart-summary input, .cart-summary select { min-height:44px; }
+.cart-summary > a, .cart-summary > button { min-height:48px; }
+.cart-feedback { font-size:13px; padding:10px; background:#eef6fb; border-radius:7px; }
+.cart-empty { text-align:center; background:white; border:1px solid #d8e4ec; border-radius:16px; padding:44px 20px; }
+.cart-empty > svg { margin:0 auto 18px; color:#1680ad; }
+.cart-empty h2 { font-size:23px; font-weight:700; }
+.cart-empty p { margin:12px auto 22px; color:#61727e; }
+.cart-empty a { display:inline-flex; align-items:center; gap:10px; background:#147fae; color:white; border-radius:9px; padding:12px 20px; font-weight:700; }
+@media(max-width:1000px) { .cart-page { grid-template-columns:1fr; } }
+@media(max-width:600px) { .cart-page { padding:24px 14px; gap:20px; } .cart-item { grid-template-columns:minmax(0,1fr) minmax(0,1fr); padding:18px; gap:16px; } .cart-item-info { grid-column:1/-1; } .cart-line-total { align-items:flex-end; } .cart-summary { padding:20px; } }
