@@ -125,18 +125,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/da883-2.webp",
       "images/products/da883-3.webp"
     ],
-    "description": "The Vanityz LED Vanity Mirror provides bright, adjustable lighting and versatile magnification for everyday makeup application, skincare, grooming, and detailed beauty routines. Designed with LED lights and a dimmer touch sensor, the mirror allows users to hold the touch button to adjust brightness for a customized view. Its tri-fold design features folding side panels for convenient storage and travel, along with two 3X magnified mirrors for precise detailing and a 2X magnified side mirror for closer viewing. The rotating kickstand offers up to 180° tilt, making it easy to adjust the mirror to a comfortable viewing angle. Measuring approximately 9.5\" x 13.5\" when open and 6.9\" x 4.2\" x 11.5\" when closed, its compact design works well on vanities, bathroom counters, dressers, or while traveling. The mirror features an ON/OFF button, LED illumination, dimmable touch control, folding side panels, battery chamber, and operates with 4 AAA batteries (not included). Practical for teens, adults, makeup enthusiasts, beauty professionals, or anyone looking for better visibility while applying cosmetics, styling hair, inserting contact lenses, shaping brows, or completing daily grooming.,Black LED Vanity Mirror with Adjustable Brightness Folding Panels and Storage Tray,",
+    "description": "The Vanityz LED Vanity Mirror provides bright, adjustable lighting and versatile magnification for everyday makeup application, skincare, grooming, and detailed beauty routines. Designed with LED lights and a dimmer touch sensor, the mirror allows users to hold the touch button to adjust brightness for a customized view. Its tri-fold design features folding side panels for convenient storage and travel, along with two 3X magnified mirrors for precise detailing and a 2X magnified side mirror for closer viewing. The rotating kickstand offers up to 180° tilt, making it easy to adjust the mirror to a comfortable viewing angle. Measuring approximately 9.5\" x 13.5\" when open and 6.9\" x 4.2\" x 11.5\" when closed, its compact design works well on vanities, bathroom counters, dressers, or while traveling. The mirror features an ON/OFF button, LED illumination, dimmable touch control, folding side panels, battery chamber, and operates with 4 AAA batteries (not included). Practical for teens, adults, makeup enthusiasts, beauty professionals, or anyone looking for better visibility while applying cosmetics, styling hair, inserting contact lenses, shaping brows, or completing daily grooming.",
     "upc": "605928020293",
     "specs": {
       "Case Pack Quantity": "10 units",
       "Inner Pack Quantity": "1 units",
-      "Upc Code": "605928020293",
       "Case Pack Dimensions": "15.5 \" (L) x13.3 \" (W) x12.4 \"(H)",
       "Case Weight": "16.95 lb",
       "Case Cube": "1.48 cubic feet",
-      "Per Piece Weight": "1.695000",
-      "Category": "Cosmetics",
-      "Subcategory": "Cosmetic Mirrors"
+      "Per Piece Weight": "1.695000"
     },
     "rules": {
       "lot": 4,
@@ -173,18 +170,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/da881-2.webp",
       "images/products/da881-3.webp"
     ],
-    "description": "Bring bright, convenient lighting to any beauty routine with this LED Vanity Mirror with Adjustable Brightness, 180° Tilt, and Storage Tray. Designed for everyday makeup application, skincare, grooming, and getting ready, the mirror features bright LED lights with a dimmable touch sensor that lets you adjust the brightness to suit different rooms and lighting conditions. The 180° tilting design makes it easy to position the mirror at a comfortable viewing angle, while the built-in storage tray measures approximately 6.25\" x 3.25\" and provides a convenient spot for makeup, jewelry, and other small accessories. The mirror measures approximately 6.5\" W x 8.9\" H and features a compact tabletop design that fits easily on vanities, bathroom counters, dressers, and desks. An on/off power button and battery chamber are conveniently located on the back. Powered by 4 AA batteries not included, the cordless design makes it easy to place and use wherever needed. Packaged in a retail-ready color box measuring approximately 6.90\" x 2.35\" x 11.5\".,Pink LED Vanity Mirror with Adjustable Brightness Tilt Function and Storage Tray,",
+    "description": "Bring bright, convenient lighting to any beauty routine with this LED Vanity Mirror with Adjustable Brightness, 180° Tilt, and Storage Tray. Designed for everyday makeup application, skincare, grooming, and getting ready, the mirror features bright LED lights with a dimmable touch sensor that lets you adjust the brightness to suit different rooms and lighting conditions. The 180° tilting design makes it easy to position the mirror at a comfortable viewing angle, while the built-in storage tray measures approximately 6.25\" x 3.25\" and provides a convenient spot for makeup, jewelry, and other small accessories. The mirror measures approximately 6.5\" W x 8.9\" H and features a compact tabletop design that fits easily on vanities, bathroom counters, dressers, and desks. An on/off power button and battery chamber are conveniently located on the back. Powered by 4 AA batteries not included, the cordless design makes it easy to place and use wherever needed. Packaged in a retail-ready color box measuring approximately 6.90\" x 2.35\" x 11.5\".",
     "upc": "605928020163",
     "specs": {
       "Case Pack Quantity": "10 units",
       "Inner Pack Quantity": "1 units",
-      "Upc Code": "605928020163",
       "Case Pack Dimensions": "14.3 \" (L) x13.3 \" (W) x12.4 \"(H)",
       "Case Weight": "11.2 lb",
       "Case Cube": "1.36 cubic feet",
-      "Per Piece Weight": "1.120000",
-      "Category": "Cosmetics",
-      "Subcategory": "Cosmetic Mirrors"
+      "Per Piece Weight": "1.120000"
     },
     "rules": {
       "lot": 5,
@@ -221,18 +215,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av822-2.webp",
       "images/products/av822-3.webp"
     ],
-    "description": "Bring nostalgic cartoon energy to any casual look with the Animaniacs Wakko Graphic Black and White Mesh Trucker Hat. The crisp white front panel features a colorful Wakko graphic with bold Animaniacs lettering for a fun throwback style, while the black curved bill and matching mesh back create a classic two-tone trucker look. Breathable mesh panels help keep you cool, and the adjustable snapback closure makes it easy to customize the fit. Perfect for Animaniacs fans, retro cartoon lovers, and anyone who likes playful accessories with a little personality. Comes packaged with an Animaniacs hang tag.,Animaniacs Wakko Graphic Black and White Mesh Trucker Hat,",
+    "description": "Bring nostalgic cartoon energy to any casual look with the Animaniacs Wakko Graphic Black and White Mesh Trucker Hat. The crisp white front panel features a colorful Wakko graphic with bold Animaniacs lettering for a fun throwback style, while the black curved bill and matching mesh back create a classic two-tone trucker look. Breathable mesh panels help keep you cool, and the adjustable snapback closure makes it easy to customize the fit. Perfect for Animaniacs fans, retro cartoon lovers, and anyone who likes playful accessories with a little personality. Comes packaged with an Animaniacs hang tag.",
     "upc": "676092700120",
     "specs": {
       "Case Pack Quantity": "144 units",
       "Inner Pack Quantity": "24 units",
-      "Upc Code": "676092700120",
       "Case Pack Dimensions": "16.5 \" (L) x24.2 \" (W) x23.3 \"(H)",
       "Case Weight": "31.000032 lb",
       "Case Cube": "5.38 cubic feet",
-      "Per Piece Weight": "0.215278",
-      "Category": "Apparel",
-      "Subcategory": "Hats"
+      "Per Piece Weight": "0.215278"
     },
     "rules": {
       "lot": 24,
@@ -269,18 +260,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av821-2.webp",
       "images/products/av821-3.webp"
     ],
-    "description": "Bring back the zany fun of a classic cartoon favorite with the Animaniacs Logo Light Blue Mesh Trucker Hat. Featuring Yakko, Wakko, and Dot popping out from the colorful Animaniacs logo, this playful cap adds instant nostalgic personality to any casual outfit. The light blue front panel and curved bill create a fresh, easygoing look, while white mesh back panels provide breathable comfort for everyday wear. An adjustable snapback closure helps create a comfortable, customizable fit. Perfect for Animaniacs fans, retro cartoon lovers, and anyone who wants a fun statement accessory.,Animaniacs Logo Light Blue Mesh Trucker Hat,",
+    "description": "Bring back the zany fun of a classic cartoon favorite with the Animaniacs Logo Light Blue Mesh Trucker Hat. Featuring Yakko, Wakko, and Dot popping out from the colorful Animaniacs logo, this playful cap adds instant nostalgic personality to any casual outfit. The light blue front panel and curved bill create a fresh, easygoing look, while white mesh back panels provide breathable comfort for everyday wear. An adjustable snapback closure helps create a comfortable, customizable fit. Perfect for Animaniacs fans, retro cartoon lovers, and anyone who wants a fun statement accessory.",
     "upc": "676092700113",
     "specs": {
       "Case Pack Quantity": "144 units",
       "Inner Pack Quantity": "24 units",
-      "Upc Code": "676092700113",
       "Case Pack Dimensions": "16 \" (L) x24.4 \" (W) x23.4 \"(H)",
       "Case Weight": "14.4 lb",
       "Case Cube": "5.29 cubic feet",
-      "Per Piece Weight": "0.100000",
-      "Category": "Apparel",
-      "Subcategory": "Hats"
+      "Per Piece Weight": "0.100000"
     },
     "rules": {
       "lot": 24,
@@ -315,18 +303,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/da850-2.webp",
       "images/products/da850-3.webp"
     ],
-    "description": "This practical organizer provides a convenient way to separate pills by day while keeping everything neatly stored in one compact case. Featuring a 7-day pill organizer with brightly colored compartments, this set makes it easy to sort and identify daily medications, vitamins, and supplements throughout the week. The colorful compartments help distinguish each day, while the included note card provides a convenient space for recording medication information, reminders, or personal notes. The organizer fits securely inside a black carrying case, helping keep its contents protected and organized during everyday use. The compact, portable design makes this weekly medication organizer ideal for home use, travel, work, vacations, and daily routines. Its convenient carrying case allows users to store their medications discreetly in a purse, backpack, luggage, or bedside drawer. The combination of colorful daily compartments and a dedicated note card makes it a useful accessory for maintaining an organized medication schedule. Comes individually packaged in a printed hanging retail box, featuring a product image that showcases the colorful pill compartments, note card, and black carrying case. The packaging includes a built-in hang tab for convenient peg-hook merchandising and displays the product's organizational features, making it suitable for pharmacies, health and wellness departments, convenience stores, discount retailers, and general merchandise displays.,Weekly Pill Organizer with Note Card in Carry Case,",
+    "description": "This practical organizer provides a convenient way to separate pills by day while keeping everything neatly stored in one compact case. Featuring a 7-day pill organizer with brightly colored compartments, this set makes it easy to sort and identify daily medications, vitamins, and supplements throughout the week. The colorful compartments help distinguish each day, while the included note card provides a convenient space for recording medication information, reminders, or personal notes. The organizer fits securely inside a black carrying case, helping keep its contents protected and organized during everyday use. The compact, portable design makes this weekly medication organizer ideal for home use, travel, work, vacations, and daily routines. Its convenient carrying case allows users to store their medications discreetly in a purse, backpack, luggage, or bedside drawer. The combination of colorful daily compartments and a dedicated note card makes it a useful accessory for maintaining an organized medication schedule. Comes individually packaged in a printed hanging retail box, featuring a product image that showcases the colorful pill compartments, note card, and black carrying case. The packaging includes a built-in hang tab for convenient peg-hook merchandising and displays the product's organizational features, making it suitable for pharmacies, health and wellness departments, convenience stores, discount retailers, and general merchandise displays.",
     "upc": "731015332526",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "12 units",
-      "Upc Code": "731015332526",
       "Case Pack Dimensions": "17.1 \" (L) x10.8 \" (W) x11.9 \"(H)",
       "Case Weight": "12 lb",
       "Case Cube": "1.27 cubic feet",
-      "Per Piece Weight": "0.500000",
-      "Category": "Health Care",
-      "Subcategory": "Pill Boxes & Splitters"
+      "Per Piece Weight": "0.500000"
     },
     "rules": {
       "lot": 12,
@@ -363,18 +348,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw300-2.webp",
       "images/products/aw300-3.webp"
     ],
-    "description": "Stay connected with the Mochic 30W Dual Port USB-A and USB-C Wall Charging Bundle. This convenient set includes a compact 30W wall charger equipped with USB-A and USB-C ports, allowing you to charge two compatible devices from a single wall outlet. Features TruFast charging technology through the USB-C port, delivering up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. Includes a 4-foot USB-A to USB-C charging and syncing cable featuring a durable, tangle-resistant braided exterior and metallic connector housings. The included cable tie makes organization and storage easy. Ideal for charging compatible smartphones, tablets, and other USB-C devices at home, in the office, or while traveling. Features a sleek white finish. Comes packaged in a retail display box with a clear window and hanging loop.,Mochic 30W Dual Port USB A and USB C Wall Charger in White with 4 Foot USB A to C Cable,",
+    "description": "Stay connected with the Mochic 30W Dual Port USB-A and USB-C Wall Charging Bundle. This convenient set includes a compact 30W wall charger equipped with USB-A and USB-C ports, allowing you to charge two compatible devices from a single wall outlet. Features TruFast charging technology through the USB-C port, delivering up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. Includes a 4-foot USB-A to USB-C charging and syncing cable featuring a durable, tangle-resistant braided exterior and metallic connector housings. The included cable tie makes organization and storage easy. Ideal for charging compatible smartphones, tablets, and other USB-C devices at home, in the office, or while traveling. Features a sleek white finish. Comes packaged in a retail display box with a clear window and hanging loop.",
     "upc": "811725026578",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "6 units",
-      "Upc Code": "811725026578",
       "Case Pack Dimensions": "8.1 \" (L) x20.9 \" (W) x10 \"(H)",
       "Case Weight": "9.199992 lb",
       "Case Cube": "0.98 cubic feet",
-      "Per Piece Weight": "0.383333",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.383333"
     },
     "rules": {
       "lot": 6,
@@ -411,18 +393,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw298-2.webp",
       "images/products/aw298-3.webp"
     ],
-    "description": "Keep your devices charged while traveling with the Mochic 30W Dual Port USB-A and USB-C Car Charging Bundle. This convenient set includes a 30W car charger featuring both USB-A and USB-C ports, allowing you to charge two compatible devices from a single vehicle power outlet. Features TruFast charging technology through the USB-C port, delivering up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. Includes a 4-foot USB-A to USB-C charging and syncing cable with a durable, tangle-resistant braided exterior and metallic connector housings. The included cable tie allows for convenient organization and storage. Ideal for charging compatible smartphones, tablets, and other USB-C devices on the go. Features a sleek black finish. Comes packaged in a retail display box with a clear window and hanging loop.,Mochic 30W Dual Port USB A and USB C Car Charger in Black with 4 Foot USB A to C Cable,",
+    "description": "Keep your devices charged while traveling with the Mochic 30W Dual Port USB-A and USB-C Car Charging Bundle. This convenient set includes a 30W car charger featuring both USB-A and USB-C ports, allowing you to charge two compatible devices from a single vehicle power outlet. Features TruFast charging technology through the USB-C port, delivering up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. Includes a 4-foot USB-A to USB-C charging and syncing cable with a durable, tangle-resistant braided exterior and metallic connector housings. The included cable tie allows for convenient organization and storage. Ideal for charging compatible smartphones, tablets, and other USB-C devices on the go. Features a sleek black finish. Comes packaged in a retail display box with a clear window and hanging loop.",
     "upc": "811725028329",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "6 units",
-      "Upc Code": "811725028329",
       "Case Pack Dimensions": "8.2 \" (L) x20.8 \" (W) x10 \"(H)",
       "Case Weight": "7.750008 lb",
       "Case Cube": "0.99 cubic feet",
-      "Per Piece Weight": "0.322917",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.322917"
     },
     "rules": {
       "lot": 6,
@@ -459,18 +438,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw297-2.webp",
       "images/products/aw297-3.webp"
     ],
-    "description": "Stay powered on the road with the Mochic 30W Dual Port USB-A and USB-C Car Charging Bundle. This convenient set includes a 30W car charger with USB-A and USB-C ports, allowing you to charge two compatible devices from a single vehicle power outlet. Features TruFast charging technology through the USB-C port, providing up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. Includes a 4-foot USB-C to USB-C charging and syncing cable with a strong, tangle-resistant braided exterior and metallic connector housings. The included cable tie keeps the cord neatly organized when not in use. Ideal for charging compatible smartphones, tablets, and other USB-C devices while traveling. Features a sleek black finish. Comes packaged in a retail display box with a clear window and hanging loop.,Mochic 30W Dual Port USB A and USB C Car Charger in Black with 4 Foot USB C to C Cable,",
+    "description": "Stay powered on the road with the Mochic 30W Dual Port USB-A and USB-C Car Charging Bundle. This convenient set includes a 30W car charger with USB-A and USB-C ports, allowing you to charge two compatible devices from a single vehicle power outlet. Features TruFast charging technology through the USB-C port, providing up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. Includes a 4-foot USB-C to USB-C charging and syncing cable with a strong, tangle-resistant braided exterior and metallic connector housings. The included cable tie keeps the cord neatly organized when not in use. Ideal for charging compatible smartphones, tablets, and other USB-C devices while traveling. Features a sleek black finish. Comes packaged in a retail display box with a clear window and hanging loop.",
     "upc": "811725028367",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "6 units",
-      "Upc Code": "811725028367",
       "Case Pack Dimensions": "8.3 \" (L) x20.7 \" (W) x9.9 \"(H)",
       "Case Weight": "7.699992 lb",
       "Case Cube": "0.98 cubic feet",
-      "Per Piece Weight": "0.320833",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.320833"
     },
     "rules": {
       "lot": 6,
@@ -507,18 +483,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw296-2.webp",
       "images/products/aw296-3.webp"
     ],
-    "description": "Keep your devices charged while on the road with the Mochic 30W Dual Port USB-A and USB-C Car Charger in Black. Designed for convenient and efficient charging, this compact car charger features both a USB-A port and a USB-C port, allowing you to charge two compatible devices from a single vehicle power outlet. Features TruFast charging technology through the USB-C port, delivering up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. The 30W charging capability makes it ideal for smartphones, tablets, and other USB-powered devices. Its compact, lightweight design fits conveniently into a vehicle's 12V accessory socket without taking up unnecessary space. Features a sleek black finish with metallic contact points. Comes packaged in a retail display box with a clear window and hanging loop.,Mochic 30W Dual Port USB A and USB C Car Charger in Black,",
+    "description": "Keep your devices charged while on the road with the Mochic 30W Dual Port USB-A and USB-C Car Charger in Black. Designed for convenient and efficient charging, this compact car charger features both a USB-A port and a USB-C port, allowing you to charge two compatible devices from a single vehicle power outlet. Features TruFast charging technology through the USB-C port, delivering up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. The 30W charging capability makes it ideal for smartphones, tablets, and other USB-powered devices. Its compact, lightweight design fits conveniently into a vehicle's 12V accessory socket without taking up unnecessary space. Features a sleek black finish with metallic contact points. Comes packaged in a retail display box with a clear window and hanging loop.",
     "upc": "811725028343",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "6 units",
-      "Upc Code": "811725028343",
       "Case Pack Dimensions": "6.8 \" (L) x17.7 \" (W) x9.1 \"(H)",
       "Case Weight": "5.85 lb",
       "Case Cube": "0.63 cubic feet",
-      "Per Piece Weight": "0.243750",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.243750"
     },
     "rules": {
       "lot": 6,
@@ -555,18 +528,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw295-2.webp",
       "images/products/aw295-3.webp"
     ],
-    "description": "Keep your devices powered with the Mochic 30W Dual Port USB-A and USB-C Wall Charger in White. Designed for convenient and efficient charging, this compact wall adapter features both a USB-A port and a USB-C port, allowing you to charge two compatible devices from a single outlet. Features TruFast charging technology through the USB-C port, delivering up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. The 30W charging capability makes it ideal for smartphones, tablets, and other USB-powered devices. Its lightweight, compact design makes it convenient for use at home, in the office, or while traveling. Features a standard two-prong wall plug and a sleek white finish. Comes packaged in a retail display box with a clear window and hanging loop.,Mochic 30W Dual Port USB A and USB C Wall Charger in White,",
+    "description": "Keep your devices powered with the Mochic 30W Dual Port USB-A and USB-C Wall Charger in White. Designed for convenient and efficient charging, this compact wall adapter features both a USB-A port and a USB-C port, allowing you to charge two compatible devices from a single outlet. Features TruFast charging technology through the USB-C port, delivering up to 4 times faster charging compared to a standard 5W charger when used with compatible devices. The 30W charging capability makes it ideal for smartphones, tablets, and other USB-powered devices. Its lightweight, compact design makes it convenient for use at home, in the office, or while traveling. Features a standard two-prong wall plug and a sleek white finish. Comes packaged in a retail display box with a clear window and hanging loop.",
     "upc": "811725028350",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "6 units",
-      "Upc Code": "811725028350",
       "Case Pack Dimensions": "7 \" (L) x17.7 \" (W) x9.1 \"(H)",
       "Case Weight": "7.099992 lb",
       "Case Cube": "0.65 cubic feet",
-      "Per Piece Weight": "0.295833",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.295833"
     },
     "rules": {
       "lot": 6,
@@ -603,18 +573,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw293-2.webp",
       "images/products/aw293-3.webp"
     ],
-    "description": "Power up your devices with the Quantum 10 Foot USB-C to USB-C Braided Charging Cable. Designed for durability and convenience, this cable features a strong braided exterior that helps resist tangling and everyday wear. The extra-long 10-foot length provides added flexibility when charging devices at home, in the office, or while traveling. Equipped with USB-C connectors on both ends, it is compatible with smartphones, tablets, newer MacBook models, and other USB-C devices. Features TruFast charging technology for faster charging when paired with a compatible 20W wall charger. Sleek metallic connector housings provide a modern finish, while the included cable tie keeps the cable neatly organized for storage. Comes packaged in a retail display box with a clear window and hanging tab.,Quantum 10 ft USB-C to USB-C Braided Charging Cable in Black,",
+    "description": "Power up your devices with the Quantum 10 Foot USB-C to USB-C Braided Charging Cable. Designed for durability and convenience, this cable features a strong braided exterior that helps resist tangling and everyday wear. The extra-long 10-foot length provides added flexibility when charging devices at home, in the office, or while traveling. Equipped with USB-C connectors on both ends, it is compatible with smartphones, tablets, newer MacBook models, and other USB-C devices. Features TruFast charging technology for faster charging when paired with a compatible 20W wall charger. Sleek metallic connector housings provide a modern finish, while the included cable tie keeps the cable neatly organized for storage. Comes packaged in a retail display box with a clear window and hanging tab.",
     "upc": "810012239059",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "1 units",
-      "Upc Code": "810012239059",
       "Case Pack Dimensions": "9.8 \" (L) x14.6 \" (W) x7.9 \"(H)",
       "Case Weight": "7.699992 lb",
       "Case Cube": "0.65 cubic feet",
-      "Per Piece Weight": "0.320833",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.320833"
     },
     "rules": {
       "lot": 9,
@@ -651,18 +618,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw284-2.webp",
       "images/products/aw284-3.webp"
     ],
-    "description": "Stay connected with the Mochic 10 Foot USB-A to USB-C Braided Charging Cable. Designed for convenient and reliable charging, this cable features a strong braided exterior that helps prevent tangling and withstand everyday wear. The extra-long 10-foot length provides added flexibility, allowing you to comfortably charge your devices from a distance. Features a USB-A connector on one end and a USB-C connector on the other, making it ideal for compatible smartphones, tablets, and other USB-C devices. Supports fast charging when paired with compatible devices and power adapters. Includes sleek metallic connector housings and a convenient cable tie for easy organization and storage. Comes packaged in a retail display box with a clear window and hanging loop.,Mochic 10 Foot USB A to USB-C Braided Charging Cable in Pink,",
+    "description": "Stay connected with the Mochic 10 Foot USB-A to USB-C Braided Charging Cable. Designed for convenient and reliable charging, this cable features a strong braided exterior that helps prevent tangling and withstand everyday wear. The extra-long 10-foot length provides added flexibility, allowing you to comfortably charge your devices from a distance. Features a USB-A connector on one end and a USB-C connector on the other, making it ideal for compatible smartphones, tablets, and other USB-C devices. Supports fast charging when paired with compatible devices and power adapters. Includes sleek metallic connector housings and a convenient cable tie for easy organization and storage. Comes packaged in a retail display box with a clear window and hanging loop.",
     "upc": "811725020026",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "6 units",
-      "Upc Code": "811725020026",
       "Case Pack Dimensions": "9.6 \" (L) x15.3 \" (W) x7.2 \"(H)",
       "Case Weight": "7.549992 lb",
       "Case Cube": "0.61 cubic feet",
-      "Per Piece Weight": "0.314583",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.314583"
     },
     "rules": {
       "lot": 6,
@@ -699,18 +663,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw004-2.webp",
       "images/products/aw004-3.webp"
     ],
-    "description": "Turn your car’s cup holder into a convenient on-the-go dining and storage station with the Bytech Tech Bits Universal Auto Cup Holder Food Tray. Designed to fit most vehicle cup holders measuring approximately 2.56\"–3.7\" wide, it features secure rubber mounting points to help hold it in place without scratching. The adjustable arm offers multiple positioning options, including 180° angle adjustment and 360° tray rotation, while the built-in phone holder keeps your device upright and within reach. A non-slip silicone tray liner helps keep food and small items from sliding around, making it ideal for meals, snacks, commuting, and road trips. Comes packaged in a retail box.,Bytech Tech Bits Universal Auto Cup Holder Food Tray,",
+    "description": "Turn your car’s cup holder into a convenient on-the-go dining and storage station with the Bytech Tech Bits Universal Auto Cup Holder Food Tray. Designed to fit most vehicle cup holders measuring approximately 2.56\"–3.7\" wide, it features secure rubber mounting points to help hold it in place without scratching. The adjustable arm offers multiple positioning options, including 180° angle adjustment and 360° tray rotation, while the built-in phone holder keeps your device upright and within reach. A non-slip silicone tray liner helps keep food and small items from sliding around, making it ideal for meals, snacks, commuting, and road trips. Comes packaged in a retail box.",
     "upc": "805112085835",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "4 units",
-      "Upc Code": "805112085835",
       "Case Pack Dimensions": "15.7 \" (L) x21 \" (W) x27.3 \"(H)",
       "Case Weight": "24.6 lb",
       "Case Cube": "5.21 cubic feet",
-      "Per Piece Weight": "1.025000",
-      "Category": "Automotive Supplies",
-      "Subcategory": "Auto Interior Accessories"
+      "Per Piece Weight": "1.025000"
     },
     "rules": {
       "lot": 4,
@@ -747,18 +708,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av014-2.webp",
       "images/products/av014-3.webp"
     ],
-    "description": "Keep your phone comfortably in view with the Bytech Universal Flexible Clip-On Smartphone Holder Grip. The sturdy clip-on base attaches securely to tables, desks, counters, and other compatible surfaces, while the flexible gooseneck arm lets you bend and position your phone at the angle that works best for you. The adjustable holder fits most smartphones approximately 2\" to 3.5\" wide, making it great for watching videos, video calls, following recipes, or hands-free browsing. Its compact, versatile design makes it easy to use at home, work, or while traveling. Comes packaged in a retail box with a hanging tab.,Bytech Universal Flexible Clip-On Smartphone Holder Grip,",
+    "description": "Keep your phone comfortably in view with the Bytech Universal Flexible Clip-On Smartphone Holder Grip. The sturdy clip-on base attaches securely to tables, desks, counters, and other compatible surfaces, while the flexible gooseneck arm lets you bend and position your phone at the angle that works best for you. The adjustable holder fits most smartphones approximately 2\" to 3.5\" wide, making it great for watching videos, video calls, following recipes, or hands-free browsing. Its compact, versatile design makes it easy to use at home, work, or while traveling. Comes packaged in a retail box with a hanging tab.",
     "upc": "805112049950",
     "specs": {
       "Case Pack Quantity": "40 units",
       "Inner Pack Quantity": "4 units",
-      "Upc Code": "805112049950",
       "Case Pack Dimensions": "13 \" (L) x15.3 \" (W) x26.2 \"(H)",
       "Case Weight": "18.15 lb",
       "Case Cube": "3.02 cubic feet",
-      "Per Piece Weight": "0.453750",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.453750"
     },
     "rules": {
       "lot": 4,
@@ -795,18 +753,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av010-2.webp",
       "images/products/av010-3.webp"
     ],
-    "description": "Keep your tablet secure, accessible, and perfectly positioned on the road with the Bytech Universal Suction Cup Car Tablet Mount! Designed for convenience and versatility, this adjustable windshield mount transforms your tablet into an easy-to-view navigation and entertainment companion. The powerful suction cup attaches securely to your vehicle's windshield, while the expandable holder accommodates most tablets up to 7 inches wide, including 7- to 10-inch tablets. Featuring a flexible adjustable arm, swivel joint, and 360-degree rotating design, it allows you to customize your viewing angle for optimal visibility in portrait or landscape orientation. The sturdy, adjustable grips help keep your device securely in place while driving, making it ideal for GPS navigation, road trips, and hands-free viewing while parked. Sleek, practical, and easy to install, this universal tablet mount comes packaged in a retail hanging box.,Bytech Suction Cup Car Tablet Mount,",
+    "description": "Keep your tablet secure, accessible, and perfectly positioned on the road with the Bytech Universal Suction Cup Car Tablet Mount! Designed for convenience and versatility, this adjustable windshield mount transforms your tablet into an easy-to-view navigation and entertainment companion. The powerful suction cup attaches securely to your vehicle's windshield, while the expandable holder accommodates most tablets up to 7 inches wide, including 7- to 10-inch tablets. Featuring a flexible adjustable arm, swivel joint, and 360-degree rotating design, it allows you to customize your viewing angle for optimal visibility in portrait or landscape orientation. The sturdy, adjustable grips help keep your device securely in place while driving, making it ideal for GPS navigation, road trips, and hands-free viewing while parked. Sleek, practical, and easy to install, this universal tablet mount comes packaged in a retail hanging box.",
     "upc": "805112028696",
     "specs": {
       "Case Pack Quantity": "40 units",
       "Inner Pack Quantity": "4 units",
-      "Upc Code": "805112028696",
       "Case Pack Dimensions": "18.5 \" (L) x19.6 \" (W) x23.8 \"(H)",
       "Case Weight": "23.5 lb",
       "Case Cube": "4.99 cubic feet",
-      "Per Piece Weight": "0.587500",
-      "Category": "Electronics",
-      "Subcategory": "Cell Phone Accessories"
+      "Per Piece Weight": "0.587500"
     },
     "rules": {
       "lot": 4,
@@ -843,18 +798,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av006-2.webp",
       "images/products/av006-3.webp"
     ],
-    "description": "Stay connected for video calls, virtual meetings, online classes, livestreams, and more with the Bytech 480P PC Webcam with Mic in Black. Designed for laptops and desktop computers, this easy-to-use webcam delivers 480P streaming video with clear, true-color images and features a built-in microphone for convenient audio with sound clarity up to 10 meters. The adjustable 180° rotating clip makes it easy to position on your monitor, while the plug-and-play design offers quick setup. Features USB and 3.5mm connections and is compatible with Windows, Linux, and other operating systems. Comes packaged in a retail box with hanging tab.,Bytech 480P PC Webcam with Mic in Black,",
+    "description": "Stay connected for video calls, virtual meetings, online classes, livestreams, and more with the Bytech 480P PC Webcam with Mic in Black. Designed for laptops and desktop computers, this easy-to-use webcam delivers 480P streaming video with clear, true-color images and features a built-in microphone for convenient audio with sound clarity up to 10 meters. The adjustable 180° rotating clip makes it easy to position on your monitor, while the plug-and-play design offers quick setup. Features USB and 3.5mm connections and is compatible with Windows, Linux, and other operating systems. Comes packaged in a retail box with hanging tab.",
     "upc": "805112067411",
     "specs": {
       "Case Pack Quantity": "40 units",
       "Inner Pack Quantity": "4 units",
-      "Upc Code": "805112067411",
       "Case Pack Dimensions": "11.5 \" (L) x17.4 \" (W) x25.6 \"(H)",
       "Case Weight": "16.05 lb",
       "Case Cube": "2.96 cubic feet",
-      "Per Piece Weight": "0.401250",
-      "Category": "Electronics",
-      "Subcategory": "Computer & Tablet Accessories"
+      "Per Piece Weight": "0.401250"
     },
     "rules": {
       "lot": 4,
@@ -891,18 +843,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av003-2.webp",
       "images/products/av003-3.webp"
     ],
-    "description": "Add a playful pop of shine to any space with the Room 2 Room 7\" Battery Powered Figural Lamp in Assorted Metallic finishes. This compact accent lamp features a quirky sculptural character base with a glossy metallic look, topped with a clear faceted shade that beautifully reflects the light for extra sparkle. Battery-powered for easy cordless placement, it’s perfect for nightstands, desks, shelves, dorm rooms, or anywhere that could use a fun decorative glow. Measures approximately 7\" tall and comes in assorted metallic finishes. Comes packaged with a hang tag.,Room 2 Room 7\" Battery Powered Figural Lamp in Assorted Metallic,",
+    "description": "Add a playful pop of shine to any space with the Room 2 Room 7\" Battery Powered Figural Lamp in Assorted Metallic finishes. This compact accent lamp features a quirky sculptural character base with a glossy metallic look, topped with a clear faceted shade that beautifully reflects the light for extra sparkle. Battery-powered for easy cordless placement, it’s perfect for nightstands, desks, shelves, dorm rooms, or anywhere that could use a fun decorative glow. Measures approximately 7\" tall and comes in assorted metallic finishes. Comes packaged with a hang tag.",
     "upc": "731015335589",
     "specs": {
       "Case Pack Quantity": "12 units",
       "Inner Pack Quantity": "1 units",
-      "Upc Code": "731015335589",
       "Case Pack Dimensions": "13.6 \" (L) x17.3 \" (W) x8.6 \"(H)",
       "Case Weight": "10.149996 lb",
       "Case Cube": "1.17 cubic feet",
-      "Per Piece Weight": "0.845833",
-      "Category": "Lighting",
-      "Subcategory": "Lamps & Lighting"
+      "Per Piece Weight": "0.845833"
     },
     "rules": {
       "lot": 12,
@@ -939,18 +888,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av997-2.webp",
       "images/products/av997-3.webp"
     ],
-    "description": "Create a mesmerizing glow with the Bytech Illuminous Iridescent Square LED Lamp. Featuring a clear iridescent cube design with a smaller inner cube, this decorative lamp reflects and refracts the built-in LED light to produce a colorful 3D visual effect that shifts beautifully from different angles. The illuminating multicolor display adds a modern accent to desks, nightstands, shelves, gaming setups, dorm rooms, and more. Battery-operated for easy cordless placement, it can be displayed almost anywhere without needing a nearby outlet. Comes packaged in a clear retail box.,Bytech Illuminous Iridescent Square LED Lamp,",
+    "description": "Create a mesmerizing glow with the Bytech Illuminous Iridescent Square LED Lamp. Featuring a clear iridescent cube design with a smaller inner cube, this decorative lamp reflects and refracts the built-in LED light to produce a colorful 3D visual effect that shifts beautifully from different angles. The illuminating multicolor display adds a modern accent to desks, nightstands, shelves, gaming setups, dorm rooms, and more. Battery-operated for easy cordless placement, it can be displayed almost anywhere without needing a nearby outlet. Comes packaged in a clear retail box.",
     "upc": "805112124480",
     "specs": {
       "Case Pack Quantity": "40 units",
       "Inner Pack Quantity": "4 units",
-      "Upc Code": "805112124480",
       "Case Pack Dimensions": "13.8 \" (L) x21.3 \" (W) x27.2 \"(H)",
       "Case Weight": "21.1 lb",
       "Case Cube": "4.63 cubic feet",
-      "Per Piece Weight": "0.527500",
-      "Category": "Lighting",
-      "Subcategory": "Lamps & Lighting"
+      "Per Piece Weight": "0.527500"
     },
     "rules": {
       "lot": 4,
@@ -987,18 +933,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av996-2.webp",
       "images/products/av996-3.webp"
     ],
-    "description": "Light up every shot with the Bytech Multicolor LED Basketball Hoop Light with Remote. Designed to mount around a basketball rim, this vibrant LED strip features four colors and eight lighting modes to add an exciting glow to nighttime games, backyard hoops, and indoor play. Use the included 13-key infrared remote to switch modes, adjust brightness, and control the lights from a distance. The battery-operated design eliminates the need for a nearby outlet, while IPX4 weather resistance helps protect against splashes and outdoor conditions. Easy to install with the included mounting Velcro and cable ties. Includes LED strip cable, remote control, mounting Velcro, 6 cable ties, and user manual. Comes packaged in a retail box with carrying handle.,Bytech Multicolor LED Basketball Hoop Light with Remote,",
+    "description": "Light up every shot with the Bytech Multicolor LED Basketball Hoop Light with Remote. Designed to mount around a basketball rim, this vibrant LED strip features four colors and eight lighting modes to add an exciting glow to nighttime games, backyard hoops, and indoor play. Use the included 13-key infrared remote to switch modes, adjust brightness, and control the lights from a distance. The battery-operated design eliminates the need for a nearby outlet, while IPX4 weather resistance helps protect against splashes and outdoor conditions. Easy to install with the included mounting Velcro and cable ties. Includes LED strip cable, remote control, mounting Velcro, 6 cable ties, and user manual. Comes packaged in a retail box with carrying handle.",
     "upc": "805112119028",
     "specs": {
       "Case Pack Quantity": "40 units",
       "Inner Pack Quantity": "4 units",
-      "Upc Code": "805112119028",
       "Case Pack Dimensions": "9.4 \" (L) x15.5 \" (W) x33.2 \"(H)",
       "Case Weight": "13.6 lb",
       "Case Cube": "2.80 cubic feet",
-      "Per Piece Weight": "0.340000",
-      "Category": "Lighting",
-      "Subcategory": "Lamps & Lighting"
+      "Per Piece Weight": "0.340000"
     },
     "rules": {
       "lot": 4,
@@ -1035,18 +978,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/av989-2.webp",
       "images/products/av989-3.webp"
     ],
-    "description": "Enjoy clear, comfortable listening with the Bytech DJ Style Wired Headphones in Red. Featuring a bold red-and-black over-ear design with cushioned ear pads and an adjustable headband, these headphones are made for everyday music, videos, gaming, and more. The 40mm drivers deliver stereo sound across a 20Hz–20kHz frequency range, while the 3.5mm stereo plug provides easy wired connectivity with compatible phones, tablets, laptops, and audio devices. A long red cable gives you extra room to move, and the lightweight DJ-style design adds a sporty look. Comes packaged in a retail box with hanging tab.,Bytech DJ Style Wired Headphones in Red,",
+    "description": "Enjoy clear, comfortable listening with the Bytech DJ Style Wired Headphones in Red. Featuring a bold red-and-black over-ear design with cushioned ear pads and an adjustable headband, these headphones are made for everyday music, videos, gaming, and more. The 40mm drivers deliver stereo sound across a 20Hz–20kHz frequency range, while the 3.5mm stereo plug provides easy wired connectivity with compatible phones, tablets, laptops, and audio devices. A long red cable gives you extra room to move, and the lightweight DJ-style design adds a sporty look. Comes packaged in a retail box with hanging tab.",
     "upc": "805112312917",
     "specs": {
       "Case Pack Quantity": "40 units",
       "Inner Pack Quantity": "4 units",
-      "Upc Code": "805112312917",
       "Case Pack Dimensions": "13.3 \" (L) x17.3 \" (W) x29.6 \"(H)",
       "Case Weight": "19.65 lb",
       "Case Cube": "3.94 cubic feet",
-      "Per Piece Weight": "0.491250",
-      "Category": "Electronics",
-      "Subcategory": "Headphones"
+      "Per Piece Weight": "0.491250"
     },
     "rules": {
       "lot": 4,
@@ -1083,18 +1023,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw404-2.webp",
       "images/products/aw404-3.webp"
     ],
-    "description": "Illuminate your workspace with the Stance COB LED Rotating Work Light with Magnetic Base in Assorted Colors. Featuring a powerful 200-lumen COB LED that produces bright white light, this compact work light is perfect for home repairs, automotive maintenance, workshops, garages, and emergency use. The 360-degree pivoting head allows you to direct light exactly where needed, while the adjustable stand provides hands-free convenience. A built-in magnetic base allows easy attachment to metal surfaces for added versatility. Measures approximately 5\" tall x 3.5\" wide x 1.25\" deep. Operates on 4 AAA batteries, which are included, and provides up to 10 hours of runtime. Available in black and yellow. Comes packaged in a retail box with a hanging tab.,Stance COB LED Rotating Work Light with Magnetic Base in Black & Yellow in PDQ Display,",
+    "description": "Illuminate your workspace with the Stance COB LED Rotating Work Light with Magnetic Base in Assorted Colors. Featuring a powerful 200-lumen COB LED that produces bright white light, this compact work light is perfect for home repairs, automotive maintenance, workshops, garages, and emergency use. The 360-degree pivoting head allows you to direct light exactly where needed, while the adjustable stand provides hands-free convenience. A built-in magnetic base allows easy attachment to metal surfaces for added versatility. Measures approximately 5\" tall x 3.5\" wide x 1.25\" deep. Operates on 4 AAA batteries, which are included, and provides up to 10 hours of runtime. Available in black and yellow. Comes packaged in a retail box with a hanging tab.",
     "upc": "900210621258",
     "specs": {
       "Case Pack Quantity": "48 units",
       "Inner Pack Quantity": "12 units",
-      "Upc Code": "900210621258",
       "Case Pack Dimensions": "18 \" (L) x11.2 \" (W) x22.3 \"(H)",
       "Case Weight": "20.000016 lb",
       "Case Cube": "2.60 cubic feet",
-      "Per Piece Weight": "0.416667",
-      "Category": "Lighting",
-      "Subcategory": "Lamps & Lighting"
+      "Per Piece Weight": "0.416667"
     },
     "rules": {
       "lot": 12,
@@ -1131,18 +1068,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw303-2.webp",
       "images/products/aw303-3.webp"
     ],
-    "description": "Bring a playful safari-inspired touch to your kitchen with the Zooniverse Ceramic Blue Elephant Salt & Pepper Shakers! This adorable two-piece set features a pair of cheerful blue elephants with oversized pink ears, raised trunks, sweet closed-eye expressions, and charming sculpted details. Crafted from glossy ceramic with a smooth finish, these whimsical shakers add a delightful pop of color and personality to any kitchen countertop or dining table. Perfect for everyday seasoning, safari-themed gatherings, or adding a fun decorative accent to your home, this charming set makes a wonderful gift for elephant lovers, animal enthusiasts, and collectors of unique kitchen accessories. Comes packaged in a colorful safari-themed illustrated box, making it ideal for gifting.,Zooniverse Ceramic Blue Elephant Salt & Pepper Shakers,",
+    "description": "Bring a playful safari-inspired touch to your kitchen with the Zooniverse Ceramic Blue Elephant Salt & Pepper Shakers! This adorable two-piece set features a pair of cheerful blue elephants with oversized pink ears, raised trunks, sweet closed-eye expressions, and charming sculpted details. Crafted from glossy ceramic with a smooth finish, these whimsical shakers add a delightful pop of color and personality to any kitchen countertop or dining table. Perfect for everyday seasoning, safari-themed gatherings, or adding a fun decorative accent to your home, this charming set makes a wonderful gift for elephant lovers, animal enthusiasts, and collectors of unique kitchen accessories. Comes packaged in a colorful safari-themed illustrated box, making it ideal for gifting.",
     "upc": "617521650562",
     "specs": {
       "Case Pack Quantity": "48 units",
       "Inner Pack Quantity": "1 units",
-      "Upc Code": "617521650562",
       "Case Pack Dimensions": "12.9 \" (L) x20.3 \" (W) x12.1 \"(H)",
       "Case Weight": "23.199984 lb",
       "Case Cube": "1.83 cubic feet",
-      "Per Piece Weight": "0.483333",
-      "Category": "Kitchen & Dining",
-      "Subcategory": "Kitchen Tools & Utensils"
+      "Per Piece Weight": "0.483333"
     },
     "rules": {
       "lot": 18,
@@ -1179,18 +1113,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw235-2.webp",
       "images/products/aw235-3.webp"
     ],
-    "description": "Bring prehistoric adventure to school days, travel, and everyday outings with the Universal Studios Jurassic World Nature Takes Over 16\" Backpack. The bold front design features a T. rex surrounded by lush jungle scenery with the phrase \"Nature Takes Over,\" while a contrasting side panel showcases colorful dinosaur and geometric graphics. A spacious zippered main compartment provides room for books, folders, clothing, and other essentials, and dual mesh side pockets keep water bottles or smaller items within easy reach. Finished with adjustable padded shoulder straps, a top carry handle, bright blue trim, and coordinating zipper pulls. Comes packaged with a Jurassic World hang tag.,Universal Studios Jurassic World Nature Takes Over 16\" Backpack,",
+    "description": "Bring prehistoric adventure to school days, travel, and everyday outings with the Universal Studios Jurassic World Nature Takes Over 16\" Backpack. The bold front design features a T. rex surrounded by lush jungle scenery with the phrase \"Nature Takes Over,\" while a contrasting side panel showcases colorful dinosaur and geometric graphics. A spacious zippered main compartment provides room for books, folders, clothing, and other essentials, and dual mesh side pockets keep water bottles or smaller items within easy reach. Finished with adjustable padded shoulder straps, a top carry handle, bright blue trim, and coordinating zipper pulls. Comes packaged with a Jurassic World hang tag.",
     "upc": "840716297925",
     "specs": {
       "Case Pack Quantity": "12 units",
       "Inner Pack Quantity": "1 units",
-      "Upc Code": "840716297925",
       "Case Pack Dimensions": "13.9 \" (L) x17.9 \" (W) x8.6 \"(H)",
       "Case Weight": "9.950004 lb",
       "Case Cube": "1.24 cubic feet",
-      "Per Piece Weight": "0.829167",
-      "Category": "Apparel",
-      "Subcategory": "Backpacks & Duffel Bags"
+      "Per Piece Weight": "0.829167"
     },
     "rules": {
       "lot": 4,
@@ -1227,18 +1158,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw258-2.webp",
       "images/products/aw258-3.webp"
     ],
-    "description": "Bring some high-speed fun to everyday outfits with this 6-Pack Sonic the Hedgehog No Show Socks. Inspired by the popular SEGA video game character, this colorful set features six unique designs showcasing Sonic the Hedgehog, his signature blue color, gold rings, and fun graphics. The assortment includes shades of blue, navy, gray, and white with character prints, playful patterns, and bold lettering. Made with soft, stretchy fabric for a comfortable fit, these socks feature a low-cut, no-show design that pairs perfectly with sneakers and casual footwear. Ideal for school, playtime, everyday wear, or gifting to Sonic fans. Fits children's shoe sizes 9-2.5. Comes packaged as a 6-pair set with a branded Sonic the Hedgehog tag.,6 Pack Sonic the Hedgehog No Show Socks Size 9-2.5,",
+    "description": "Bring some high-speed fun to everyday outfits with this 6-Pack Sonic the Hedgehog No Show Socks. Inspired by the popular SEGA video game character, this colorful set features six unique designs showcasing Sonic the Hedgehog, his signature blue color, gold rings, and fun graphics. The assortment includes shades of blue, navy, gray, and white with character prints, playful patterns, and bold lettering. Made with soft, stretchy fabric for a comfortable fit, these socks feature a low-cut, no-show design that pairs perfectly with sneakers and casual footwear. Ideal for school, playtime, everyday wear, or gifting to Sonic fans. Fits children's shoe sizes 9-2.5. Comes packaged as a 6-pair set with a branded Sonic the Hedgehog tag.",
     "upc": "086694643433",
     "specs": {
       "Case Pack Quantity": "24 units",
       "Inner Pack Quantity": "2 units",
-      "Upc Code": "086694643433",
       "Case Pack Dimensions": "7.3 \" (L) x12 \" (W) x12.3 \"(H)",
       "Case Weight": "4.95 lb",
       "Case Cube": "0.62 cubic feet",
-      "Per Piece Weight": "0.206250",
-      "Category": "Apparel",
-      "Subcategory": "Socks"
+      "Per Piece Weight": "0.206250"
     },
     "rules": {
       "lot": 2,
@@ -1275,18 +1203,15 @@ export const IMPORTED_NEW_ARRIVALS: Product[] = [
       "images/products/aw246-2.webp",
       "images/products/aw246-3.webp"
     ],
-    "description": "Bring the magic of Disney's Encanto to life with the Encanto 2 Piece Paint Your Own Figurine Set! This fun and creative activity kit includes two ready-to-paint figurines featuring an adorable jaguar and a decorative butterfly, each with raised details for easy painting. Kids can express their creativity using the six vibrant paint colors and two included paintbrushes to design their own colorful masterpieces. Once finished, the figurines make charming decorations to proudly display. Perfect for arts and crafts, rainy-day activities, and Disney fans ages 6 and up. Includes 2 figurines, 2 paintbrushes, and 6 paint pots (0.085 fl oz each). Comes packaged in a colorful 9\" x 6\" x 4\" window display box.,Encanto 2 Piece Paint Your Own Figurine Set,",
+    "description": "Bring the magic of Disney's Encanto to life with the Encanto 2 Piece Paint Your Own Figurine Set! This fun and creative activity kit includes two ready-to-paint figurines featuring an adorable jaguar and a decorative butterfly, each with raised details for easy painting. Kids can express their creativity using the six vibrant paint colors and two included paintbrushes to design their own colorful masterpieces. Once finished, the figurines make charming decorations to proudly display. Perfect for arts and crafts, rainy-day activities, and Disney fans ages 6 and up. Includes 2 figurines, 2 paintbrushes, and 6 paint pots (0.085 fl oz each). Comes packaged in a colorful 9\" x 6\" x 4\" window display box.",
     "upc": "191537132491",
     "specs": {
       "Case Pack Quantity": "12 units",
       "Inner Pack Quantity": "1 units",
-      "Upc Code": "191537132491",
       "Case Pack Dimensions": "13.1 \" (L) x19 \" (W) x12.2 \"(H)",
       "Case Weight": "12.75 lb",
       "Case Cube": "1.76 cubic feet",
-      "Per Piece Weight": "1.062500",
-      "Category": "Crafts",
-      "Subcategory": "Do-it-yourself Craft Kits"
+      "Per Piece Weight": "1.062500"
     },
     "rules": {
       "lot": 12,
