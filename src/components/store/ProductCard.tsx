@@ -31,12 +31,12 @@ export function ProductImage({ p, i = 0, className = "" }: { p: Product; i?: num
 
 export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: Product) => void }) {
   return (
-    <div className="group relative flex h-full flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
+    <div className="store-product-card group relative flex h-full flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
       <Badges badges={p.badges} />
-      <button onClick={() => onQuickView?.(p)} className="block aspect-square w-full" aria-label={`Quick view ${p.title}`}>
+      <button onClick={() => onQuickView?.(p)} className="store-product-photo block w-full" aria-label={`Quick view ${p.title}`}>
         <ProductImage p={p} />
       </button>
-      <Link to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} className="mt-3 line-clamp-2 min-h-[2.5em] text-lg leading-tight text-title hover:underline">
+      <Link to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} className="mt-3 line-clamp-2 min-h-[2.5em] font-semibold text-lg leading-tight text-title hover:underline">
         {p.title}{p.titleTruncated ? "…" : ""}
       </Link>
       <div className="mt-3 font-arial text-xs font-bold">Item # {p.sku}</div>

@@ -27,6 +27,7 @@ function sortProducts(list: Product[], sort: string) {
 const PAGE = 24;
 
 export function ProductListing({ products, banner, defaultSort = "position", initialPrice }: { products: Product[]; banner: ReactNode; defaultSort?: string; initialPrice?: string | undefined }) {
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [sort, setSort] = useState(defaultSort);
   const [price, setPrice] = useState<string | null>(initialPrice ?? null);
   const [sub, setSub] = useState<string | null>(null);
@@ -50,8 +51,9 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
   );
 
   return (
-    <div className="mx-auto flex max-w-[1800px] gap-4 px-4 py-4">
-      <aside className="hidden w-[232px] shrink-0 space-y-4 md:block">
+    <div className="store-container store-listing py-4">
+      <button type="button" className="rounded border bg-card px-4 py-3 text-left font-semibold md:hidden" aria-expanded={filtersOpen} aria-controls="catalog-filters" onClick={() => setFiltersOpen(!filtersOpen)}>Sort & filters {filtersOpen ? "−" : "+"}</button>
+      <aside id="catalog-filters" className={`${filtersOpen ? "block" : "hidden"} space-y-4 md:block`}>
         <div className="rounded bg-card p-3">
           <select aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value)} className="w-full bg-transparent py-2 text-base">
             {SORTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
@@ -68,7 +70,7 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
       </aside>
       <div className="min-w-0 flex-1">
         {banner}
-        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+        <div className="store-catalog-grid mt-4 grid">
           {filtered.slice(0, shown).map((p) => <ProductCard key={p.sku} p={p} onQuickView={setQv} />)}
         </div>
         {filtered.length === 0 && <p className="mt-8 text-center">No products match these filters.</p>}
