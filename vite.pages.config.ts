@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  base: "/fresh-finds-wholesale/",
+  base: process.env.DEPLOY_TARGET === "netlify" ? "/" : "/fresh-finds-wholesale/",
   plugins: [
     tsconfigPaths(),
     tailwindcss(),

@@ -31,14 +31,14 @@ function Page() {
     <div className="mx-auto grid max-w-[1300px] gap-8 px-4 py-6 md:grid-cols-2">
       <div>
         <div className="relative aspect-square rounded border border-border bg-card p-4">
-          <Badges badges={p.badges} /><ProductImage p={p} i={img} />
+          <Badges badges={p.badges} /><ProductImage p={p} i={img} eager />
           {n > 1 && <>
             <button aria-label="Previous image" className="absolute left-2 top-1/2" onClick={() => setImg((img - 1 + n) % n)}><ChevronLeft /></button>
             <button aria-label="Next image" className="absolute right-2 top-1/2" onClick={() => setImg((img + 1) % n)}><ChevronRight /></button>
           </>}
         </div>
         <div className="mt-3 flex gap-2">{Array.from({ length: n }, (_, k) => (
-          <button key={k} onClick={() => setImg(k)} className={`h-20 w-20 rounded border bg-card ${k === img ? "border-primary" : "border-border"}`}><ProductImage p={p} i={k} /></button>))}</div>
+          <button aria-label={`View product image ${k + 1}`} aria-pressed={img === k} key={k} onClick={() => setImg(k)} className={`h-20 w-20 rounded border bg-card ${k === img ? "border-primary" : "border-border"}`}><ProductImage p={p} i={k} /></button>))}</div>
       </div>
       <div className="space-y-3">
         <h1 className="text-3xl font-bold text-title">{p.title}{p.titleTruncated ? "…" : ""}</h1>
@@ -57,7 +57,7 @@ function Page() {
               {k === "Category" && p.category ? <Link to="/category/$slug" params={{ slug: slugify(p.category) }} className="text-primary underline">{v}</Link> : v}
             </td></tr>))}</tbody></table>
         </section>
-        {p.californiaWarning && <details className="rounded border border-border bg-card p-3 text-sm"><summary className="cursor-pointer font-semibold">California Warning</summary><p className="mt-2">Warning text to be supplied from the authorized product source.</p></details>}
+        {p.californiaWarning && <details className="rounded border border-border bg-card p-3 text-sm"><summary className="cursor-pointer font-semibold">California Warning</summary><p className="mt-2">{p.californiaWarningText ?? "Warning text to be supplied from the authorized product source."}</p></details>}
       </div>
     </div>
   );

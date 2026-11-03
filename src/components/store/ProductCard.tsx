@@ -21,7 +21,8 @@ export function Badges({ badges }: { badges: Badge[] }) {
 
 export function ProductImage({ p, i = 0, className = "", eager = false }: { p: Product; i?: number; className?: string; eager?: boolean }) {
   const [failed, setFailed] = useState<string | null>(null);
-  const src = p.images[i];
+  const raw = p.images[i];
+  const src = raw && !/^(https?:|data:|blob:)/.test(raw) ? import.meta.env.BASE_URL + raw.replace(/^\//, "") : raw;
   if (src && failed !== src) return <img onError={() => setFailed(src)} src={src} alt={p.title} loading={eager ? "eager" : "lazy"} decoding="async" className={`h-full w-full object-contain ${className}`} />;
   return (
     <div className={`flex h-full w-full flex-col items-center justify-center gap-1 bg-muted text-muted-foreground ${className}`}>

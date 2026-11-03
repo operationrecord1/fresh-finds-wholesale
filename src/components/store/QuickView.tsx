@@ -50,7 +50,7 @@ function ProductDialog({ p, onClose, initialPieces }: { p: Product; onClose: () 
         <p>{p.description ?? "Product description is not yet available from the supplier source."}</p>
         <h3>Specifications</h3>
         <dl className="product-specifications">{specs.map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{value}</dd></div>)}</dl>
-        {p.californiaWarning && <details className="product-warning"><summary>California Warning</summary><p>This item is marked with a California warning in the catalog. The supplier's exact warning text has not yet been supplied.</p></details>}
+        {p.californiaWarning && <details className="product-warning"><summary>California Warning</summary><p>{p.californiaWarningText ?? "The supplier warning text has not yet been supplied."}</p></details>}
         <Link to="/product/$sku" params={{sku:p.sku.toLowerCase()}} onClick={onClose} className="product-detail-link">View full product page</Link>
       </div>
     </div>
