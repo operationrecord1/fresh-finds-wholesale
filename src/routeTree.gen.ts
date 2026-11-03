@@ -21,6 +21,7 @@ import { Route as NewsletterRouteImport } from './routes/newsletter'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ShopByPriceRouteImport } from './routes/shop-by-price'
+import { Route as TermsOfSaleRouteImport } from './routes/terms-of-sale'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as CollectionSlugRouteImport } from './routes/collection.$slug'
 import { Route as InfoPageRouteImport } from './routes/info.$page'
@@ -86,6 +87,11 @@ const ShopByPriceRoute = ShopByPriceRouteImport.update({
   path: '/shop-by-price',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsOfSaleRoute = TermsOfSaleRouteImport.update({
+  id: '/terms-of-sale',
+  path: '/terms-of-sale',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/shop-by-price': typeof ShopByPriceRoute
+  '/terms-of-sale': typeof TermsOfSaleRoute
   '/category/$slug': typeof CategorySlugRoute
   '/collection/$slug': typeof CollectionSlugRoute
   '/info/$page': typeof InfoPageRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/shop-by-price': typeof ShopByPriceRoute
+  '/terms-of-sale': typeof TermsOfSaleRoute
   '/category/$slug': typeof CategorySlugRoute
   '/collection/$slug': typeof CollectionSlugRoute
   '/info/$page': typeof InfoPageRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/shop-by-price': typeof ShopByPriceRoute
+  '/terms-of-sale': typeof TermsOfSaleRoute
   '/category/$slug': typeof CategorySlugRoute
   '/collection/$slug': typeof CollectionSlugRoute
   '/info/$page': typeof InfoPageRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/search'
     | '/shop-by-price'
+    | '/terms-of-sale'
     | '/category/$slug'
     | '/collection/$slug'
     | '/info/$page'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/search'
     | '/shop-by-price'
+    | '/terms-of-sale'
     | '/category/$slug'
     | '/collection/$slug'
     | '/info/$page'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/search'
     | '/shop-by-price'
+    | '/terms-of-sale'
     | '/category/$slug'
     | '/collection/$slug'
     | '/info/$page'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   SearchRoute: typeof SearchRoute
   ShopByPriceRoute: typeof ShopByPriceRoute
+  TermsOfSaleRoute: typeof TermsOfSaleRoute
   CategorySlugRoute: typeof CategorySlugRoute
   CollectionSlugRoute: typeof CollectionSlugRoute
   InfoPageRoute: typeof InfoPageRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopByPriceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms-of-sale': {
+      id: '/terms-of-sale'
+      path: '/terms-of-sale'
+      fullPath: '/terms-of-sale'
+      preLoaderRoute: typeof TermsOfSaleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -368,6 +388,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   SearchRoute: SearchRoute,
   ShopByPriceRoute: ShopByPriceRoute,
+  TermsOfSaleRoute: TermsOfSaleRoute,
   CategorySlugRoute: CategorySlugRoute,
   CollectionSlugRoute: CollectionSlugRoute,
   InfoPageRoute: InfoPageRoute,

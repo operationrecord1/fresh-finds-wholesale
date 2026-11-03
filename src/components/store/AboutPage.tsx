@@ -1,16 +1,26 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Info, Store, Heart, Package, BookOpen, ArrowUp, ShoppingBag, School, Building2 } from "lucide-react";
+import { Info, Store, Heart, Package, BookOpen, ArrowUp, ShoppingBag, School, Building2, BriefcaseBusiness } from "lucide-react";
 import "./AboutPage.css";
 const sections = [
  { id: "about-us", label: "About Us", icon: Info },
  { id: "industries-served", label: "Industries Served", icon: Store },
  { id: "artisan-cares", label: "Artisan Cares", icon: Heart },
  { id: "easy-shipping", label: "Easy Shipping", icon: Package },
+ { id: "careers", label: "Artisan Market Careers", icon: BriefcaseBusiness },
  { id: "blog", label: "Blog", icon: BookOpen },
 ];
 export function AboutPage() {
  const [active, setActive] = useState("about-us");
+ const hash = useLocation({ select: location => location.hash });
+ useEffect(() => {
+  if (!sections.some(section => section.id === hash)) return;
+  const frame = requestAnimationFrame(() => {
+   document.getElementById(hash)?.scrollIntoView({ block: "start", behavior: "instant" });
+   setActive(hash);
+  });
+  return () => cancelAnimationFrame(frame);
+ }, [hash]);
  useEffect(() => {
   const observer = new IntersectionObserver(entries => {
    for (const entry of entries) if (entry.isIntersecting) setActive(entry.target.id);
@@ -47,6 +57,11 @@ export function AboutPage() {
     <section id="easy-shipping" tabIndex={-1} className="about-section" aria-labelledby="shipping-title">
      <h2 id="shipping-title">EASY SHIPPING</h2><p className="about-lead">Know what to check before your order ships.</p>
      <div className="about-shipping-grid"><div><span className="about-step">01</span><h3>Check your items</h3><p>Review each item's available quantity, lot size and minimum order quantity. A purchasing case and a physical shipping carton may have different quantities.</p></div><div><span className="about-step">02</span><h3>Confirm delivery details</h3><p>Have the destination address, postal code and any delivery requirements ready when discussing your order.</p></div><div><span className="about-step">03</span><h3>Review the shipping terms</h3><p>Carrier options, freight services, delivery times and charges will be published when confirmed. No shipping rate or delivery date is guaranteed here.</p></div></div>
+    </section>
+    <section id="careers" tabIndex={-1} className="about-section" aria-labelledby="careers-title">
+     <h2 id="careers-title">ARTISAN MARKET CAREERS</h2><p className="about-lead">Find your next opportunity with Artisan Market.</p>
+     <div className="about-guide"><span className="about-guide-label">CURRENT OPENINGS</span><h3>No open positions are currently listed.</h3><p>When recruitment opens, each listing will include the role, work location, responsibilities, required experience and application instructions. There is no application form or hiring deadline for an unlisted role.</p></div>
+     <div className="about-guide"><h3>What to prepare for a future application</h3><ul><li>A current resume with relevant work experience.</li><li>The title of the published role you want to apply for.</li><li>Your availability and preferred work location.</li></ul><p>Follow the instructions in the individual job listing when an opportunity becomes available. Do not send identity documents or payment with a job inquiry.</p></div>
     </section>
     <section id="blog" tabIndex={-1} className="about-section" aria-labelledby="blog-title">
      <h2 id="blog-title">BLOG</h2><p className="about-lead">Notes for smarter wholesale buying.</p>
