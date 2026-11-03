@@ -15,15 +15,15 @@ const KEY = "artisan-mart-cart";
 export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
   useEffect(() => { try { setLines(JSON.parse(sessionStorage.getItem(KEY) || "[]")); } catch { /* ignore */ } }, []);
-  const save = (l: CartLine[]) => { setLines(l); sessionStorage.setItem(KEY, JSON.stringify(l)); };
+  const save = (update: (previous: CartLine[]) => CartLine[]) => setLines(previous => { const next = update(previous); try { sessionStorage.setItem(KEY, JSON.stringify(next)); } catch { /* Keep the in-memory cart usable if storage is unavailable. */ } return next; });
   const subtotal = lines.reduce((s, l) => s + lineTotal(l.pieces, getProduct(l.sku)?.price ?? 0), 0);
   return (
     <Ctx.Provider value={{
       lines, subtotal: Math.round(subtotal * 100) / 100,
-      add: (sku, pieces) => { const ex = lines.find((l) => l.sku === sku); save(ex ? lines.map((l) => l.sku === sku ? { ...l, pieces: l.pieces + pieces } : l) : [...lines, { sku, pieces }]); },
-      set: (sku, pieces) => save(lines.map((l) => (l.sku === sku ? { ...l, pieces } : l))),
-      remove: (sku) => save(lines.filter((l) => l.sku !== sku)),
-      clear: () => save([]),
+      add: (sku, pieces) => save(previous => previous.some(l => l.sku === sku) ? previous.map(l => l.sku === sku ? { ...l, pieces: l.pieces + pieces } : l) : [...previous, { sku, pieces }]),
+      set: (sku, pieces) => save(previous => previous.map((l) => (l.sku === sku ? { ...l, pieces } : l))),
+      remove: (sku) => save(previous => previous.filter((l) => l.sku !== sku)),
+      clear: () => save(() => []),
     }}>{children}</Ctx.Provider>
   );
 }

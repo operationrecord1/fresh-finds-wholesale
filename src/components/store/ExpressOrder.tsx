@@ -34,9 +34,9 @@ export function ExpressOrder({ open = false }: { open?: boolean }) {
       <summary className="cursor-pointer font-bold">Express Order</summary>
       <p className="mt-2 text-sm text-muted-foreground">Enter item # and quantity. Quantities round up to the nearest quantity break.</p>
       <div className="mt-3 space-y-2">{rows.map((r, i) => (
-        <div key={i} className="flex gap-2">
-          <input aria-label="Item #" placeholder="Item #" value={r.sku} onChange={(e) => setRows(rows.map((x, k) => k === i ? { ...x, sku: e.target.value } : x))} className="w-40 rounded border p-2" />
-          <input aria-label="Qty" placeholder="Qty" value={r.qty} onChange={(e) => setRows(rows.map((x, k) => k === i ? { ...x, qty: e.target.value } : x))} className="w-24 rounded border p-2" />
+        <div key={i} className="grid grid-cols-[minmax(0,1fr)_70px_auto] gap-2">
+          <input aria-label="Item #" placeholder="Item #" value={r.sku} onChange={(e) => setRows(rows.map((x, k) => k === i ? { ...x, sku: e.target.value } : x))} className="min-w-0 w-full rounded border p-2" />
+          <input aria-label="Qty" placeholder="Qty" value={r.qty} onChange={(e) => setRows(rows.map((x, k) => k === i ? { ...x, qty: e.target.value } : x))} className="min-w-0 w-full rounded border p-2" />
           <button className="text-sm text-destructive" onClick={() => setRows(rows.filter((_, k) => k !== i))}>Remove</button>
         </div>))}</div>
       <div className="mt-3 flex flex-wrap gap-2">
@@ -45,7 +45,7 @@ export function ExpressOrder({ open = false }: { open?: boolean }) {
         <button className="rounded border px-3 py-1" onClick={() => { setRows([blank(), blank(), blank()]); setErrors([]); }}>Reset</button>
       </div>
       <label className="mt-4 block text-sm">Upload CSV (two columns, header: item #, qty)
-        <input type="file" accept=".csv" className="mt-1 block" onChange={(e) => e.target.files?.[0] && onCsv(e.target.files[0])} />
+        <input type="file" accept=".csv" className="mt-1 block w-full min-w-0" onChange={(e) => e.target.files?.[0] && onCsv(e.target.files[0])} />
       </label>
       {errors.length > 0 && <ul className="mt-2 text-sm text-destructive">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
     </details>
