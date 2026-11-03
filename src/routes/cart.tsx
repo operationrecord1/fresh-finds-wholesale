@@ -31,7 +31,7 @@ function CartPage() {
           {lines.map(l => { const p = getProduct(l.sku); if (!p) return null; return <article className="cart-item" key={l.sku}>
             <div className="cart-item-info"><span className="cart-sku">ITEM #{p.sku}</span><Link to="/product/$sku" params={{sku:p.sku.toLowerCase()}}>{p.title}</Link><p>{money(p.price ?? 0)} / piece</p></div>
             <div className="cart-quantity"><span>Quantity</span><strong>{l.pieces} pieces</strong><button onClick={()=>setEdit({p,pieces:l.pieces})} aria-label={`Change quantity for ${p.title}`}>Change quantity</button></div>
-            <div className="cart-line-total"><span>Subtotal</span><strong>{money(lineTotal(l.pieces,p.price ?? 0))}</strong><button onClick={()=>remove(l.sku)} aria-label={`Remove ${p.title}`}><Trash2 size={15} aria-hidden="true"/> Remove</button></div>
+            <div className="cart-line-total"><span>Subtotal</span><strong>{money(lineTotal(l.pieces,p.price ?? 0))}</strong><button onClick={()=>{ if (confirm("Remove this item?")) remove(l.sku); }} aria-label={`Remove ${p.title}`}><Trash2 size={15} aria-hidden="true"/> Remove</button></div>
           </article>; })}
           {!lines.length && <div className="cart-empty"><ShoppingCart size={44} aria-hidden="true"/><h2>Your cart is ready for your first find</h2><p>Browse our wholesale products or add an item number below.</p><Link to="/collection/$slug" params={{slug:"imports"}}>Browse products <ArrowRight size={17}/></Link></div>}
         </div>

@@ -36,8 +36,8 @@ function Home() {
       <HeroCarousel />
       <div className="store-home-panels mt-4 grid gap-5 lg:grid-cols-2">
         {PANELS.map((pnl) => (
-          <section key={pnl.slug} className="overflow-hidden rounded-t-[20px] bg-card">
-            <div className={`flex h-[58px] items-center justify-center gap-5 font-arial text-[22px] font-bold text-primary-foreground ${pnl.color}`}>
+          <section key={pnl.slug} className="relative rounded-t-[20px] bg-card hover:z-30 focus-within:z-30">
+            <div className={`flex h-[58px] rounded-t-[20px] items-center justify-center gap-5 font-arial text-[22px] font-bold text-primary-foreground ${pnl.color}`}>
               {(() => { const Icon = { "new-arrivals": PackagePlus, "best-sellers": Award, "reduced-price": Tags, closeouts: PackageOpen, imports: PackageOpen }[pnl.slug]; return <Icon aria-hidden="true" className="h-8 w-8 shrink-0" strokeWidth={1.25} />; })()}
               <h2>{pnl.title}</h2>
               <Link to="/collection/$slug" params={{ slug: pnl.slug }} className="text-lg underline">View All</Link>

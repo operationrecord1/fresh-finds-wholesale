@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { PRICE_BANDS, type Product } from "@/data/catalog";
+import { PRICE_BANDS, type Product, type Badge } from "@/data/catalog";
 import { ProductCard } from "./ProductCard";
 import { QuickView } from "./QuickView";
 
@@ -30,16 +30,19 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sort, setSort] = useState(defaultSort);
   const [price, setPrice] = useState<string | null>(initialPrice ?? null);
+  const [special, setSpecial] = useState<Badge | null>(null);
   const [sub, setSub] = useState<string | null>(null);
   const [shown, setShown] = useState(PAGE);
   const [qv, setQv] = useState<Product | null>(null);
   const sentinel = useRef<HTMLDivElement>(null);
 
+  useEffect(() => { setPrice(initialPrice ?? null); setSub(null); setSpecial(null); setSort(defaultSort); }, [initialPrice, defaultSort, products]);
+
   const inBand = (p: Product, id: string) => { const b = PRICE_BANDS.find((x) => x.id === id)!; return p.price != null && p.price >= b.min && p.price <= b.max; };
   const subs = useMemo(() => { const m = new Map<string, number>(); products.forEach((p) => { const s = p.subcategory ?? p.category; if (s) m.set(s, (m.get(s) ?? 0) + 1); }); return [...m].sort(); }, [products]);
-  const filtered = useMemo(() => sortProducts(products.filter((p) => (!price || inBand(p, price)) && (!sub || (p.subcategory ?? p.category) === sub)), sort), [products, price, sub, sort]);
+  const filtered = useMemo(() => sortProducts(products.filter((p) => (!price || inBand(p, price)) && (!sub || (p.subcategory ?? p.category) === sub) && (!special || p.badges.includes(special))), sort), [products, price, sub, special, sort]);
 
-  useEffect(() => { setShown(PAGE); }, [price, sub, sort]);
+  useEffect(() => { setShown(PAGE); }, [price, sub, special, sort, products]);
   useEffect(() => {
     const el = sentinel.current; if (!el) return;
     const io = new IntersectionObserver((e) => e[0]?.isIntersecting && setShown((s) => s + PAGE));
@@ -60,8 +63,13 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
           </select>
         </div>
         <div className="rounded bg-card p-4">
-          <div className="mb-2 flex justify-between"><h3>Filter By Price</h3>{(price || sub) && <button className="text-sm text-primary" onClick={() => { setPrice(null); setSub(null); }}>Clear All</button>}</div>
+          <div className="mb-2 flex justify-between"><h3>Filter By Price</h3>{(price || sub || special || sort !== defaultSort) && <button className="text-sm text-primary" onClick={() => { setPrice(null); setSub(null); setSpecial(null); setSort(defaultSort); }}>Clear All</button>}</div>
           {PRICE_BANDS.map((b) => { const n = products.filter((p) => inBand(p, b.id)).length; return n ? <Radio key={b.id} on={price === b.id} label={`${b.label} (${n})`} onClick={() => setPrice(b.id)} /> : null; })}
+          <h3 className="mb-2 mt-5">Filter By Special Options</h3>
+          {([["new", "New Arrivals"], ["hot", "Hot Items"], ["closeout", "Closeouts"], ["reduced", "Reduced Price"], ["special", "Special"]] as [Badge, string][]).map(([badge, label]) => {
+            const count = products.filter(p => p.badges.includes(badge)).length;
+            return count ? <Radio key={badge} on={special === badge} label={label + " (" + count + ")"} onClick={() => setSpecial(badge)}/> : null;
+          })}
           {subs.length > 0 && <>
             <h3 className="mb-2 mt-5">Filter By Subcategory</h3>
             {subs.map(([s, n]) => <Radio key={s} on={sub === s} label={`${s} (${n})`} onClick={() => setSub(s)} />)}
@@ -75,6 +83,8 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
         </div>
         {filtered.length === 0 && <p className="mt-8 text-center">No products match these filters.</p>}
         <div ref={sentinel} className="h-8" />
+        {shown < filtered.length && <button className="mx-auto block rounded border bg-white px-5 py-3" onClick={() => setShown(s => s + PAGE)}>Load more products</button>}
+        <p className="my-4 text-center text-sm text-muted-foreground" role="status">Showing {Math.min(shown, filtered.length)} of {filtered.length} products</p>
       </div>
       <QuickView p={qv} onClose={() => setQv(null)} />
     </div>

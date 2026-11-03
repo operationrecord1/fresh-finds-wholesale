@@ -1,3 +1,5 @@
+import { useState } from "react";
+import "./ProductCommerce.css";
 import { Link } from "@tanstack/react-router";
 import { ImageOff } from "lucide-react";
 import type { Badge, Product } from "@/data/catalog";
@@ -18,8 +20,9 @@ export function Badges({ badges }: { badges: Badge[] }) {
 }
 
 export function ProductImage({ p, i = 0, className = "" }: { p: Product; i?: number; className?: string }) {
+  const [failed, setFailed] = useState<string | null>(null);
   const src = p.images[i];
-  if (src) return <img src={src} alt={p.title} loading="lazy" className={`h-full w-full object-contain ${className}`} />;
+  if (src && failed !== src) return <img onError={() => setFailed(src)} src={src} alt={p.title} loading="lazy" decoding="async" className={`h-full w-full object-contain ${className}`} />;
   return (
     <div className={`flex h-full w-full flex-col items-center justify-center gap-1 bg-muted text-muted-foreground ${className}`}>
       <ImageOff className="h-8 w-8" />
@@ -36,18 +39,19 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
       <button onClick={() => onQuickView?.(p)} className="store-product-photo block w-full" aria-label={`Quick view ${p.title}`}>
         <ProductImage p={p} />
       </button>
-      <Link to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} className="mt-3 line-clamp-2 min-h-[2.5em] font-semibold text-lg leading-tight text-title hover:underline">
+      <Link onClick={e => { if (onQuickView && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); onQuickView(p); } }} to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} className="mt-3 line-clamp-2 min-h-[2.5em] font-semibold text-lg leading-tight text-title hover:underline">
         {p.title}{p.titleTruncated ? "…" : ""}
       </Link>
       <div className="mt-3 font-arial text-xs font-bold">Item # {p.sku}</div>
       <div className="font-arial text-sm">Qty Avail: {p.stock != null ? p.stock.toLocaleString() : "—"}</div>
-      <div className="mt-3 font-arial text-lg font-bold text-price">Price: {p.price != null ? money(p.price) : "—"}</div>
+      <button type="button" onClick={() => onQuickView?.(p)} className="mt-3 font-arial text-lg font-bold text-price" aria-label={`Quick view price for ${p.title}`}>Price: {p.price != null ? money(p.price) : "—"}</button>
+      <button type="button" className="product-touch-action" onClick={() => onQuickView?.(p)}>View & order</button>
       {/* Kole Imports: hovering a card reveals a purchase box anchored below it (desktop only). */}
-      {p.rules && p.price != null && (
-        <div className="absolute left-1/2 top-full hidden w-[304px] -translate-x-1/2 pt-2 text-left lg:group-hover:block lg:group-focus-within:block">
-          <div className="rounded-lg border border-border bg-muted p-3 shadow-xl">
+      {(
+        <div className="product-hover-panel">
+          <div className="product-hover-surface">
             <PurchasePanel p={p} compact />
-            <p className="mt-2 text-center text-sm font-semibold">*Sold in Lots of {p.rules.lot}</p>
+            {p.rules && <p className="mt-2 text-center text-sm font-semibold">*Sold in Lots of {p.rules.lot}</p>}
           </div>
         </div>
       )}

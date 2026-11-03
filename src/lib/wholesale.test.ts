@@ -28,3 +28,22 @@ describe("wholesale rules from research report", () => {
     expect(meetsMinimum(lineTotal(639, 0.79))).toBe(true);
   });
 });
+
+import { validateQuantity } from "./wholesale";
+describe("purchase validation", () => {
+  it("rejects zero, fractional quantities and incomplete lots without rounding", () => {
+    expect(validateQuantity(0, "piece", r("MT500"), 7479)).toBeTruthy();
+    expect(validateQuantity(24.5, "piece", r("MT500"), 7479)).toBeTruthy();
+    expect(validateQuantity(25, "piece", r("MT500"), 7479)).toContain("24 or 48");
+    expect(validateQuantity(24, "piece", r("MT500"), 7479)).toBeNull();
+  });
+  it("caps orders at the available lot multiple, including the existing cart", () => {
+    expect(validateQuantity(999999, "case", r("MT500"), 7479)).toContain("Maximum");
+    expect(validateQuantity(48, "piece", r("MT500"), 72, 48)).toContain("24 pieces");
+    expect(validateQuantity(24, "piece", r("MT500"), 72, 48)).toBeNull();
+  });
+  it("allows a full case whose size differs from the piece lot", () => {
+    expect(validateQuantity(1, "case", r("CB163"), 1100)).toBeNull();
+    expect(validateQuantity(8, "piece", r("CB163"), 1100)).toBeTruthy();
+  });
+});
