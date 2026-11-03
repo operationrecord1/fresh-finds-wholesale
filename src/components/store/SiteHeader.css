@@ -120,3 +120,12 @@
 @media(min-width:1000px) and (max-width:1199px) { .store-minimum { width:70px; font-size:11px; } }
 @media(max-width:1199px) { .store-category-columns { grid-template-columns:repeat(4,minmax(0,1fr)); } }
 @media(max-width:599px) { .store-category-columns { grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 16px; } .store-dropdown-surface { padding:12px 16px; } .store-dropdown a { min-height:40px; display:flex; align-items:center; } }
+
+/* Compact navigation rhythm; readable utility links without spreading the row. */
+.store-nav { justify-content:flex-start; gap:18px; font-size:15px; }
+.store-utility-links,.store-account-links { font-size:14px; }
+.store-dropdown a { padding:4px 0; font-size:14px; }
+@media(min-width:1200px) { .store-header-layout { grid-template-columns:132px 180px minmax(120px,1fr) 180px 340px; gap:4px 14px; } .store-minimum { width:132px; font-size:14px; line-height:20px; } }
+@media(min-width:1000px) and (max-width:1199px) { .store-header-layout { grid-template-columns:116px 150px minmax(100px,1fr) 160px 290px; gap:4px 9px; } .store-minimum { width:116px; font-size:13px; } .store-utility-links,.store-account-links {font-size:13px;gap:7px} }
+@media(max-width:999px) { .store-header-layout {grid-template-columns:116px minmax(0,1fr)} .store-minimum {width:116px} .store-utilities {width:135px} .store-brand-contact {padding-right:141px} .store-utility-links,.store-account-links {font-size:12px} .store-nav {font-size:14px;gap:16px} }
+@media(max-width:599px) { .store-dropdown a {min-height:40px} }

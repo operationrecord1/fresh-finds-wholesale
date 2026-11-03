@@ -85,7 +85,6 @@ export function SiteHeader() {
         <div className="store-brand-contact">
             <Link to="/" className="store-brand leading-none">
               <span className="store-brand-name block font-display font-bold tracking-tight text-primary">ARTISAN<span className="text-accent">MART</span></span>
-              <span className="store-brand-caption block font-semibold text-title">WHOLESALE MERCHANDISE</span>
             </Link>
         </div>
             <form role="search" className="store-search relative" onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav({ to: "/search", search: { q: q.trim() } }); }}>

@@ -14,3 +14,13 @@
 .merch-dots button[aria-pressed=true] span { width:25px; background:white; }
 .merch-hero :focus-visible { outline:3px solid #a8d95c; outline-offset:3px; }
 @media(max-width:767px) { .merch-arrow {display:none} .merch-hero {min-height:440px} .merch-hero-image {object-position:65% bottom; height:62%; top:auto;} .merch-hero-shade {background:linear-gradient(180deg,#0a2445 0%,#0a2445 34%,#0a244580 60%,transparent 85%)} .merch-hero-copy {width:100%; max-width:480px; padding:26px 24px 150px} .merch-hero h2 {font-size:30px;max-width:320px} .merch-hero-copy > p:not(.merch-eyebrow) {font-size:14px;max-width:290px} .merch-hero-copy > a {margin-top:14px;padding:10px 14px;font-size:13px} }
+
+/* Shorter banner: 380 -> 260px desktop, 440 -> 300px mobile. */
+.merch-hero { min-height:260px; height:260px; }
+.merch-hero-copy {padding:22px 66px 38px;width:58%;max-width:720px}
+.merch-eyebrow {font-size:11px;letter-spacing:1.5px}
+.merch-hero h2 {font-size:clamp(26px,2.5vw,36px);margin:8px 0;line-height:1.08}
+.merch-hero-copy > p:not(.merch-eyebrow) {font-size:14px;line-height:1.4;max-width:420px}
+.merch-hero-copy > a {margin-top:12px;padding:9px 14px;font-size:14px}
+.merch-dots {bottom:0}
+@media(max-width:767px) { .merch-hero {min-height:300px;height:300px} .merch-hero-copy {width:100%;padding:20px 20px 36px;max-width:420px} .merch-hero h2 {font-size:26px;max-width:290px} .merch-hero-copy > p:not(.merch-eyebrow) {font-size:13px;max-width:270px} .merch-hero-copy > a {font-size:13px;margin-top:10px} .merch-hero-image {height:65%} .merch-hero-shade {background:linear-gradient(110deg,#0a2445 0%,#0a2445e8 40%,#0a244550 80%,transparent)} }
