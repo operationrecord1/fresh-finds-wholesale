@@ -34,7 +34,7 @@ export function SiteFooter() {
             <address>24600 Main Street<br className="footer-address-break" /> Carson, CA 90745</address>
             <span className="footer-sample">Sample address &amp; hours — to be updated</span>
             <dl className="footer-hours"><div><dt>Hours:</dt><dd>Mon–Fri, 7:00 AM–4:00 PM PST<br />Sat–Sun: Closed</dd></div></dl>
-            <div className="footer-contact-links"><p>Customer Service: <a href="https://images.artisanmart.com">images.artisanmart.com</a></p><p>Sell Closeouts: <a href="mailto:offer@artisanmart.com">offer@artisanmart.com</a></p></div>
+            <div className="footer-contact-links"><p>Customer Service: <a href="https://email.artisanmart.com">email.artisanmart.com</a></p><p>Sell Closeouts: <a href="mailto:offer@artisanmart.com">offer@artisanmart.com</a></p></div>
           </section>
           <section className="footer-about" aria-label="About Us">
             <h2 className="footer-desktop-heading">About Us</h2>
