@@ -13,10 +13,35 @@ export function SiteHeader() {
   const catTrigger = useRef<HTMLButtonElement>(null);
   const priceTrigger = useRef<HTMLButtonElement>(null);
   const [anchor, setAnchor] = useState({ left: 12, top: 0, width: 360 });
-  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cancelLeave = () => { if (leaveTimer.current) clearTimeout(leaveTimer.current); };
-  const openHover = (next: "cat" | "price") => { cancelLeave(); if (window.matchMedia("(hover: hover)").matches) setMenu(next); };
-  useEffect(() => () => { if (leaveTimer.current) clearTimeout(leaveTimer.current); }, []);
+  const kcTrigger = useRef<HTMLButtonElement>(null);
+  const dropdown = useRef<HTMLDivElement>(null);
+  const openHover = (next: "cat" | "price" | "kc") => {
+    if (window.matchMedia("(hover: hover)").matches) setMenu(next);
+  };
+  useEffect(() => {
+    if (!menu) return;
+    const trigger = { cat: catTrigger, price: priceTrigger, kc: kcTrigger }[menu];
+    const contains = (node: HTMLElement | null, event: PointerEvent) => {
+      if (!node) return false;
+      const rect = node.getBoundingClientRect();
+      return event.clientX >= rect.left && event.clientX <= rect.right &&
+        event.clientY >= rect.top && event.clientY <= rect.bottom;
+    };
+    const leaveRegion = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && !contains(trigger.current, event) &&
+          !contains(dropdown.current, event)) setMenu(null);
+    };
+    const outside = (event: PointerEvent) => {
+      if (!trigger.current?.contains(event.target as Node) &&
+          !dropdown.current?.contains(event.target as Node)) setMenu(null);
+    };
+    document.addEventListener("pointermove", leaveRegion);
+    document.addEventListener("pointerdown", outside);
+    return () => {
+      document.removeEventListener("pointermove", leaveRegion);
+      document.removeEventListener("pointerdown", outside);
+    };
+  }, [menu]);
   const navigation = useRef<HTMLDivElement>(null);
   const navItems = useRef<HTMLElement>(null);
   const [overflow, setOverflow] = useState({ needed: false, left: false, right: false });
@@ -56,10 +81,10 @@ export function SiteHeader() {
     if (!menu) return;
     const position = () => {
       const h = header.current?.getBoundingClientRect();
-      const trigger = (menu === "cat" ? catTrigger : priceTrigger).current?.getBoundingClientRect();
+      const trigger = ({ cat: catTrigger, price: priceTrigger, kc: kcTrigger }[menu]).current?.getBoundingClientRect();
       if (!h) return;
       const left = Math.max(12, Math.min((trigger?.left ?? h.left + 12) - h.left, h.width - 240));
-      setAnchor({left, top: menu === "kc" ? h.height : (trigger?.bottom ?? h.bottom) - h.top, width: Math.min(menu === "cat" ? 1100 : 370, h.width - left - 12)});
+      setAnchor({left, top: (trigger?.bottom ?? h.bottom) - h.top, width: Math.min(menu === "cat" ? 1100 : 370, h.width - left - 12)});
     };
     position();
     window.addEventListener("resize", position);
@@ -73,7 +98,7 @@ export function SiteHeader() {
   const cols = Array.from({ length: 7 }, (_, i) => CATEGORIES.slice(i * 5, i * 5 + 5));
 
   return (
-    <header onPointerEnter={cancelLeave} onPointerLeave={(e) => { if(e.pointerType === "mouse") leaveTimer.current = setTimeout(() => setMenu(null), 180); }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMenu(null); }} ref={header} className="store-header relative z-40 bg-card shadow-sm">
+    <header onPointerLeave={(e) => { if (e.pointerType === "mouse") setMenu(null); }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMenu(null); }} ref={header} className="store-header relative z-40 bg-card shadow-sm">
       <div className="store-promo bg-promo text-center font-arial font-bold italic text-promo-foreground">
         <AlertTriangle className="mr-1 inline h-5 w-5 -translate-y-0.5" /> 8% OFF $1,000+ ORDERS W/ CODE: VIP8
       </div>
@@ -109,7 +134,7 @@ export function SiteHeader() {
         <div className="store-utilities" role="group" aria-label="Customer links">
           <div className="store-utility-links">
             <Link className="store-mobile-hide" to="/careers">Careers</Link><Link to="/contact">Contact Us</Link>
-            <button data-header-secondary="true" aria-expanded={menu === "kc"} aria-controls="store-dropdown" onClick={() => toggle("kc")} className="flex items-center">Knowledge Center <ChevronDown className="h-4 w-4" /></button>
+            <button ref={kcTrigger} onPointerEnter={() => openHover("kc")} data-header-secondary="true" aria-expanded={menu === "kc"} aria-controls="store-dropdown" onClick={(e) => { if (e.detail > 0 && window.matchMedia("(hover: hover)").matches) setMenu("kc"); else toggle("kc"); }} className="flex items-center">Knowledge Center <ChevronDown className="h-4 w-4" /></button>
 
           </div>
           <div className="store-account-links leading-tight">
@@ -120,7 +145,7 @@ export function SiteHeader() {
         </div>
       </div>
       {menu && (
-        <div id="store-dropdown" className={`store-dropdown store-dropdown-${menu}`} style={{ left: anchor.left, top: anchor.top, width: anchor.width }} onClick={() => setMenu(null)}>
+        <div ref={dropdown} id="store-dropdown" className={`store-dropdown store-dropdown-${menu}`} style={{ left: anchor.left, top: anchor.top, width: anchor.width }} onClick={() => setMenu(null)}>
           <div className="store-dropdown-surface">
             {menu === "cat" && (
               <div className="store-category-columns">
