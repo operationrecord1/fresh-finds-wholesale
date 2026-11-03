@@ -1,5 +1,5 @@
 .store-header-layout { display:grid; grid-template-columns:96px 220px minmax(180px,1fr) 340px; grid-template-rows:auto auto; align-items:center; gap:4px 22px; max-width:1700px; margin:auto; padding:12px 24px 4px; }
-.store-minimum { grid-column:1; grid-row:1/3; align-self:start; padding:12px 5px; border-radius:0 0 18px 18px; margin-top:-12px; font-size:14px; line-height:21px; }
+.store-minimum { grid-column:1; grid-row:1; align-self:start; padding:12px 5px; border-radius:0 0 18px 18px; margin-top:-12px; font-size:14px; line-height:21px; }
 .store-brand-contact { grid-column:2; grid-row:1; min-width:0; }
 .store-brand-name { font-size:35px; white-space:nowrap; }
 .store-brand-caption { margin-top:6px; font-size:10px; letter-spacing:2px; white-space:nowrap; }
@@ -15,7 +15,7 @@
 .store-account-links { margin:0; }
 .store-account-links svg { width:27px; height:27px; flex-shrink:0; }
 .store-utilities a, .store-utilities button { min-height:36px; display:flex; align-items:center; }
-.store-header-scroll { grid-column:2/4; grid-row:2; min-width:0; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; }
+.store-header-scroll { width:100%; min-width:0; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; }
 .store-header-scroll::-webkit-scrollbar { display:none; }
 .store-nav { display:flex; align-items:center; justify-content:space-between; gap:20px; white-space:nowrap; font-size:14px; font-weight:600; }
 .store-nav a, .store-nav button { display:flex; align-items:center; min-height:44px; flex-shrink:0; }
@@ -36,23 +36,42 @@
  .store-nav { font-size:13px; gap:18px; }
 }
 @media(max-width:767px) {
- .store-header-layout { grid-template-columns:minmax(0,1fr) 124px; gap:10px 12px; padding:12px 14px 0; }
- .store-brand-contact { grid-column:1; grid-row:1; }
+ .store-header-layout { grid-template-columns:100px minmax(0,1fr); gap:10px 12px; padding:12px 14px 0; }
+ .store-brand-contact { grid-column:1/-1; grid-row:1; padding-right:126px; }
  .store-brand-name { font-size:clamp(22px,6.5vw,29px); }
  .store-brand-caption { font-size:8px; letter-spacing:.7px; }
  .store-phone { margin-top:7px; }
  .store-phone-number { font-size:12px; }
- .store-utilities { grid-column:2; grid-row:1; padding:0 0 0 12px; gap:3px; }
+ .store-utilities { grid-column:1/-1; grid-row:1; justify-self:end; width:120px; padding:0 0 0 12px; gap:3px; }
  .store-utilities .store-mobile-hide, .store-utilities [data-header-secondary] { display:none; }
  .store-utility-links { justify-content:flex-end; }
  .store-utility-links a { min-height:30px; }
  .store-account-links { gap:8px; justify-content:flex-end; font-size:11px; }
  .store-account-links svg { width:21px; height:21px; }
  .store-account-links a { min-height:40px; }
- .store-search { grid-column:1; grid-row:2; }
+ .store-search { grid-column:2; grid-row:2; }
  .store-search input { height:44px; padding-left:10px; }
- .store-minimum { grid-column:2; grid-row:2; margin:0; border-radius:8px; padding:5px; font-size:11px; line-height:16px; align-self:center; }
+ .store-minimum { grid-column:1; grid-row:2; margin:0; border-radius:8px; padding:5px; font-size:11px; line-height:16px; align-self:center; }
  .store-minimum br:first-of-type { display:none; }
- .store-header-scroll { grid-column:1/-1; grid-row:3; }
+ .store-navigation-area { grid-column:1/-1; grid-row:3; }
  .store-nav { justify-content:flex-start; }
+}
+
+.store-navigation-area { grid-column:1/4; grid-row:2; min-width:0; position:relative; }
+.store-navigation-area.has-overflow { padding-top:30px; }
+.store-nav { width:max-content; min-width:100%; gap:clamp(12px,1.4vw,20px); }
+.store-nav-controls { display:flex; justify-content:flex-end; gap:6px; position:absolute; top:0; right:0; }
+.store-nav-controls button { display:grid; place-items:center; width:32px; height:28px; border:1px solid #b6cad6; border-radius:6px; color:#17668c; background:#f5f9fc; }
+.store-nav-controls button:disabled { opacity:.35; }
+@media (min-width:768px) and (max-width:1100px) {
+ .store-header-layout { grid-template-columns:70px 164px minmax(110px,1fr) 245px; gap:4px 10px; }
+ .store-utilities { padding-left:10px; }
+ .store-utility-links, .store-account-links { font-size:11px; gap:6px; }
+ .store-account-links svg { width:20px; height:20px; }
+ .store-nav { font-size:12px; gap:12px; }
+}
+@media(max-width:767px) {
+ .store-navigation-area { grid-column:1/-1; grid-row:3; }
+ .store-nav { gap:18px; font-size:13px; }
+ .store-search { width:100%; }
 }

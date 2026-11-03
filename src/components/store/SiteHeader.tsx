@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Search, ShoppingCart, ChevronDown, Megaphone, AlertTriangle } from "lucide-react";
+import { Search, ShoppingCart, ChevronDown, ChevronLeft, ChevronRight, Megaphone, AlertTriangle } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
@@ -10,6 +10,32 @@ export function SiteHeader() {
   const [q, setQ] = useState("");
   const [menu, setMenu] = useState<null | "cat" | "price" | "kc">(null);
   const header = useRef<HTMLElement>(null);
+  const navigation = useRef<HTMLDivElement>(null);
+  const navItems = useRef<HTMLElement>(null);
+  const [overflow, setOverflow] = useState({ needed: false, left: false, right: false });
+  useEffect(() => {
+    const viewport = navigation.current;
+    const items = navItems.current;
+    if (!viewport || !items) return;
+    let active = true;
+    const update = () => {
+      if (!active) return;
+      const max = viewport.scrollWidth - viewport.clientWidth;
+      setOverflow({ needed: max > 1, left: viewport.scrollLeft > 1, right: viewport.scrollLeft < max - 1 });
+    };
+    const observer = new ResizeObserver(update);
+    observer.observe(viewport);
+    observer.observe(items);
+    viewport.addEventListener("scroll", update, { passive: true });
+    document.fonts.ready.then(update);
+    update();
+    return () => { active = false; observer.disconnect(); viewport.removeEventListener("scroll", update); };
+  }, []);
+  const scrollNavigation = (direction: number) => {
+    const viewport = navigation.current;
+    if (!viewport) return;
+    viewport.scrollBy({ left: direction * viewport.clientWidth * .75, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+  };
   useEffect(() => {
     const closeOutside = (event: PointerEvent) => {
       if (!header.current?.contains(event.target as Node)) setMenu(null);
@@ -48,8 +74,10 @@ export function SiteHeader() {
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products or item numbers" autoComplete="off" name="q" aria-label="Search products" className="h-[54px] w-full rounded-[20px] border border-border bg-secondary px-5 pr-14 font-arial text-lg outline-none focus:ring-2 focus:ring-ring" />
               <button disabled={!q.trim()} aria-label="Search" className="absolute right-4 top-1/2 -translate-y-1/2 disabled:opacity-70"><Search className="h-7 w-7" /></button>
             </form>
-        <div className="store-header-scroll" tabIndex={0} role="region" aria-label="Store navigation - scroll horizontally for more links">
-          <nav className="store-nav" aria-label="Main navigation">
+        <div className={`store-navigation-area${overflow.needed ? " has-overflow" : ""}`}>
+          {overflow.needed && <div className="store-nav-controls" aria-label="Navigation scroll controls"><button type="button" aria-label="Scroll navigation left" aria-controls="store-nav-viewport" disabled={!overflow.left} onClick={() => scrollNavigation(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button type="button" aria-label="Scroll navigation right" aria-controls="store-nav-viewport" disabled={!overflow.right} onClick={() => scrollNavigation(1)}><ChevronRight size={18} aria-hidden="true" /></button></div>}
+          <div id="store-nav-viewport" ref={navigation} className="store-header-scroll" tabIndex={0} role="region" aria-label="Product navigation">
+          <nav ref={navItems} className="store-nav" aria-label="Main navigation">
             <button aria-expanded={menu === "cat"} aria-controls="store-dropdown" onClick={() => toggle("cat")} className="flex items-center">Categories <ChevronDown className="h-4 w-4" /></button>
             <button aria-expanded={menu === "price"} aria-controls="store-dropdown" onClick={() => toggle("price")} className="flex items-center">Shop By Price <ChevronDown className="h-4 w-4" /></button>
             <Link to="/collection/$slug" params={{ slug: "imports" }}>Imports</Link>
@@ -58,6 +86,7 @@ export function SiteHeader() {
             <Link to="/collection/$slug" params={{ slug: "reduced-price" }}>Reduced Price</Link>
             <Link to="/collection/$slug" params={{ slug: "new-arrivals" }}>New Arrivals</Link>
           </nav>
+          </div>
         </div>
         <div className="store-utilities" role="group" aria-label="Customer links">
           <div className="store-utility-links">
