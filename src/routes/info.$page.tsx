@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { SimplePage } from "@/components/store/SimplePage";
 
 const PAGES: Record<string, string> = {
@@ -8,7 +8,10 @@ const PAGES: Record<string, string> = {
 };
 
 export const Route = createFileRoute("/info/$page")({
-  loader: ({ params }) => { const t = PAGES[params.page]; if (!t) throw notFound(); return { title: t }; },
+  loader: ({ params }) => {
+    const section = ({ "artisan-mart": "about-us", "industries-served": "industries-served", "community-outreach": "artisan-cares", shipping: "easy-shipping", blog: "blog" } as Record<string, string>)[params.page];
+    if (section) throw redirect({ to: "/about-us", hash: section });
+    const t = PAGES[params.page]; if (!t) throw notFound(); return { title: t }; },
   head: ({ loaderData }) => ({ meta: [
     { title: `${loaderData?.title ?? "Info"} | Artisan Mart` }, { name: "description", content: `${loaderData?.title ?? "Information"} — Artisan Mart.` },
     { property: "og:title", content: `${loaderData?.title ?? "Info"} | Artisan Mart` }, { property: "og:description", content: "Artisan Mart information." },
