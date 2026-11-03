@@ -24,7 +24,7 @@ describe("authorized New Arrivals import", () => {
     }
   });
   it("calculates mirror piece and case totals using the resale price", () => {
-    const p = IMPORTED_NEW_ARRIVALS[0];
+    const p = IMPORTED_NEW_ARRIVALS[0]!;
     expect(p.price).toBe(14.5);
     expect(lineTotal(p.rules!.moq, p.price!)).toBe(58);
     expect(lineTotal(casesToPieces(1, p.rules!), p.price!)).toBe(145);
