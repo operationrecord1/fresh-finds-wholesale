@@ -64,9 +64,9 @@ export function SiteHeader() {
 
           </div>
           <div className="store-account-links leading-tight">
-            <Link to="/login">Login Or<br />Register</Link>
-            <Link to="/cart" className="flex items-center gap-2"><ShoppingCart className="h-10 w-10 text-accent" /><span>Your cart<br />({lines.length} Items)</span></Link>
-            <Link to="/newsletter" className="flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our<br />Newsletter</span></Link>
+            <Link to="/login">Login Or <br />Register</Link>
+            <Link to="/cart" className="flex items-center gap-2"><ShoppingCart className="h-10 w-10 text-accent" /><span>Your cart <br />({lines.length} Items)</span></Link>
+            <Link to="/newsletter" className="flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
           </div>
         </div>
       </div>
