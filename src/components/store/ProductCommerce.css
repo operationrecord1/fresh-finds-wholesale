@@ -58,3 +58,34 @@
  .product-specifications {grid-template-columns:repeat(2,minmax(0,1fr))}
  .purchase-total {font-size:18px}
 }
+
+/* Card ordering follows the reference: action, lot, choices, calculated total. */
+.product-hover-panel {padding-top:12px}
+.product-hover-surface {position:relative;padding:10px 0 0;border:1px solid #d4d4d4;border-radius:10px;background:#e7e7e7;box-shadow:0 8px 24px #19344126}
+.product-hover-surface::before {content:"";position:absolute;top:-9px;left:calc(50% - 9px);width:16px;height:16px;transform:rotate(45deg);background:#e7e7e7;border-left:1px solid #d4d4d4;border-top:1px solid #d4d4d4}
+.purchase-compact {display:flex;flex-direction:column}
+.purchase-compact .purchase-submit {order:-3;width:calc(100% - 32px);margin:0 16px;font-size:25px;padding:10px 8px;min-height:48px}
+.purchase-lot {order:-2;text-align:center;font-size:14px;font-weight:600;margin:10px 0 12px}
+.purchase-compact .purchase-options {gap:0;margin:0}
+.purchase-compact .purchase-option {border:0;border-radius:0;background:transparent;padding:10px 16px;min-height:64px}
+.purchase-compact .purchase-option.is-selected {background:#fff}
+.purchase-compact .purchase-option label {font-size:15px;gap:10px;flex:1}
+.purchase-compact .purchase-option strong {font-weight:500}
+.purchase-compact .purchase-option small {font-size:12px;margin-top:3px}
+.purchase-compact .purchase-option:not(.is-selected) .purchase-stepper {display:none}
+.purchase-compact .purchase-stepper > div {display:grid;grid-template-columns:52px 30px;grid-template-rows:24px 24px;height:48px;border:1px solid #aab4bb;border-radius:5px;background:#fff}
+.purchase-compact .purchase-stepper input {grid-column:1;grid-row:1/3;width:52px;font-size:17px}
+.purchase-compact .purchase-stepper button {width:30px;height:24px;background:#fff;color:#0093d3}
+.purchase-compact .purchase-stepper button:first-child {grid-column:2;grid-row:2}
+.purchase-compact .purchase-stepper button:last-child {grid-column:2;grid-row:1}
+.purchase-compact .purchase-stepper > small {display:none}
+.purchase-compact .purchase-total {padding:12px 8px;margin:0;font-size:15px;border-top:1px solid #d8d8d8}
+.purchase-compact .purchase-error {margin:8px}
+.store-product-card[data-purchase-open=true] {z-index:40}
+.store-product-card[data-purchase-open=true] .product-hover-panel {display:block}
+@media(hover:none),(max-width:1023px) {
+ .product-touch-action {min-height:44px}
+ .purchase-compact .purchase-stepper > div {grid-template-columns:46px 44px;grid-template-rows:44px 44px;height:88px}
+ .purchase-compact .purchase-stepper input {width:46px}
+ .purchase-compact .purchase-stepper button {width:44px;height:44px}
+}

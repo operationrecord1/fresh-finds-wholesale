@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from "react";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import type { Product } from "@/data/catalog";
 import { lineTotal, money, normalizePieces, stepDown, stepUp, validateQuantity, type BuyMode } from "@/lib/wholesale";
@@ -41,6 +41,7 @@ export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart",
     });
   };
   return <div className={`purchase-panel ${compact ? "purchase-compact" : ""}`} aria-busy={busy}>
+    {compact && <p className="purchase-lot">*Sold in Lots of {r.lot}</p>}
     <div className="purchase-options">
       {(["case", "piece"] as const).map(m => {
         const current = m === "piece" ? Number(pieces) : Number(cases);
@@ -49,12 +50,12 @@ export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart",
         const next = m === "piece" ? stepUp(current, r) : current + 1;
         const maximumReached = p.stock != null && (m === "piece" ? next : next * r.caseQty) + existing > p.stock;
         return <div key={m} className={`purchase-option ${mode === m ? "is-selected" : ""}`}>
-          <label><input type="radio" name={id} checked={mode === m} onChange={() => choose(m)} disabled={busy}/><span><strong>Order By {m === "case" ? "Case" : "Piece"}</strong><small>{m === "case" ? `${r.caseQty} (Pieces)` : `${r.moq} Pieces Minimum`}</small></span></label>
+          <label><input type="radio" name={id} checked={mode === m} onChange={() => choose(m)} disabled={busy}/><span><strong>{m === "case" ? "Order By Case" : compact ? "Piece Quantity" : "Order By Piece"}</strong><small>{m === "case" ? `${r.caseQty} (Pieces)` : `${r.moq} Pieces Minimum`}</small></span></label>
           <div className="purchase-stepper">
             <div>
-              <button type="button" aria-label={`Decrease ${m}`} disabled={busy || current <= minimum} onClick={() => update(m === "piece" ? stepDown(current, r) : Math.max(1, current - 1))}><Minus size={20}/></button>
+              <button type="button" aria-label={`Decrease ${m}`} disabled={busy || current <= minimum} onClick={() => update(m === "piece" ? stepDown(current, r) : Math.max(1, current - 1))}>{compact ? <ChevronDown size={22}/> : <Minus size={20}/>}</button>
               <input aria-label={`${m === "piece" ? "Pieces" : "Case"} quantity`} aria-invalid={mode === m && !!error} aria-describedby={mode === m && error ? id + "-error" : undefined} inputMode="numeric" pattern="[0-9]*" disabled={busy} value={mode === m ? (m === "piece" ? pieces : cases) : ""} onFocus={() => setMode(m)} onChange={e => { const raw = e.target.value.replace(/\D/g, ""); m === "piece" ? setPieces(raw) : setCases(raw); setSubmitted(false); }}/>
-              <button type="button" aria-label={`Increase ${m}`} disabled={busy || maximumReached} onClick={() => update(next)}><Plus size={20}/></button>
+              <button type="button" aria-label={`Increase ${m}`} disabled={busy || maximumReached} onClick={() => update(next)}>{compact ? <ChevronUp size={22}/> : <Plus size={20}/>}</button>
             </div>
             <small>{m === "piece" ? "PIECES" : "CASE"}</small>
           </div>
@@ -63,6 +64,6 @@ export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart",
     </div>
     {error && <p id={id + "-error"} role={submitted ? "alert" : "status"} className="purchase-error">{error}</p>}
     <button type="button" className="purchase-submit" disabled={busy} onClick={submit}>{busy ? "Please Wait..." : label}</button>
-    <div className="purchase-total" aria-live="polite">{money(p.price)} x {Number.isFinite(qty) ? qty : 0} Pieces = {money(lineTotal(Number.isFinite(qty) ? qty : 0, p.price))}</div>
+    <div className="purchase-total" aria-live="polite">{compact ? `${Number.isFinite(qty) ? qty : 0} pieces x ${money(p.price)}` : `${money(p.price)} x ${Number.isFinite(qty) ? qty : 0} Pieces`} = {money(lineTotal(Number.isFinite(qty) ? qty : 0, p.price))}</div>
   </div>;
 }

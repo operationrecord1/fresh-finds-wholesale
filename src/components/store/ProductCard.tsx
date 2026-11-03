@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import "./ProductCommerce.css";
 import { Link } from "@tanstack/react-router";
 import { ImageOff } from "lucide-react";
@@ -33,6 +33,19 @@ export function ProductImage({ p, i = 0, className = "" }: { p: Product; i?: num
 }
 
 export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: Product) => void }) {
+  const [expanded, setExpanded] = useState(false);
+  const card = useRef<HTMLDivElement>(null);
+  const panelId = useId();
+  useEffect(() => {
+    if (!expanded) return;
+    const outside = (e: PointerEvent) => { if (!card.current?.contains(e.target as Node)) setExpanded(false); };
+    const escape = (e: KeyboardEvent) => { if (e.key === "Escape") setExpanded(false); };
+    const resize = () => { if (card.current) placePanel(card.current); };
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", escape);
+    window.addEventListener("resize", resize);
+    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); window.removeEventListener("resize", resize); };
+  }, [expanded]);
   const [panelLeft, setPanelLeft] = useState(0);
   const placePanel = (card: HTMLElement) => {
     const rect = card.getBoundingClientRect();
@@ -40,7 +53,7 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
     setPanelLeft(Math.max(12, Math.min(rect.left + (rect.width - width) / 2, window.innerWidth - width - 12)) - rect.left);
   };
   return (
-    <div onPointerEnter={e => placePanel(e.currentTarget)} onFocusCapture={e => placePanel(e.currentTarget)} className="store-product-card group relative flex h-full flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
+    <div ref={card} data-purchase-open={expanded} onPointerEnter={e => placePanel(e.currentTarget)} onFocusCapture={e => placePanel(e.currentTarget)} className="store-product-card group relative flex h-full flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
       <Badges badges={p.badges} />
       <button onClick={() => onQuickView?.(p)} className="store-product-photo block w-full" aria-label={`Quick view ${p.title}`}>
         <ProductImage p={p} />
@@ -51,13 +64,12 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
       <div className="mt-3 font-arial text-xs font-bold">Item # {p.sku}</div>
       <div className="font-arial text-sm">Qty Avail: {p.stock != null ? p.stock.toLocaleString() : "—"}</div>
       <button type="button" onClick={() => onQuickView?.(p)} className="mt-3 font-arial text-lg font-bold text-price" aria-label={`Quick view price for ${p.title}`}>Price: {p.price != null ? money(p.price) : "—"}</button>
-      <button type="button" className="product-touch-action" onClick={() => onQuickView?.(p)}>View & order</button>
+      <button type="button" className="product-touch-action" aria-expanded={expanded} aria-controls={panelId} onClick={() => { if (card.current) placePanel(card.current); setExpanded(!expanded); }}>{expanded ? "Close order options" : "Order options"}</button>
       {/* Kole Imports: hovering a card reveals a purchase box anchored below it (desktop only). */}
       {(
-        <div className="product-hover-panel" style={{left:panelLeft, right:"auto", transform:"none"}}>
+        <div id={panelId} className="product-hover-panel" style={{left:panelLeft, right:"auto", transform:"none"}}>
           <div className="product-hover-surface">
-            <PurchasePanel p={p} compact />
-            {p.rules && <p className="mt-2 text-center text-sm font-semibold">*Sold in Lots of {p.rules.lot}</p>}
+            <PurchasePanel p={p} compact onDone={() => setExpanded(false)} />
           </div>
         </div>
       )}
