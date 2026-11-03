@@ -1,0 +1,49 @@
+.store-header-layout { display:grid; grid-template-columns:100px 220px minmax(180px,1fr) 190px; align-items:center; gap:12px 24px; max-width:1800px; margin:auto; padding:12px 24px 0; }
+.store-minimum { align-self:start; padding:9px 6px; border-radius:0 0 18px 18px; margin-top:-12px; font-size:14px; line-height:20px; letter-spacing:.2px; }
+.store-brand { min-width:0; }
+.store-brand-name { font-size:35px; white-space:nowrap; }
+.store-brand-caption { margin-top:7px; font-size:10px; letter-spacing:2px; white-space:nowrap; }
+.store-phone { white-space:nowrap; }
+.store-phone > div { font-size:11px; font-weight:600; letter-spacing:1px; color:#5d6c77; margin-bottom:5px; }
+.store-phone-number { font-size:18px; font-weight:700; color:#19445a; }
+.store-search { min-width:0; }
+.store-search input { border-radius:12px; background:#f7fafc; height:48px; font-size:16px; padding:0 50px 0 16px; }
+.store-search button { display:grid; place-items:center; width:44px; height:44px; right:3px; border-radius:10px; color:#147daf; }
+.store-search button:hover:not(:disabled) { background:#e3f0f8; }
+.store-search button svg { width:23px; height:23px; }
+.store-header-scroll { grid-column:1/-1; display:flex; align-items:center; gap:28px; min-width:0; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:thin; scrollbar-color:#9cb9ca #edf3f7; padding:0 0 7px; }
+.store-nav, .store-utilities, .store-utility-links, .store-account-links { display:flex; flex-wrap:nowrap; align-items:center; flex-shrink:0; gap:20px; white-space:nowrap; }
+.store-nav { font-size:14px; font-weight:600; }
+.store-utilities { margin-left:auto; padding:0; border:0; gap:24px; }
+.store-utility-links, .store-account-links { font-size:13px; }
+.store-account-links { margin:0; }
+.store-account-links br { display:none; }
+.store-account-links svg { width:25px; height:25px; flex-shrink:0; }
+.store-header-scroll a, .store-header-scroll button { display:flex; align-items:center; min-height:44px; flex-shrink:0; }
+.store-header-scroll :focus-visible, .store-header-scroll:focus-visible, .store-search button:focus-visible { outline:2px solid #147daf; outline-offset:-2px; border-radius:4px; }
+#store-dropdown > div { max-height: min(65vh,520px); overflow-y:auto; overscroll-behavior:contain; }
+@media(max-width:1100px) {
+  .store-header-layout { grid-template-columns:86px 190px minmax(0,1fr) 170px; gap:10px 16px; padding:10px 16px 0; }
+  .store-minimum { margin-top:-10px; font-size:12px; line-height:18px; padding:9px 5px; }
+  .store-brand-name { font-size:30px; }
+  .store-brand-caption { font-size:9px; letter-spacing:1.5px; }
+  .store-phone-number { font-size:16px; }
+  .store-header-scroll { gap:22px; }
+}
+@media(max-width:767px) {
+  .store-header-layout { grid-template-columns:minmax(0,1fr) auto; gap:12px; padding:10px 14px 0; }
+  .store-brand { grid-column:1; grid-row:1; }
+  .store-brand-name { font-size:clamp(22px, 6.5vw, 29px); }
+  .store-minimum { grid-column:2; grid-row:1; margin:0; border-radius:8px; padding:6px 10px; line-height:16px; font-size:11px; }
+  .store-brand-caption { font-size:8px; letter-spacing:1px; }
+  .store-search { grid-column:1; grid-row:2; }
+  .store-search input { height:44px; padding-left:10px; padding-right:40px; }
+  .store-search button { width:36px; height:38px; }
+  .store-phone { grid-column:2; grid-row:2; }
+  .store-phone > div { font-size:9px; letter-spacing:.6px; }
+  .store-phone-number { font-size:12px; }
+  .store-header-scroll { grid-row:3; gap:20px; }
+  .store-nav, .store-utility-links, .store-account-links { gap:18px; font-size:13px; }
+  .store-utilities { gap:20px; }
+}
+@media(prefers-reduced-motion:no-preference) { .store-header-scroll { scroll-behavior:smooth; } }

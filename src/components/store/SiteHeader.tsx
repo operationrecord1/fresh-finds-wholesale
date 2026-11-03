@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Search, ShoppingCart, ChevronDown, Megaphone, AlertTriangle } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
+import "./SiteHeader.css";
 import { useCart } from "@/lib/cart";
 
 export function SiteHeader() {
@@ -32,8 +33,7 @@ export function SiteHeader() {
         <Link to="/cart" className="store-minimum bg-gradient-to-b from-minimum to-minimum-deep text-center font-bold text-primary-foreground">
           Minimum <br />Order Amount <br />$500
         </Link>
-        <div className="store-header-main">
-          <div className="store-header-top">
+
             <Link to="/" className="store-brand leading-none">
               <span className="store-brand-name block font-display font-bold tracking-tight text-primary">ARTISAN<span className="text-accent">MART</span></span>
               <span className="store-brand-caption block font-semibold text-title">WHOLESALE MERCHANDISE</span>
@@ -46,7 +46,7 @@ export function SiteHeader() {
               <div className="text-lg">CALL US TODAY</div>
               <a href={BUSINESS_PHONE_HREF} className="store-phone-number">{BUSINESS_PHONE}</a>
             </div>
-          </div>
+        <div className="store-header-scroll" tabIndex={0} role="region" aria-label="Store navigation - scroll horizontally for more links">
           <nav className="store-nav" aria-label="Main navigation">
             <button aria-expanded={menu === "cat"} aria-controls="store-dropdown" onClick={() => toggle("cat")} className="flex items-center">Categories <ChevronDown className="h-4 w-4" /></button>
             <button aria-expanded={menu === "price"} aria-controls="store-dropdown" onClick={() => toggle("price")} className="flex items-center">Shop By Price <ChevronDown className="h-4 w-4" /></button>
@@ -56,7 +56,6 @@ export function SiteHeader() {
             <Link to="/collection/$slug" params={{ slug: "reduced-price" }}>Reduced Price</Link>
             <Link to="/collection/$slug" params={{ slug: "new-arrivals" }}>New Arrivals</Link>
           </nav>
-        </div>
         <div className="store-utilities">
           <div className="store-utility-links">
             <Link to="/careers">Careers</Link><Link to="/contact">Contact Us</Link>
@@ -68,6 +67,7 @@ export function SiteHeader() {
             <Link to="/cart" className="flex items-center gap-2"><ShoppingCart className="h-10 w-10 text-accent" /><span>Your cart <br />({lines.length} Items)</span></Link>
             <Link to="/newsletter" className="flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
           </div>
+        </div>
         </div>
       </div>
       {menu && (
