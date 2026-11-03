@@ -15,7 +15,7 @@
 .footer-sample{display:block;font-size:11px;color:#666;margin-top:3px}
 .footer-hours{margin:20px 0}.footer-hours div{display:flex;gap:7px}.footer-hours dt{font-weight:600}.footer-hours dd{margin:0}
 .footer-contact-links p{margin:5px 0}.footer-contact-links a{text-decoration:underline;overflow-wrap:anywhere}
-.footer-about-list{list-style:none;padding:0;margin:34px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:13px;font-weight:600;align-items:start}
+.footer-about-list{list-style:none;padding:0;margin:19px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:13px;font-weight:600;align-items:start}
 .footer-about-list a{display:inline-block;padding-block:3px}
 .footer-newsletter h2{display:flex;align-items:flex-start;gap:8px}.footer-newsletter h2 svg{flex-shrink:0;color:#0093d3}
 .artisan-footer .footer-subscribe{display:inline-flex;justify-content:center;align-items:center;min-height:44px;padding:10px 28px;background:#197db8;color:#fff;border-radius:30px;font-weight:700;text-align:center}
