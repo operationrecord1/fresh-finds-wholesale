@@ -150,7 +150,7 @@
   grid-template-columns:180px minmax(120px,1fr) 180px 350px;
   gap:4px 18px;
  }
- .store-minimum { position:absolute; top:0; left:16px; width:132px; margin:0; }
+ .store-minimum { position:absolute; grid-column:auto; grid-row:auto; top:0; left:16px; width:132px; margin:0; }
  .store-brand-contact {grid-column:1}
  .store-search {grid-column:2}
  .store-call-button {grid-column:3}
