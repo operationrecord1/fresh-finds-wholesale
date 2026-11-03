@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { CheckCircle2, PackagePlus, Award, Tags, PackageOpen } from "lucide-react";
+import { useState } from "react";
+import { PackagePlus, Award, Tags, PackageOpen } from "lucide-react";
 import { PRODUCTS, type CollectionSlug, type Product } from "@/data/catalog";
 import { ProductCard } from "@/components/store/ProductCard";
+import { HeroCarousel } from "@/components/store/HeroCarousel";
 import { QuickView } from "@/components/store/QuickView";
 
 export const Route = createFileRoute("/")({
@@ -15,12 +16,6 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const SLIDES = [
-  { h: "WHOLESALE GENERAL MERCHANDISE", s: "Closeouts & Imports", b: ["Serving Retailers, Resellers, Nonprofits & more", "Constantly Changing Assortment"] },
-  { h: "8% OFF $1,000+ ORDERS", s: "Use code VIP8 at checkout", b: ["$500 order minimum", "Piece and case purchasing"] },
-  { h: "SHOP NEW ARRIVALS", s: "Fresh items added regularly", b: ["Browse by category or price", "Express Order by SKU"] },
-];
-
 const PANELS: { slug: CollectionSlug; title: string; color: string }[] = [
   { slug: "new-arrivals", title: "NEW ARRIVALS", color: "bg-sec-new" },
   { slug: "best-sellers", title: "BEST SELLERS", color: "bg-sec-best" },
@@ -29,10 +24,7 @@ const PANELS: { slug: CollectionSlug; title: string; color: string }[] = [
 ];
 
 function Home() {
-  const [i, setI] = useState(0);
   const [qv, setQv] = useState<Product | null>(null);
-  useEffect(() => { const t = setInterval(() => setI((x) => (x + 1) % SLIDES.length), 6000); return () => clearInterval(t); }, []);
-  const s = SLIDES[i] ?? SLIDES[0]!;
   const pick = (slug: CollectionSlug) => {
     const list = PRODUCTS.filter((p) => p.collections.includes(slug) && p.price != null);
     return slug === "new-arrivals" ? list.sort((a, b) => (a.newestRank ?? 999) - (b.newestRank ?? 999)).slice(0, 3) : list.slice(0, 3);
@@ -41,13 +33,7 @@ function Home() {
   return (
     <div className="store-container">
       <h1 className="store-home-title text-center font-bold tracking-wide text-primary">Your Premier Source For Wholesale General Merchandise</h1>
-      <section className="store-hero relative overflow-hidden rounded-2xl bg-hero text-primary-foreground">
-        <h2 className="font-display text-3xl font-bold md:text-[42px]">{s.h}</h2>
-        <p className="mt-2 text-2xl text-accent md:text-3xl">{s.s}</p>
-        <ul className="mt-3 space-y-1 text-lg">{s.b.map((x) => <li key={x} className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-accent" />{x}</li>)}</ul>
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">{SLIDES.map((_, k) => <button key={k} aria-label={`Slide ${k + 1}`} aria-pressed={k === i} onClick={() => setI(k)} className={`h-3 w-3 rounded-full ${k === i ? "bg-primary-foreground" : "bg-primary-foreground/40"}`} />)}</div>
-        <span className="absolute bottom-3 left-6 hidden text-xs opacity-60 md:block">Hero artwork pending</span>
-      </section>
+      <HeroCarousel />
       <div className="store-home-panels mt-4 grid gap-5 lg:grid-cols-2">
         {PANELS.map((pnl) => (
           <section key={pnl.slug} className="overflow-hidden rounded-t-[20px] bg-card">

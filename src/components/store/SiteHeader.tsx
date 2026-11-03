@@ -10,6 +10,13 @@ export function SiteHeader() {
   const [q, setQ] = useState("");
   const [menu, setMenu] = useState<null | "cat" | "price" | "kc">(null);
   const header = useRef<HTMLElement>(null);
+  const catTrigger = useRef<HTMLButtonElement>(null);
+  const priceTrigger = useRef<HTMLButtonElement>(null);
+  const [anchor, setAnchor] = useState({ left: 12, top: 0, width: 360 });
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelLeave = () => { if (leaveTimer.current) clearTimeout(leaveTimer.current); };
+  const openHover = (next: "cat" | "price") => { cancelLeave(); if (window.matchMedia("(hover: hover)").matches) setMenu(next); };
+  useEffect(() => () => { if (leaveTimer.current) clearTimeout(leaveTimer.current); }, []);
   const navigation = useRef<HTMLDivElement>(null);
   const navItems = useRef<HTMLElement>(null);
   const [overflow, setOverflow] = useState({ needed: false, left: false, right: false });
@@ -45,13 +52,28 @@ export function SiteHeader() {
     document.addEventListener("keydown", escape);
     return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", escape); };
   }, []);
+  useEffect(() => {
+    if (!menu) return;
+    const position = () => {
+      const h = header.current?.getBoundingClientRect();
+      const trigger = (menu === "cat" ? catTrigger : priceTrigger).current?.getBoundingClientRect();
+      if (!h) return;
+      const left = Math.max(12, Math.min((trigger?.left ?? h.left + 12) - h.left, h.width - 240));
+      setAnchor({left, top: menu === "kc" ? h.height : (trigger?.bottom ?? h.bottom) - h.top, width: Math.min(menu === "cat" ? 1100 : 370, h.width - left - 12)});
+    };
+    position();
+    window.addEventListener("resize", position);
+    const viewport = navigation.current;
+    viewport?.addEventListener("scroll", position);
+    return () => { window.removeEventListener("resize", position); viewport?.removeEventListener("scroll", position); };
+  }, [menu]);
   const nav = useNavigate();
   const { lines } = useCart();
   const toggle = (m: typeof menu) => setMenu(menu === m ? null : m);
   const cols = Array.from({ length: 7 }, (_, i) => CATEGORIES.slice(i * 5, i * 5 + 5));
 
   return (
-    <header ref={header} className="store-header relative z-40 bg-card shadow-sm">
+    <header onPointerEnter={cancelLeave} onPointerLeave={(e) => { if(e.pointerType === "mouse") leaveTimer.current = setTimeout(() => setMenu(null), 180); }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMenu(null); }} ref={header} className="store-header relative z-40 bg-card shadow-sm">
       <div className="store-promo bg-promo text-center font-arial font-bold italic text-promo-foreground">
         <AlertTriangle className="mr-1 inline h-5 w-5 -translate-y-0.5" /> 8% OFF $1,000+ ORDERS W/ CODE: VIP8
       </div>
@@ -75,8 +97,8 @@ export function SiteHeader() {
           {overflow.needed && <div className="store-nav-controls" aria-label="Navigation scroll controls"><button type="button" aria-label="Scroll navigation left" aria-controls="store-nav-viewport" disabled={!overflow.left} onClick={() => scrollNavigation(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button type="button" aria-label="Scroll navigation right" aria-controls="store-nav-viewport" disabled={!overflow.right} onClick={() => scrollNavigation(1)}><ChevronRight size={18} aria-hidden="true" /></button></div>}
           <div id="store-nav-viewport" ref={navigation} className="store-header-scroll" tabIndex={0} role="region" aria-label="Product navigation">
           <nav ref={navItems} className="store-nav" aria-label="Main navigation">
-            <button aria-expanded={menu === "cat"} aria-controls="store-dropdown" onClick={() => toggle("cat")} className="flex items-center">Categories <ChevronDown className="h-4 w-4" /></button>
-            <button aria-expanded={menu === "price"} aria-controls="store-dropdown" onClick={() => toggle("price")} className="flex items-center">Shop By Price <ChevronDown className="h-4 w-4" /></button>
+            <button ref={catTrigger} onPointerEnter={() => openHover("cat")} aria-expanded={menu === "cat"} aria-controls="store-dropdown" onClick={(e) => { if (e.detail > 0 && window.matchMedia("(hover: hover)").matches) setMenu("cat"); else toggle("cat"); }} className="flex items-center">Categories <ChevronDown className="h-4 w-4" /></button>
+            <button ref={priceTrigger} onPointerEnter={() => openHover("price")} aria-expanded={menu === "price"} aria-controls="store-dropdown" onClick={(e) => { if (e.detail > 0 && window.matchMedia("(hover: hover)").matches) setMenu("price"); else toggle("price"); }} className="flex items-center">Shop By Price <ChevronDown className="h-4 w-4" /></button>
             <Link to="/collection/$slug" params={{ slug: "imports" }}>Imports</Link>
             <Link to="/collection/$slug" params={{ slug: "closeouts" }}>Closeouts</Link>
             <Link to="/collection/$slug" params={{ slug: "best-sellers" }}>Best Sellers</Link>
@@ -99,20 +121,20 @@ export function SiteHeader() {
         </div>
       </div>
       {menu && (
-        <div id="store-dropdown" className="absolute inset-x-0 top-full z-50 px-4" onClick={() => setMenu(null)}>
-          <div className="mx-auto max-w-[1452px] rounded-xl bg-menu p-6 text-primary-foreground shadow-xl">
+        <div id="store-dropdown" className={`store-dropdown store-dropdown-${menu}`} style={{ left: anchor.left, top: anchor.top, width: anchor.width }} onClick={() => setMenu(null)}>
+          <div className="store-dropdown-surface">
             {menu === "cat" && (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-7">
+              <div className="store-category-columns">
                 {cols.map((c, i) => <ul key={i} className="space-y-2">{c.map((name) => (
                   <li key={name}><Link to="/category/$slug" params={{ slug: slugify(name) }} className="hover:underline">{name}</Link></li>))}</ul>)}
               </div>
             )}
             {menu === "price" && (
-              <ul className="grid max-w-md grid-cols-2 gap-2">{PRICE_BANDS.map((b) => (
+              <ul className="store-price-columns">{PRICE_BANDS.map((b) => (
                 <li key={b.id}><Link to="/shop-by-price" search={{ price: b.id }} className="hover:underline">{b.label}</Link></li>))}</ul>
             )}
             {menu === "kc" && (
-              <ul className="grid max-w-md grid-cols-2 gap-2">{["Artisan Mart", "Sales", "Product Download", "Shipping", "Closeouts", "FBA Sales", "Community Outreach"].map((x) => (
+              <ul className="store-price-columns">{["Artisan Mart", "Sales", "Product Download", "Shipping", "Closeouts", "FBA Sales", "Community Outreach"].map((x) => (
                 <li key={x}><Link to="/info/$page" params={{ page: slugify(x) }} className="hover:underline">{x}</Link></li>))}</ul>
             )}
           </div>
