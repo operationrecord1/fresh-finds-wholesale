@@ -33,8 +33,14 @@ export function ProductImage({ p, i = 0, className = "" }: { p: Product; i?: num
 }
 
 export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: Product) => void }) {
+  const [panelLeft, setPanelLeft] = useState(0);
+  const placePanel = (card: HTMLElement) => {
+    const rect = card.getBoundingClientRect();
+    const width = Math.min(304, window.innerWidth - 24);
+    setPanelLeft(Math.max(12, Math.min(rect.left + (rect.width - width) / 2, window.innerWidth - width - 12)) - rect.left);
+  };
   return (
-    <div className="store-product-card group relative flex h-full flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
+    <div onPointerEnter={e => placePanel(e.currentTarget)} onFocusCapture={e => placePanel(e.currentTarget)} className="store-product-card group relative flex h-full flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
       <Badges badges={p.badges} />
       <button onClick={() => onQuickView?.(p)} className="store-product-photo block w-full" aria-label={`Quick view ${p.title}`}>
         <ProductImage p={p} />
@@ -48,7 +54,7 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
       <button type="button" className="product-touch-action" onClick={() => onQuickView?.(p)}>View & order</button>
       {/* Kole Imports: hovering a card reveals a purchase box anchored below it (desktop only). */}
       {(
-        <div className="product-hover-panel">
+        <div className="product-hover-panel" style={{left:panelLeft, right:"auto", transform:"none"}}>
           <div className="product-hover-surface">
             <PurchasePanel p={p} compact />
             {p.rules && <p className="mt-2 text-center text-sm font-semibold">*Sold in Lots of {p.rules.lot}</p>}
