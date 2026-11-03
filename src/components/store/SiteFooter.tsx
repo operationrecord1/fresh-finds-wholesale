@@ -59,8 +59,8 @@ export function SiteFooter() {
       </div>
       <div className="footer-wrap footer-bottom">
         <p>© {new Date().getFullYear()} Artisan Market. All rights reserved.</p>
-        <nav aria-label="Legal"><FooterLink page="terms-of-sale">Terms of Sale</FooterLink><FooterLink page="privacy">Privacy Policy</FooterLink><FooterLink page="sitemap">Sitemap</FooterLink></nav>
-        <div className="footer-review-preview" aria-label="Customer reviews design preview, no verified rating"><div><strong>Artisan Market</strong><span className="footer-stars" aria-hidden="true">{Array.from({ length: 5 }, (_, i) => <Star key={i} size={15} fill="currentColor" />)}</span></div><span>Review preview · Not yet rated</span></div>
+        <nav aria-label="Legal"><FooterLink page="terms-of-sale">Terms of Sale</FooterLink><FooterLink page="privacy">Privacy Policy</FooterLink></nav>
+        <div className="footer-rating-preview" aria-label="Review badge design preview, 1.2K is sample data, not verified reviews"><div className="footer-rating-badge"><div className="footer-rating-emblem"><Star aria-hidden="true" fill="currentColor"/></div><div className="footer-rating-brand"><span>Artisan Mart</span><strong>CUSTOMER<br/>REVIEWS</strong></div></div><div className="footer-rating-caption"><span>1.2K Ratings</span><span aria-hidden="true">★★★★★</span></div><small>Design preview · Sample rating count</small></div>
       </div>
     </footer>
   );
