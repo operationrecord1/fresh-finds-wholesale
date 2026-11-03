@@ -191,3 +191,8 @@
   .store-home-panels section > div:first-child { gap:10px; font-size:18px; }
   .store-home-panels section > div:first-child a { font-size:15px; }
 }
+.store-account-links > a { flex-shrink: 0; white-space: nowrap; }
+@media (min-width: 1101px) and (max-width: 1535px) {
+  .store-account-links svg { width: 28px; height: 28px; }
+  .store-account-links { gap: 8px; }
+}
