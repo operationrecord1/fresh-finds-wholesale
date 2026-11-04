@@ -48,7 +48,7 @@ export function SiteFooter() {
             <h2 id="footer-newsletter-title"><Megaphone aria-hidden="true" size={23} /> Join Our Newsletter To Get Exclusives</h2>
             <Link to="/newsletter" className="footer-subscribe">Subscribe To Newsletter</Link>
             <div className="footer-social" aria-label="Social media">
-              <button type="button" aria-label="Facebook — coming soon" onClick={() => setNotice("Our Facebook page will be linked here soon.")}><Facebook fill="currentColor" aria-hidden="true" /></button>
+              <a href="https://www.facebook.com/profile.php?id=61593310559477" aria-label="Artisan Mart on Facebook" target="_blank" rel="noopener noreferrer"><Facebook fill="currentColor" aria-hidden="true" /></a>
               <button type="button" aria-label="X — coming soon" onClick={() => setNotice("Our X profile will be linked here soon.")}><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.5 22H2.3l8.2-9.4L.8 2h6.5l4.5 6.8L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z" /></svg></button>
             </div>
             {notice && <p className="footer-notice" role="status">{notice}<button type="button" aria-label="Dismiss social media notice" onClick={() => setNotice("")}><X size={16} /></button></p>}

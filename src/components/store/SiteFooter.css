@@ -78,3 +78,9 @@
 .footer-shortcuts a:nth-child(2)>svg{color:#58882b;background:#f0f6e9;border-color:#deebd1}
 .footer-shortcuts a:nth-child(3)>svg{color:#245675;background:#edf2f7;border-color:#dce5ed}
 @media(max-width:600px){.footer-shortcuts a:nth-child(-n+3)>svg{width:26px;height:26px;padding:9px;border-radius:12px}}
+
+.footer-social>a{display:grid;place-items:center;background:#4267a9;color:white;width:44px;height:44px;border-radius:50%;text-decoration:none}.footer-social>a:hover{filter:brightness(.85)}
+.footer-shortcuts a:nth-child(4){border-radius:14px;transition:background-color .16s,box-shadow .16s,transform .16s}
+@media(hover:hover){.footer-shortcuts a:nth-child(4):hover{background:#edf7fb;box-shadow:0 5px 16px #19344112,inset 0 0 0 1px #89bfd6;transform:translateY(-2px);text-decoration:none}}
+.footer-shortcuts a:nth-child(4):focus-visible{outline:3px solid #008fc5;outline-offset:3px;border-radius:14px}
+@media(prefers-reduced-motion:reduce){.footer-shortcuts a:nth-child(4){transition:none;transform:none}}
