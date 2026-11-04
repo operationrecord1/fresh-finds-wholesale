@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
 import { PRICE_BANDS, type Product, type Badge } from "@/data/catalog";
 import { ProductCard } from "./ProductCard";
 import { QuickView } from "./LazyQuickView";
@@ -28,6 +28,7 @@ function sortProducts(list: Product[], sort: string) {
 
 
 export function ProductListing({ products, banner, defaultSort = "position", initialPrice }: { products: Product[]; banner: ReactNode; defaultSort?: string; initialPrice?: string | undefined }) {
+  const filterId = useId();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sort, setSort] = useState(defaultSort);
   const [price, setPrice] = useState<string | null>(initialPrice ?? null);
@@ -50,8 +51,8 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
 
   return (
     <div className="store-container store-listing py-4">
-      <button type="button" className="rounded border bg-card px-4 py-3 text-left font-semibold md:hidden" aria-expanded={filtersOpen} aria-controls="catalog-filters" onClick={() => setFiltersOpen(!filtersOpen)}>Sort & filters {filtersOpen ? "−" : "+"}</button>
-      <aside id="catalog-filters" className={`${filtersOpen ? "block" : "hidden"} space-y-4 md:block`}>
+      <button type="button" className="rounded border bg-card px-4 py-3 text-left font-semibold md:hidden" aria-expanded={filtersOpen} aria-controls={filterId} onClick={() => setFiltersOpen(!filtersOpen)}>Sort & filters {filtersOpen ? "−" : "+"}</button>
+      <aside id={filterId} className={`${filtersOpen ? "block" : "hidden"} space-y-4 md:block`}>
         <div className="rounded bg-card p-3">
           <select aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value)} className="w-full bg-transparent py-2 text-base">
             {SORTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}

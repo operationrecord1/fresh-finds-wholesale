@@ -1,8 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { getProduct } from "@/data/catalog";
+import type { PurchaseRules } from "@/data/catalog";
 import { normalizePieces, stepUp, casesToPieces, lineTotal, meetsMinimum } from "./wholesale";
 
-const r = (sku: string) => getProduct(sku)!.rules!;
+// Stable unit fixtures keep arithmetic tests independent of supplier inventory changes.
+const fixtures: Record<string, PurchaseRules> = {
+ AW213: {lot:9,moq:36,caseQty:36,physicalCase:9,innerPack:1},
+ MT500: {lot:24,moq:24,caseQty:144,physicalCase:144,innerPack:24},
+ AA636: {lot:6,moq:66,caseQty:66,physicalCase:48,innerPack:6},
+ CB163: {lot:3,moq:3,caseQty:8,physicalCase:8,innerPack:1},
+};
+const r = (sku: string) => fixtures[sku]!;
 
 describe("wholesale rules from research report", () => {
   it("AW213 defaults to 36 pieces = $28.44", () => {

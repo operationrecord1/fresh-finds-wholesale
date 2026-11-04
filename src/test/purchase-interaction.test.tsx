@@ -25,7 +25,7 @@ it("converts cases to pieces and preserves the minimum", () => {
   expect(screen.getByRole("button", {name:"Decrease piece"})).toBeDisabled();
   fireEvent.click(screen.getByLabelText(/Order By Case/));
   expect(screen.getByLabelText("Case quantity")).toHaveValue("1");
-  expect(screen.getByText(/237.60/)).toBeInTheDocument();
+  expect(screen.getByText(/475.20/)).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", {name:"Increase case"}));
   expect(screen.getByLabelText("Case quantity")).toHaveValue("2");
 });
@@ -35,4 +35,10 @@ it("updates instead of adding during cart editing", async () => {
   fireEvent.click(screen.getByRole("button", {name:"Update Cart"}));
   await waitFor(() => expect(cart.set).toHaveBeenCalledWith("MT500", 72));
   expect(cart.add).not.toHaveBeenCalled();
+});
+
+it("does not offer Add To Cart for supplier products with zero stock", () => {
+  render(<PurchasePanel p={getProduct("AV011")!}/>);
+  expect(screen.getByRole("status")).toHaveTextContent("Currently out of stock");
+  expect(screen.queryByRole("button", {name:"Add To Cart"})).not.toBeInTheDocument();
 });

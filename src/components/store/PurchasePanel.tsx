@@ -17,6 +17,7 @@ export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart",
   const submitting = useRef(false);
   const [submitted, setSubmitted] = useState(false);
   if (!r || p.price == null) return <p className="purchase-unavailable">Purchasing is unavailable until the price and order quantities are verified.</p>;
+  if (p.stock === 0) return <p className="purchase-unavailable" role="status">Currently out of stock.</p>;
   const value = Number(mode === "piece" ? pieces : cases);
   const qty = mode === "piece" ? value : value * r.caseQty;
   const existing = initialPieces == null ? lines.find(l => l.sku === p.sku)?.pieces ?? 0 : 0;
