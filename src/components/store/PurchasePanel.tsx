@@ -10,9 +10,9 @@ export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart",
   const r = p.rules;
   const { add, set, lines } = useCart();
   const id = useId();
-  const [mode, setMode] = useState<BuyMode>("piece");
+  const [mode, setMode] = useState<BuyMode>(initialPieces != null && r && initialPieces % r.caseQty === 0 && (lines.find(l => l.sku === p.sku)?.mode === "case" || initialPieces % r.lot !== 0) ? "case" : "piece");
   const [pieces, setPieces] = useState(String(initialPieces ?? (r ? normalizePieces(0, r) : 0)));
-  const [cases, setCases] = useState("1");
+  const [cases, setCases] = useState(String(initialPieces != null && r && initialPieces % r.caseQty === 0 ? initialPieces / r.caseQty : 1));
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);
   const [submitted, setSubmitted] = useState(false);
@@ -35,7 +35,7 @@ export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart",
     // Allow the pending state to paint before committing the local cart action.
     requestAnimationFrame(() => {
       try {
-        if (initialPieces != null) set(p.sku, qty); else add(p.sku, qty);
+        if (initialPieces != null) set(p.sku, qty, mode); else add(p.sku, qty, mode);
         toast.success(`${p.sku} ${initialPieces != null ? "updated" : "added to cart"} (${qty} pcs)`);
         onDone?.();
       } finally { submitting.current = false; setBusy(false); }

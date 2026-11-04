@@ -1,10 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Phone, Search, ShoppingCart, ChevronDown, ChevronLeft, ChevronRight, Megaphone, AlertTriangle } from "lucide-react";
+import { Phone, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone, AlertTriangle } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
-import { useCart } from "@/lib/cart";
+import { MiniCart } from "./MiniCart";
 
 export function SiteHeader() {
   const [q, setQ] = useState("");
@@ -94,7 +94,6 @@ export function SiteHeader() {
     return () => { window.removeEventListener("resize", position); viewport?.removeEventListener("scroll", position); };
   }, [menu]);
   const nav = useNavigate();
-  const { lines } = useCart();
   const toggle = (m: typeof menu) => setMenu(menu === m ? null : m);
   const cols = Array.from({ length: 7 }, (_, i) => CATEGORIES.slice(i * 5, i * 5 + 5));
 
@@ -140,7 +139,7 @@ export function SiteHeader() {
           </div>
           <div className="store-account-links leading-tight">
             <Link to="/login">Login Or <br />Register</Link>
-            <Link to="/cart" className="store-cart-button" aria-label={`Shopping cart, ${lines.length} products`}><span className="store-cart-icon"><ShoppingCart aria-hidden="true"/><b>{lines.length}</b></span><span>Cart</span></Link>
+            <MiniCart />
             <Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
           </div>
         </div>

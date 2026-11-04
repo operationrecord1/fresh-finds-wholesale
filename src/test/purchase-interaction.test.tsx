@@ -18,7 +18,7 @@ it("keeps keyboard input focused, rejects an incomplete lot, and adds a valid or
   expect(screen.getByRole("alert")).toHaveTextContent("24 or 48");
   fireEvent.change(input, {target:{value:"48"}});
   fireEvent.click(screen.getByRole("button", {name:"Add To Cart"}));
-  await waitFor(() => expect(cart.add).toHaveBeenCalledWith("MT500", 48));
+  await waitFor(() => expect(cart.add).toHaveBeenCalledWith("MT500", 48, "piece"));
 });
 it("converts cases to pieces and preserves the minimum", () => {
   render(<PurchasePanel p={getProduct("MT500")!}/>);
@@ -33,7 +33,7 @@ it("updates instead of adding during cart editing", async () => {
   render(<PurchasePanel p={getProduct("MT500")!} initialPieces={48} label="Update Cart"/>);
   fireEvent.click(screen.getByRole("button", {name:"Increase piece"}));
   fireEvent.click(screen.getByRole("button", {name:"Update Cart"}));
-  await waitFor(() => expect(cart.set).toHaveBeenCalledWith("MT500", 72));
+  await waitFor(() => expect(cart.set).toHaveBeenCalledWith("MT500", 72, "piece"));
   expect(cart.add).not.toHaveBeenCalled();
 });
 
