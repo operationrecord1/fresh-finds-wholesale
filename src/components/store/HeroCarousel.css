@@ -1,26 +1,10 @@
-.merch-hero { position:relative; isolation:isolate; overflow:hidden; border-radius:16px; min-height:380px; background:#102a44; color:white; touch-action:pan-y; }
-.merch-hero-image { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 52%; z-index:-2; }
-.merch-hero-shade { position:absolute; inset:0; background:linear-gradient(90deg,#0a2445 0%,#0a2445f0 28%,#0a244575 52%,transparent 75%); z-index:-1; }
-.merch-hero-copy { padding:48px 70px 65px; width:54%; max-width:680px; }
-.merch-eyebrow { color:#a8d95c; letter-spacing:2px; font-size:12px; font-weight:700; }
-.merch-hero h2 { margin:12px 0; font-size:clamp(30px,3.2vw,48px); line-height:1.08; font-weight:800; text-wrap:balance; }
-.merch-hero-copy > p:not(.merch-eyebrow) { font-size:16px; line-height:1.6; color:#dce8f1; max-width:350px; }
-.merch-hero-copy > a { display:inline-flex; align-items:center; gap:12px; margin-top:22px; padding:12px 18px; border-radius:7px; background:#fff; color:#123b55; font-weight:700; }
-.merch-arrow { position:absolute; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:40px; height:48px; border-radius:8px; background:#fffef5e8; color:#123b55; }
-.merch-prev {left:12px}.merch-next {right:12px}
-.merch-dots { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; }
-.merch-dots button { width:40px; height:36px; display:grid; place-items:center; }
+.merch-hero { position:relative; overflow:hidden; border-radius:16px; background:#102a44; touch-action:pan-y; }
+.merch-hero-image { display:block; width:100%; height:auto; aspect-ratio:3/1; object-fit:contain; }
+.merch-arrow { position:absolute; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:32px; height:44px; border-radius:6px; background:#ffffffdf; color:#123b55; box-shadow:0 1px 6px #102a4433; }
+.merch-prev {left:4px}.merch-next {right:4px}
+.merch-dots { position:absolute; bottom:0; left:50%; transform:translateX(-50%); display:flex; background:#102a4499; border-radius:12px 12px 0 0; }
+.merch-dots button { width:40px; height:24px; display:grid; place-items:center; }
 .merch-dots span { width:9px; height:9px; background:#ffffff80; border:1px solid white; border-radius:20px; }
 .merch-dots button[aria-pressed=true] span { width:25px; background:white; }
-.merch-hero :focus-visible { outline:3px solid #a8d95c; outline-offset:3px; }
-@media(max-width:767px) { .merch-arrow {display:none} .merch-hero {min-height:440px} .merch-hero-image {object-position:65% bottom; height:62%; top:auto;} .merch-hero-shade {background:linear-gradient(180deg,#0a2445 0%,#0a2445 34%,#0a244580 60%,transparent 85%)} .merch-hero-copy {width:100%; max-width:480px; padding:26px 24px 150px} .merch-hero h2 {font-size:30px;max-width:320px} .merch-hero-copy > p:not(.merch-eyebrow) {font-size:14px;max-width:290px} .merch-hero-copy > a {margin-top:14px;padding:10px 14px;font-size:13px} }
-
-/* Shorter banner: 380 -> 260px desktop, 440 -> 300px mobile. */
-.merch-hero { min-height:260px; height:260px; }
-.merch-hero-copy {padding:22px 66px 38px;width:58%;max-width:720px}
-.merch-eyebrow {font-size:11px;letter-spacing:1.5px}
-.merch-hero h2 {font-size:clamp(26px,2.5vw,36px);margin:8px 0;line-height:1.08}
-.merch-hero-copy > p:not(.merch-eyebrow) {font-size:14px;line-height:1.4;max-width:420px}
-.merch-hero-copy > a {margin-top:12px;padding:9px 14px;font-size:14px}
-.merch-dots {bottom:0}
-@media(max-width:767px) { .merch-hero {min-height:300px;height:300px} .merch-hero-copy {width:100%;padding:20px 20px 36px;max-width:420px} .merch-hero h2 {font-size:26px;max-width:290px} .merch-hero-copy > p:not(.merch-eyebrow) {font-size:13px;max-width:270px} .merch-hero-copy > a {font-size:13px;margin-top:10px} .merch-hero-image {height:65%} .merch-hero-shade {background:linear-gradient(110deg,#0a2445 0%,#0a2445e8 40%,#0a244550 80%,transparent)} }
+.merch-hero :focus-visible { outline:3px solid #8dc63f; outline-offset:-3px; }
+@media(max-width:1024px) { .merch-hero {display:none} }
