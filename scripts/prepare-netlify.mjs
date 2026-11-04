@@ -6,9 +6,13 @@ await copyFile(`${dir}/_shell.html`, `${dir}/index.html`);
 await writeFile(`${dir}/_redirects`, "/* /index.html 200\n");
 console.log("Netlify static site ready in dist/client");
 
-// Allow only our own build's inline bootstrap scripts, never arbitrary inline code.
-const html = await readFile(`${dir}/index.html`, "utf8");
-const hashes = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
-  .filter(([, attributes, body]) => !/\bsrc\s*=/i.test(attributes) && body.trim())
-  .map(([, , body]) => `'sha256-${createHash("sha256").update(body).digest("base64")}'`);
-await writeFile(`${dir}/_headers`, `/*\n  Content-Security-Policy: script-src 'self' ${[...new Set(hashes)].join(" ")}; object-src 'none'; base-uri 'self'\n`);
+// Externalize the generated bootstrap so CSP does not permit arbitrary inline code.
+let html = await readFile(`${dir}/index.html`, "utf8");
+for (const [tag, attributes, body] of [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]) {
+  if (/\bsrc\s*=/i.test(attributes) || !body.trim()) continue;
+  const name = `bootstrap-${createHash("sha256").update(body).digest("hex").slice(0,16)}.js`;
+  await writeFile(`${dir}/assets/${name}`, body);
+  html = html.replace(tag, `<script${attributes} src="/assets/${name}"></script>`);
+}
+await writeFile(`${dir}/index.html`, html);
+await writeFile(`${dir}/_headers`, "/*\n  Content-Security-Policy: script-src 'self'; object-src 'none'; base-uri 'self'\n");
