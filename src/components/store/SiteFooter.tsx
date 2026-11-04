@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Store, Heart, BriefcaseBusiness, Phone, Megaphone, Facebook, ChevronDown, ArrowUp, X } from "lucide-react";
+import { Boxes, HandHeart, BriefcaseBusiness, Phone, Megaphone, Facebook, ChevronDown, ArrowUp, X } from "lucide-react";
 import "./SiteFooter.css";
 
 const shortcuts = [
-  { title: "Industries Served", page: "industries-served", icon: Store },
-  { title: "Artisan Cares", page: "community-outreach", icon: Heart },
+  { title: "Industries Served", page: "industries-served", icon: Boxes },
+  { title: "Artisan Cares", page: "community-outreach", icon: HandHeart },
   { title: "Career Opportunities", page: "careers", icon: BriefcaseBusiness },
   { title: "Contact Us", page: "contact", icon: Phone },
 ];
@@ -37,7 +37,7 @@ export function SiteFooter() {
             <address>7901 4TH ST N, STE 18005<br />ST. PETERSBURG, FL 33702, US</address>
             
             
-            <div className="footer-contact-links"><p>Customer Service: <a href="https://email.artisanmart.com">email.artisanmart.com</a></p><p>Sell Closeouts: <a href="mailto:offer@artisanmart.com">offer@artisanmart.com</a></p></div>
+            <div className="footer-contact-links"><p>Customer Service: <a href="mailto:email@artisanmart.site">email@artisanmart.site</a></p><p>Sell Closeouts: <a href="mailto:offer@artisanmart.site">offer@artisanmart.site</a></p></div>
           </section>
           <section className="footer-about" aria-label="About Us">
             <h2 className="footer-desktop-heading">About Us</h2>

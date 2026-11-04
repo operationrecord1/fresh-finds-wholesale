@@ -3,3 +3,17 @@ html:has(.about-page){scroll-behavior:smooth}.about-page{max-width:1452px;margin
 @media(max-width:760px){.about-page{padding:20px}.about-layout{grid-template-columns:1fr;gap:28px}.about-nav{position:static;display:grid;grid-template-columns:1fr 1fr}.about-nav a{min-height:52px;font-size:13px}.about-nav a>svg{width:22px;height:22px}.about-section{scroll-margin-top:20px;padding-bottom:32px;margin-bottom:32px}.about-section .about-lead{font-size:17px}.about-section p{font-size:14px}.about-breadcrumb{margin-bottom:22px}}
 @media(max-width:480px){.about-page{padding:18px 16px}.about-industry-grid{grid-template-columns:1fr}.about-care-panel{align-items:flex-start;padding:20px;gap:14px}.about-care-panel>svg{width:30px;height:30px}.about-brand-panel{min-height:190px}.about-guide,.about-industry{padding:20px}}
 @media(prefers-reduced-motion:reduce){html:has(.about-page){scroll-behavior:auto}}
+
+/* Scoped to the two wholesale sections. */
+:is(#industries-served,#careers) .distribution-intro{padding:32px;border-radius:16px;background:linear-gradient(120deg,#edf7fb,#f4f8ee);border:1px solid #dce8ed}
+:is(#industries-served,#careers) .distribution-intro h2{text-align:left;margin:12px 0;font-size:clamp(25px,3vw,34px);color:#143e54}
+:is(#industries-served,#careers) .distribution-intro .about-lead{text-align:left;margin:0 0 16px;color:#177c9f}
+.distribution-eyebrow{font-size:11px;font-weight:700;letter-spacing:.13em;color:#22748f}
+.distribution-heading{margin-top:30px}.distribution-heading p{margin-top:4px}
+.distribution-blocks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}
+.distribution-blocks article{padding:22px;background:#fff;border:1px solid #dfe8ec;border-top:3px solid #1689b6;border-radius:10px}
+.distribution-blocks p{margin-bottom:0}.distribution-note{padding:26px;margin-top:24px;border-left:3px solid #89bd3f;background:#f1f6f8;border-radius:0 12px 12px 0}
+.distribution-values{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:18px}.distribution-values strong,.distribution-values span{display:block}.distribution-values span{font-size:15px;color:#52636b}
+.distribution-openings{border-top:3px solid #89bd3f}
+@media(max-width:1100px){.distribution-blocks{grid-template-columns:1fr}}
+@media(max-width:600px){:is(#industries-served,#careers) .distribution-intro{padding:22px}.distribution-note,.distribution-blocks article{padding:20px}}

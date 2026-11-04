@@ -72,3 +72,9 @@
 .footer-shortcuts a:nth-child(-n+3):active { background:#dceef6; transform:translateY(0); }
 @media(max-width:600px) { .footer-shortcuts a:nth-child(-n+3) { min-height:104px; padding:14px 8px; font-size:13px; } }
 @media(prefers-reduced-motion:reduce) { .footer-shortcuts a:nth-child(-n+3) { transition:none; transform:none; } }
+
+/* Consistent icon treatment for the first three shortcuts only. */
+.footer-shortcuts a:nth-child(-n+3)>svg{box-sizing:content-box;width:30px;height:30px;padding:12px;border-radius:14px;stroke-width:1.8;fill:none;color:#117da5;background:#eaf5fa;border:1px solid #d5eaf3}
+.footer-shortcuts a:nth-child(2)>svg{color:#58882b;background:#f0f6e9;border-color:#deebd1}
+.footer-shortcuts a:nth-child(3)>svg{color:#245675;background:#edf2f7;border-color:#dce5ed}
+@media(max-width:600px){.footer-shortcuts a:nth-child(-n+3)>svg{width:26px;height:26px;padding:9px;border-radius:12px}}
