@@ -1,12 +1,23 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Phone, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone, AlertTriangle } from "lucide-react";
+import { MoreHorizontal, Phone, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone, AlertTriangle } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
 import { MiniCart } from "./MiniCart";
 
 export function SiteHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const mobileToggle = useRef<HTMLButtonElement>(null);
+  const mobilePanel = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const outside = (e: PointerEvent) => { if (!mobilePanel.current?.contains(e.target as Node) && !mobileToggle.current?.contains(e.target as Node)) setMobileOpen(false); };
+    const escape = (e: KeyboardEvent) => { if (e.key === "Escape") { setMobileOpen(false); mobileToggle.current?.focus(); } };
+    const resize = () => { if (window.innerWidth > 1024) setMobileOpen(false); };
+    document.addEventListener("pointerdown", outside); document.addEventListener("keydown", escape); window.addEventListener("resize", resize);
+    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); window.removeEventListener("resize", resize); };
+  }, [mobileOpen]);
   const [q, setQ] = useState("");
   const [menu, updateMenu] = useState<null | "cat" | "price" | "kc">(null);
   const activeMenu = useRef<typeof menu>(null);
@@ -103,6 +114,7 @@ export function SiteHeader() {
         <AlertTriangle className="mr-1 inline h-5 w-5 -translate-y-0.5" /> 8% OFF $1,000+ ORDERS W/ CODE: VIP8
       </div>
       <div className="store-header-layout">
+        <button ref={mobileToggle} className="store-mobile-menu-toggle" type="button" aria-label="Browse products menu" aria-expanded={mobileOpen} aria-controls="store-mobile-menu" onClick={() => { setMobileOpen(!mobileOpen); setMenu(null); }}><MoreHorizontal aria-hidden="true" /></button>
         <Link to="/cart" className="store-minimum bg-gradient-to-b from-minimum to-minimum-deep text-center font-bold text-primary-foreground">
           Minimum <br />Order Amount <br /> $500
         </Link>
@@ -138,12 +150,17 @@ export function SiteHeader() {
 
           </div>
           <div className="store-account-links leading-tight">
-            <Link to="/login">Login Or <br />Register</Link>
+            <Link to="/login" className="store-login-link"><span className="store-login-desktop">Login Or <br />Register</span><span className="store-login-mobile">Login</span></Link>
             <MiniCart />
             <Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
           </div>
         </div>
       </div>
+      {mobileOpen && <nav ref={mobilePanel} id="store-mobile-menu" className="store-mobile-menu" aria-label="Browse products" onClick={e => { if ((e.target as HTMLElement).closest('a')) setMobileOpen(false); }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node) && e.relatedTarget !== mobileToggle.current) setMobileOpen(false); }}>
+        <details><summary>Categories</summary><div>{CATEGORIES.map(name => <Link key={name} to="/category/$slug" params={{slug:slugify(name)}}>{name}</Link>)}</div></details>
+        <details><summary>Shop By Price</summary><div>{PRICE_BANDS.map(b => <Link key={b.id} to="/shop-by-price" search={{price:b.id}}>{b.label}</Link>)}</div></details>
+        {([['imports','Imports'],['closeouts','Closeouts'],['best-sellers','Best Sellers'],['reduced-price','Reduced Price'],['new-arrivals','New Arrivals']] as const).map(([slug,label]) => <Link key={slug} to="/collection/$slug" params={{slug}}>{label}</Link>)}
+      </nav>}
       {menu && (
         <div ref={dropdown} id="store-dropdown" className={`store-dropdown store-dropdown-${menu}`} style={{ left: anchor.left, top: anchor.top, width: anchor.width }} onClick={() => setMenu(null)}>
           <div className="store-dropdown-surface">
