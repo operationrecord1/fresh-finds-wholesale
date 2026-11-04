@@ -104,7 +104,7 @@ export function SiteHeader() {
       </div>
       <div className="store-header-layout">
         <Link to="/cart" className="store-minimum bg-gradient-to-b from-minimum to-minimum-deep text-center font-bold text-primary-foreground">
-          Minimum <br />Order Amount <br />$500
+          Minimum <br />Order Amount <br /> $500
         </Link>
 
         <div className="store-brand-contact">
