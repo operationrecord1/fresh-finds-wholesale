@@ -94,7 +94,7 @@ export function SiteHeader() {
       const h = header.current?.getBoundingClientRect();
       const trigger = ({ cat: catTrigger, price: priceTrigger, kc: kcTrigger }[menu]).current?.getBoundingClientRect();
       if (!h) return;
-      const width = Math.min(menu === "cat" ? 1100 : 370, h.width - 24);
+      const width = Math.min(menu === "cat" ? 1100 : menu === "kc" ? (trigger?.width ?? 160) : 370, h.width - 24);
       const left = Math.max(12, Math.min((trigger?.left ?? h.left + 12) - h.left, h.width - width - 12));
       setAnchor({ left, top: (trigger?.bottom ?? h.bottom) - h.top, width });
     };
