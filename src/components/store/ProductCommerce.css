@@ -1,7 +1,7 @@
 .product-hover-panel {display:none;position:absolute;z-index:40;top:100%;left:50%;width:304px;max-width:calc(100vw - 24px);transform:translateX(-50%);padding-top:4px;text-align:left}
 .product-hover-surface {background:#e7e7e7;border:1px solid #d4d4d4;border-radius:8px;padding:12px;box-shadow:0 8px 20px #0002}
 .product-touch-action {margin-top:12px;padding:10px;border:1px solid #0093d3;border-radius:5px;color:#0076aa;font-weight:600}
-@media(hover:hover) and (min-width:1024px) {
+@media(hover:hover) and (min-width:1025px) {
  .store-product-card:hover .product-hover-panel,.store-product-card:focus-within .product-hover-panel {display:block}
  .product-touch-action {display:none}
  .store-product-card:first-child .product-hover-panel {left:0;transform:none}
@@ -83,9 +83,14 @@
 .purchase-compact .purchase-error {margin:8px}
 .store-product-card[data-purchase-open=true] {z-index:40}
 .store-product-card[data-purchase-open=true] .product-hover-panel {display:block}
-@media(hover:none),(max-width:1023px) {
+@media(hover:none),(max-width:1024px) {
  .product-touch-action {min-height:44px}
  .purchase-compact .purchase-stepper > div {grid-template-columns:46px 44px;grid-template-rows:44px 44px;height:88px}
  .purchase-compact .purchase-stepper input {width:46px}
  .purchase-compact .purchase-stepper button {width:44px;height:44px}
 }
+
+/* Touch controls remain reachable in narrow and landscape viewports. */
+.product-modal-close { width:44px; height:44px; top:2px; left:6px; }
+.purchase-option label { min-width:0; overflow-wrap:anywhere; }
+@media(max-width:360px) { .purchase-option { flex-wrap:wrap; } .purchase-stepper { margin-left:auto; } }

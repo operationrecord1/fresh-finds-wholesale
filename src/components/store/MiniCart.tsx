@@ -26,7 +26,7 @@ export function MiniCart() {
     if (!open) return;
     const place = () => {
       const rect = trigger.current?.getBoundingClientRect();
-      if (rect) setPosition({top: Math.min(rect.bottom + 6, window.innerHeight - 160), right: Math.max(12, window.innerWidth - rect.right)});
+      if (rect) setPosition({top: Math.max(12, Math.min(rect.bottom + 6, window.innerHeight - 160)), right: Math.min(Math.max(12, window.innerWidth - rect.right), Math.max(12, window.innerWidth - Math.min(440, window.innerWidth - 24) - 12))});
     };
     const outside = (e: PointerEvent) => {
       if (!trigger.current?.contains(e.target as Node) && !panel.current?.contains(e.target as Node)) close();

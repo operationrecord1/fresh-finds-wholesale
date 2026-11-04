@@ -227,3 +227,13 @@
 .store-dropdown-kc .store-dropdown-surface { padding:10px 12px; }
 .store-dropdown-kc .store-price-columns { grid-template-columns:minmax(0,1fr); gap:0; }
 .store-dropdown-kc a { min-height:36px; display:flex; align-items:center; padding:6px 0; }
+
+/* Separate first-row tracks prevent the brand and phone from overlapping. */
+@media(max-width:1024px) {
+ .store-brand-contact { grid-column:1/3; width:100%; overflow:hidden; }
+ .store-brand-name { font-size:clamp(18px,3.5vw,28px); }
+ .store-call-button { grid-column:3/5; max-width:100%; white-space:normal; text-align:right; }
+ .store-call-button strong { font-size:11px; line-height:1.4; overflow-wrap:anywhere; }
+ .store-search input { text-overflow:ellipsis; }
+ .store-mobile-menu a:focus-visible,.store-mobile-menu summary:focus-visible { outline-offset:-2px; }
+}

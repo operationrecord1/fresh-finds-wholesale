@@ -1,5 +1,5 @@
 .cart-confirm-overlay {position:fixed;inset:0;background:#0006;z-index:200;animation:cart-fade .14s ease-out}
-.cart-confirm {position:fixed;z-index:201;top:50%;left:50%;transform:translate(-50%,-50%);width:min(360px,calc(100vw - 32px));border-radius:12px;background:#fff;box-shadow:0 20px 70px #0003;text-align:center;overflow:hidden;animation:cart-fade .14s ease-out;color:#163f53}
+.cart-confirm {position:fixed;z-index:201;top:50%;left:50%;transform:translate(-50%,-50%);width:min(360px,calc(100vw - 32px));border-radius:12px;background:#fff;box-shadow:0 20px 70px #0003;text-align:center;max-height:calc(100dvh - 24px);overflow:auto;animation:cart-fade .14s ease-out;color:#163f53}
 .cart-confirm h2 {font-size:20px;font-weight:700;padding:24px 20px 8px}
 .cart-confirm p {font-size:14px;line-height:1.5;color:#657581;padding:0 22px 22px;overflow-wrap:anywhere}
 .cart-confirm-actions {display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #d6e0e5}
