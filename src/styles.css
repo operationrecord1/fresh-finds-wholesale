@@ -182,3 +182,23 @@
  .store-home-products .store-product-card > .absolute span { padding-inline:6px; font-size:10px; }
  .store-home-title { font-size:clamp(20px,5vw,28px); }
 }
+
+.product-mobile-buy-label { display:none; }
+/* Mobile homepage only: blend collection titles into the page and separate cards. */
+@media (max-width:600px) {
+ .store-home-panels { row-gap:18px; }
+ .store-home-panels > section { background:transparent; border-radius:0; }
+ .store-home-panels section > div:first-child { background:transparent; border-radius:0; min-height:64px; padding:8px 0 10px; font-size:clamp(16px,4.4vw,22px); }
+ .store-home-panels section > div:first-child h2 { text-transform:capitalize; }
+ .store-home-panels [data-collection="new-arrivals"] h2 { color:var(--color-sec-new); }
+ .store-home-panels [data-collection="best-sellers"] h2 { color:var(--color-sec-best); }
+ .store-home-panels [data-collection="reduced-price"] h2 { color:var(--color-sec-reduced); }
+ .store-home-panels [data-collection="closeouts"] h2 { color:var(--color-sec-closeout); }
+ .store-home-panels section > div:first-child a { color:#777; font-size:13px; font-weight:400; }
+ .store-home-products { padding:0; }
+ .store-home-products .store-product-card { border-radius:20px; padding:10px 8px 16px; }
+ .store-home-products .store-product-card > a { font-size:14px; line-height:1.2; }
+ .store-home-products .product-touch-action { display:inline-flex; align-items:center; justify-content:center; align-self:center; max-width:100%; min-height:44px; margin-top:16px; padding:8px 20px; border:0; border-radius:999px; background:#0097c9; color:white; font-family:var(--font-display); font-size:20px; font-weight:700; line-height:1.1; text-transform:uppercase; }
+ .store-home-products .product-order-label { display:none; }
+ .store-home-products .product-mobile-buy-label { display:inline; }
+}

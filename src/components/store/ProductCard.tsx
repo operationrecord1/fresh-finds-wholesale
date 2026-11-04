@@ -65,7 +65,7 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
       <div className="mt-3 font-arial text-xs font-bold">Item # {p.sku}</div>
       <div className="font-arial text-sm">Qty Avail: {p.stock != null ? p.stock.toLocaleString() : "—"}</div>
       <button type="button" onClick={() => onQuickView?.(p)} className="mt-3 font-arial text-lg font-bold text-price" aria-label={`Quick view price for ${p.title}`}>Price: {p.price != null ? money(p.price) : "—"}</button>
-      <button type="button" className="product-touch-action" aria-expanded={expanded} aria-controls={panelId} onClick={() => { if (card.current) placePanel(card.current); setExpanded(!expanded); }}>{expanded ? "Close order options" : "Order options"}</button>
+      <button type="button" className="product-touch-action" aria-expanded={expanded} aria-controls={panelId} onClick={() => { if (card.current) placePanel(card.current); setExpanded(!expanded); }}><span className="product-order-label">{expanded ? "Close order options" : "Order options"}</span><span className="product-mobile-buy-label">{expanded ? "Close" : "Buy Now"}</span></button>
       {/* Kole Imports: hovering a card reveals a purchase box anchored below it (desktop only). */}
       {(
         <div id={panelId} className="product-hover-panel" style={{left:panelLeft, right:"auto", transform:"none"}}>
