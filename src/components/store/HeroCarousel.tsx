@@ -5,7 +5,7 @@ import "./HeroCarousel.css";
 const slides = [
   { title: "Real conversations. Better sourcing.", alt: "Artisan Mart. Real conversations. Better sourcing. General merchandise for retailers and resellers.", image: 1 },
   { title: "More categories. One source.", alt: "Artisan Mart. More categories. One source. A broad assortment for your business: home, tech, tools, toys and pet supplies.", image: 2 },
-  { title: "Built around your business.", alt: "Artisan Mart. Built around your business. Wholesale sourcing. Broader possibilities. For retailers, resellers and growing businesses.", image: 3 },
+  { title: "Wholesale for every aisle.", alt: "Artisan Mart. Wholesale for every aisle. General merchandise for retailers and resellers.", image: 3 },
 ];
 
 export function HeroCarousel() {

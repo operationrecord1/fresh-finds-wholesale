@@ -1,4 +1,4 @@
-.merch-hero { position:relative; overflow:hidden; border-radius:16px; background:#102a44; touch-action:pan-y; }
+.merch-hero { width:70%; margin-inline:auto; position:relative; overflow:hidden; border-radius:16px; background:#102a44; touch-action:pan-y; }
 .merch-hero-image { display:block; width:100%; height:auto; aspect-ratio:3/1; object-fit:contain; }
 .merch-arrow { position:absolute; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:32px; height:44px; border-radius:6px; background:#ffffffdf; color:#123b55; box-shadow:0 1px 6px #102a4433; }
 .merch-prev {left:4px}.merch-next {right:4px}
