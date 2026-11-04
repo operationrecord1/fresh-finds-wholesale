@@ -84,3 +84,8 @@
 @media(hover:hover){.footer-shortcuts a:nth-child(4):hover{background:#edf7fb;box-shadow:0 5px 16px #19344112,inset 0 0 0 1px #89bfd6;transform:translateY(-2px);text-decoration:none}}
 .footer-shortcuts a:nth-child(4):focus-visible{outline:3px solid #008fc5;outline-offset:3px;border-radius:14px}
 @media(prefers-reduced-motion:reduce){.footer-shortcuts a:nth-child(4){transition:none;transform:none}}
+
+/* Match the contact shortcut's geometry without changing its plain appearance. */
+.footer-shortcuts a:nth-child(4){padding:18px 12px;border:1px solid transparent;font-weight:600}
+.footer-shortcuts a:nth-child(4)>svg{box-sizing:content-box;width:30px;height:30px;padding:12px;border:1px solid transparent;flex-shrink:0}
+@media(max-width:600px){.footer-shortcuts a:nth-child(4){min-height:104px;padding:14px 8px;font-size:13px}.footer-shortcuts a:nth-child(4)>svg{width:26px;height:26px;padding:9px}}
