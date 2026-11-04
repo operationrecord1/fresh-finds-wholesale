@@ -14,5 +14,6 @@ for (const [tag, attributes, body] of [...html.matchAll(/<script\b([^>]*)>([\s\S
   await writeFile(`${dir}/assets/${name}`, body);
   html = html.replace(tag, `<script${attributes} src="/assets/${name}"></script>`);
 }
+html = html.replace("<head>", `<head><meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'none'; base-uri 'self'">`);
 await writeFile(`${dir}/index.html`, html);
 await writeFile(`${dir}/_headers`, "/*\n  Content-Security-Policy: script-src 'self'; object-src 'none'; base-uri 'self'\n");
