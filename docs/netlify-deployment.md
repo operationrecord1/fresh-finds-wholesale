@@ -14,6 +14,12 @@ Before publication run `npx tsc --noEmit`, `npm test`, and `npm run build:netlif
 
 ## Collection presentation
 
-The catalog contains exactly 125 unique SKUs across the two supplied lists. Legacy placeholders are excluded. Collection memberships follow supplier new/closeout/reduced flags and previously observed best-seller assignments. Where a collection has fewer than 51 products, a separately labeled More to Explore section supplies complementary products to bring that page to 51 unique products without inventing badges or sales claims. Category pages remain limited to genuinely matching products.
+The catalog contains exactly 125 unique SKUs across the two supplied lists. Legacy placeholders are excluded. Collection memberships follow supplier new/closeout/reduced flags and supplier Best Sellers categories, supplemented by previously observed best-seller assignments. Where a collection has fewer than 51 products, a separately labeled More to Explore section supplies complementary products to bring that page to 51 unique products without inventing badges or sales claims. Category pages remain limited to genuinely matching products.
 
 The supplier provides fewer than three gallery images for 21 products; their real images are retained without duplication.
+
+## Published site
+
+Public storefront: https://incandescent-vacherin-bd19b5.netlify.app/
+
+Published via Netlify Drop using the validated static build on 2026-11-04. GitHub main also contains the source. Git-connected automatic deployment is not configured; future GitHub pushes alone do not update this Netlify project until that integration is connected.

@@ -4259,9 +4259,12 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/cubic-zirconia-earrings-refill-bi578",
     "sourceCheckedAt": "2026-11-04",
     "stock": 203,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Apparel",
     "subcategory": "Jewelry",
@@ -4299,12 +4302,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/bamboo-utensil-set-with-container-ol512",
     "sourceCheckedAt": "2026-11-04",
     "stock": 3847,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Kitchen & Dining",
-    "subcategory": "Best Sellers",
+    "subcategory": "Kitchen Tools & Utensils",
     "images": [
       "images/products/ol512-1.webp",
       "images/products/ol512-2.webp",
@@ -4341,15 +4347,17 @@ export const PRODUCTS: Product[] = [
     "stock": 23521,
     "badges": [
       "closeout",
-      "reduced"
+      "reduced",
+      "hot"
     ],
     "collections": [
       "imports",
       "closeouts",
-      "reduced-price"
+      "reduced-price",
+      "best-sellers"
     ],
-    "category": "Closeouts",
-    "subcategory": "Reduced Price",
+    "category": "Crafts",
+    "subcategory": "Do-it-yourself Craft Kits",
     "images": [
       "images/products/am773-1.webp",
       "images/products/am773-2.webp",
@@ -4395,8 +4403,8 @@ export const PRODUCTS: Product[] = [
       "reduced-price",
       "best-sellers"
     ],
-    "category": "Closeouts",
-    "subcategory": "Reduced Price",
+    "category": "Pet Supplies",
+    "subcategory": "Pet Furniture",
     "images": [
       "images/products/al981-1.webp",
       "images/products/al981-2.webp",
@@ -4431,12 +4439,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/7-25-durable-dog-chew-toy-for-aggressive-chewers-ca974",
     "sourceCheckedAt": "2026-11-04",
     "stock": 4161,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Pet Supplies",
-    "subcategory": "Best Sellers",
+    "subcategory": "Pet Toys",
     "images": [
       "images/products/ca974-1.webp",
       "images/products/ca974-2.webp",
@@ -4479,7 +4490,7 @@ export const PRODUCTS: Product[] = [
       "best-sellers"
     ],
     "category": "Lawn & Garden",
-    "subcategory": "Best Sellers",
+    "subcategory": "Lawn & Garden Decor",
     "images": [
       "images/products/aj117-1.webp",
       "images/products/aj117-2.webp",
@@ -4516,15 +4527,17 @@ export const PRODUCTS: Product[] = [
     "stock": 38709,
     "badges": [
       "closeout",
-      "reduced"
+      "reduced",
+      "hot"
     ],
     "collections": [
       "imports",
       "closeouts",
-      "reduced-price"
+      "reduced-price",
+      "best-sellers"
     ],
-    "category": "Closeouts",
-    "subcategory": "Reduced Price",
+    "category": "Candles & Scents",
+    "subcategory": "Incense",
     "images": [
       "images/products/aa641-1.webp",
       "images/products/aa641-2.webp"
@@ -4565,8 +4578,8 @@ export const PRODUCTS: Product[] = [
       "imports",
       "best-sellers"
     ],
-    "category": "Rope",
-    "subcategory": "Best Sellers",
+    "category": "Tools & Hardware",
+    "subcategory": "Rope",
     "images": [
       "images/products/mt500-1.webp",
       "images/products/mt500-2.webp"
@@ -4600,12 +4613,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/reading-glasses-floor-display-3-gt109",
     "sourceCheckedAt": "2026-11-04",
     "stock": 11154,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Vision Care",
-    "subcategory": "Best Sellers",
+    "subcategory": "Reading Glasses",
     "images": [
       "images/products/gt109-1.webp",
       "images/products/gt109-2.webp",
@@ -4648,7 +4664,7 @@ export const PRODUCTS: Product[] = [
       "best-sellers"
     ],
     "category": "Pet Supplies",
-    "subcategory": "Best Sellers",
+    "subcategory": "Pet Toys",
     "images": [
       "images/products/di613-1.webp",
       "images/products/di613-2.webp"
@@ -4682,12 +4698,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/fleece-paw-print-pet-blanket-countertop-display-gr177",
     "sourceCheckedAt": "2026-11-04",
     "stock": 5951,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Pet Supplies",
-    "subcategory": "Best Sellers",
+    "subcategory": "Pet Furniture",
     "images": [
       "images/products/gr177-1.webp",
       "images/products/gr177-2.webp",
@@ -4733,8 +4752,8 @@ export const PRODUCTS: Product[] = [
       "reduced-price",
       "best-sellers"
     ],
-    "category": "Closeouts",
-    "subcategory": "Reduced Price",
+    "category": "Fashion Accessories",
+    "subcategory": "Umbrellas",
     "images": [
       "images/products/al621-1.webp",
       "images/products/al621-2.webp",
@@ -4770,14 +4789,16 @@ export const PRODUCTS: Product[] = [
     "sourceCheckedAt": "2026-11-04",
     "stock": 7408,
     "badges": [
-      "closeout"
+      "closeout",
+      "hot"
     ],
     "collections": [
       "imports",
-      "closeouts"
+      "closeouts",
+      "best-sellers"
     ],
-    "category": "Closeouts",
-    "subcategory": "Best Sellers",
+    "category": "Pet Supplies",
+    "subcategory": "Collars, Leashes & Harnesses",
     "images": [
       "images/products/an646-1.webp",
       "images/products/an646-2.webp",
@@ -4812,12 +4833,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/therapeutic-gel-beads-neck-wrap-hb198",
     "sourceCheckedAt": "2026-11-04",
     "stock": 2841,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Health Care",
-    "subcategory": "Best Sellers",
+    "subcategory": "Hot & Cold Packs",
     "images": [
       "images/products/hb198-1.webp",
       "images/products/hb198-2.webp"
@@ -4851,12 +4875,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/two-direction-remote-control-race-car-with-control-gh886",
     "sourceCheckedAt": "2026-11-04",
     "stock": 1766,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Toys",
-    "subcategory": "Best Sellers",
+    "subcategory": "Toy Vehicles",
     "images": [
       "images/products/gh886-1.webp",
       "images/products/gh886-2.webp",
@@ -4891,12 +4918,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/16-silicone-kitchen-sink-splash-guard-da592",
     "sourceCheckedAt": "2026-11-04",
     "stock": 5164,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Kitchen & Dining",
-    "subcategory": "Best Sellers",
+    "subcategory": "Kitchen Appliance Accessories",
     "images": [
       "images/products/da592-1.webp",
       "images/products/da592-2.webp",
@@ -4931,12 +4961,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/battery-operated-waterfall-fountain-with-circular-design-stones-included-ca883",
     "sourceCheckedAt": "2026-11-04",
     "stock": 1568,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Home Decor",
-    "subcategory": "Best Sellers",
+    "subcategory": "Decorative Accents",
     "images": [
       "images/products/ca883-1.webp",
       "images/products/ca883-2.webp"
@@ -4970,9 +5003,12 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/2-in-1-bean-bag-toss-and-ring-toss-desktop-game-ca996",
     "sourceCheckedAt": "2026-11-04",
     "stock": 2626,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Toys",
     "subcategory": "Games",
@@ -5010,12 +5046,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/dog-waste-refill-bags-ol996",
     "sourceCheckedAt": "2026-11-04",
     "stock": 3136,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Pet Supplies",
-    "subcategory": "Best Sellers",
+    "subcategory": "Pet Cleanup",
     "images": [
       "images/products/ol996-1.webp",
       "images/products/ol996-2.webp",
@@ -5050,12 +5089,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/mesh-back-support-with-massage-pegs-ol930",
     "sourceCheckedAt": "2026-11-04",
     "stock": 3690,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Health Care",
-    "subcategory": "Best Sellers",
+    "subcategory": "Supports",
     "images": [
       "images/products/ol930-1.webp",
       "images/products/ol930-2.webp",
@@ -5090,12 +5132,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/3-pack-cleaning-kit-hc499",
     "sourceCheckedAt": "2026-11-04",
     "stock": 2338,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Household Supplies",
-    "subcategory": "Best Sellers",
+    "subcategory": "Scrub Brushes",
     "images": [
       "images/products/hc499-1.webp",
       "images/products/hc499-2.webp",
@@ -5130,12 +5175,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/27-piece-ratcheting-screwdriver-bit-socket-set-mt793",
     "sourceCheckedAt": "2026-11-04",
     "stock": 1831,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Tools & Hardware",
-    "subcategory": "Best Sellers",
+    "subcategory": "Screwdrivers",
     "images": [
       "images/products/mt793-1.webp",
       "images/products/mt793-2.webp",
@@ -5170,12 +5218,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/led-color-changing-water-free-aroma-diffuser-ca639",
     "sourceCheckedAt": "2026-11-04",
     "stock": 2270,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Home Decor",
-    "subcategory": "Best Sellers",
+    "subcategory": "Decorative Accents",
     "images": [
       "images/products/ca639-1.webp",
       "images/products/ca639-2.webp",
@@ -5210,12 +5261,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/8-1-silicone-collapsible-air-fryer-basket-da591",
     "sourceCheckedAt": "2026-11-04",
     "stock": 3024,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Kitchen & Dining",
-    "subcategory": "Best Sellers",
+    "subcategory": "Baking Supplies",
     "images": [
       "images/products/da591-1.webp",
       "images/products/da591-2.webp",
@@ -5252,15 +5306,17 @@ export const PRODUCTS: Product[] = [
     "stock": 18508,
     "badges": [
       "closeout",
-      "reduced"
+      "reduced",
+      "hot"
     ],
     "collections": [
       "imports",
       "closeouts",
-      "reduced-price"
+      "reduced-price",
+      "best-sellers"
     ],
-    "category": "Closeouts",
-    "subcategory": "Reduced Price",
+    "category": "Electronics",
+    "subcategory": "Headphones",
     "images": [
       "images/products/ag927-1.webp",
       "images/products/ag927-2.webp",
@@ -5295,12 +5351,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/magic-static-duster-hf059",
     "sourceCheckedAt": "2026-11-04",
     "stock": 9035,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Household Supplies",
-    "subcategory": "Best Sellers",
+    "subcategory": "Dusters",
     "images": [
       "images/products/hf059-1.webp",
       "images/products/hf059-2.webp"
@@ -5336,15 +5395,17 @@ export const PRODUCTS: Product[] = [
     "stock": 18319,
     "badges": [
       "closeout",
-      "reduced"
+      "reduced",
+      "hot"
     ],
     "collections": [
       "imports",
       "closeouts",
-      "reduced-price"
+      "reduced-price",
+      "best-sellers"
     ],
-    "category": "Closeouts",
-    "subcategory": "Reduced Price",
+    "category": "Cosmetics",
+    "subcategory": "Cosmetic Tools & Brushes",
     "images": [
       "images/products/ad117-1.webp",
       "images/products/ad117-2.webp"
@@ -5378,12 +5439,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/battery-operated-automatic-pet-nail-grinder-file-di737",
     "sourceCheckedAt": "2026-11-04",
     "stock": 2952,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Pet Supplies",
-    "subcategory": "Best Sellers",
+    "subcategory": "Pet Grooming",
     "images": [
       "images/products/di737-1.webp",
       "images/products/di737-2.webp"
@@ -5419,15 +5483,17 @@ export const PRODUCTS: Product[] = [
     "stock": 5813,
     "badges": [
       "closeout",
-      "reduced"
+      "reduced",
+      "hot"
     ],
     "collections": [
       "imports",
       "closeouts",
-      "reduced-price"
+      "reduced-price",
+      "best-sellers"
     ],
-    "category": "Closeouts",
-    "subcategory": "Reduced Price",
+    "category": "Tools & Hardware",
+    "subcategory": "Utility Knives & Blades",
     "images": [
       "images/products/an688-1.webp",
       "images/products/an688-2.webp",
@@ -5462,12 +5528,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/125-volt-6-outlet-grounded-wall-adapter-aj106",
     "sourceCheckedAt": "2026-11-04",
     "stock": 2486,
-    "badges": [],
-    "collections": [
-      "imports"
+    "badges": [
+      "hot"
     ],
-    "category": "Electrical Connectors",
-    "subcategory": "Best Sellers",
+    "collections": [
+      "imports",
+      "best-sellers"
+    ],
+    "category": "Tools & Hardware",
+    "subcategory": "Electrical Connectors",
     "images": [
       "images/products/aj106-1.webp",
       "images/products/aj106-2.webp",
@@ -5502,12 +5571,15 @@ export const PRODUCTS: Product[] = [
     "sourceUrl": "https://www.koleimports.com/four-paw-pet-bowl-mat-ol601",
     "sourceCheckedAt": "2026-11-04",
     "stock": 2413,
-    "badges": [],
+    "badges": [
+      "hot"
+    ],
     "collections": [
-      "imports"
+      "imports",
+      "best-sellers"
     ],
     "category": "Pet Supplies",
-    "subcategory": "Best Sellers",
+    "subcategory": "Pet Furniture",
     "images": [
       "images/products/ol601-1.webp",
       "images/products/ol601-2.webp"
