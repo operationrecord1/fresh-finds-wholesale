@@ -17,7 +17,7 @@ export function HeroCarousel() {
     onTouchStart={e => { const t=e.touches[0]; if(t) start.current={x:t.clientX,y:t.clientY}; }}
     onTouchEnd={e => { const t=e.changedTouches[0], s=start.current; if(t&&s&&Math.abs(t.clientX-s.x)>50&&Math.abs(t.clientX-s.x)>Math.abs(t.clientY-s.y)) move(t.clientX<s.x?1:-1); start.current=null; }}>
     <div aria-live="polite" aria-atomic="true">
-      <img className="merch-hero-image" src={`${import.meta.env.BASE_URL}images/approved-banner-${slide.image}.webp`} alt={slide.alt} width="2172" height="724" fetchPriority={index === 0 ? "high" : "auto"} />
+      <img className="merch-hero-image" src={`${import.meta.env.BASE_URL}images/approved-banner-${slide.image === 3 ? "warehouse" : slide.image}.webp`} alt={slide.alt} width="2172" height="724" fetchPriority={index === 0 ? "high" : "auto"} />
     </div>
     <button className="merch-arrow merch-prev" aria-label="Previous banner" onClick={()=>move(-1)}><ChevronLeft/></button>
     <button className="merch-arrow merch-next" aria-label="Next banner" onClick={()=>move(1)}><ChevronRight/></button>
