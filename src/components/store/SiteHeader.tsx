@@ -175,7 +175,7 @@ export function SiteHeader() {
                 <li key={b.id}><Link to="/shop-by-price" search={{ price: b.id }} className="hover:underline">{b.label}</Link></li>))}</ul>
             )}
             {menu === "kc" && (
-              <ul className="store-price-columns">{["Artisan Mart", "Sales", "Product Download", "Shipping", "Closeouts", "FBA Sales", "Community Outreach"].map((x) => (
+              <ul className="store-price-columns">{["Artisan Mart", "Shipping", "Closeouts"].map((x) => (
                 <li key={x}><Link to="/info/$page" params={{ page: slugify(x) }} className="hover:underline">{x}</Link></li>))}</ul>
             )}
           </div>

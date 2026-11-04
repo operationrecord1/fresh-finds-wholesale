@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Store, Heart, BriefcaseBusiness, Phone, Megaphone, Facebook, Youtube, ChevronDown, ArrowUp, X } from "lucide-react";
+import { Store, Heart, BriefcaseBusiness, Phone, Megaphone, Facebook, ChevronDown, ArrowUp, X } from "lucide-react";
 import "./SiteFooter.css";
 
 const shortcuts = [
@@ -50,7 +50,6 @@ export function SiteFooter() {
             <div className="footer-social" aria-label="Social media">
               <button type="button" aria-label="Facebook — coming soon" onClick={() => setNotice("Our Facebook page will be linked here soon.")}><Facebook fill="currentColor" aria-hidden="true" /></button>
               <button type="button" aria-label="X — coming soon" onClick={() => setNotice("Our X profile will be linked here soon.")}><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.5 22H2.3l8.2-9.4L.8 2h6.5l4.5 6.8L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z" /></svg></button>
-              <button type="button" aria-label="YouTube — coming soon" onClick={() => setNotice("Our YouTube channel will be linked here soon.")}><Youtube aria-hidden="true" /></button>
             </div>
             {notice && <p className="footer-notice" role="status">{notice}<button type="button" aria-label="Dismiss social media notice" onClick={() => setNotice("")}><X size={16} /></button></p>}
           </section>

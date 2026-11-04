@@ -223,3 +223,6 @@
  .store-mobile-menu details a { display:flex; align-items:center; min-height:44px; padding:8px 0; font-size:13px; overflow-wrap:anywhere; }
  .store-mobile-menu a:hover { color:#0076aa; background:#f5fafc; }
 }
+
+.store-dropdown-kc .store-price-columns { grid-template-columns:minmax(0,1fr); gap:4px; }
+.store-dropdown-kc a { min-height:40px; display:flex; align-items:center; padding:8px 10px; }
