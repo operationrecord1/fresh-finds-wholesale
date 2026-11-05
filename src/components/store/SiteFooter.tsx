@@ -47,7 +47,7 @@ export function SiteFooter() {
             <Link to="/newsletter" className="footer-subscribe">Subscribe To Newsletter</Link>
             <div className="footer-social" aria-label="Social media">
               <a href="https://www.facebook.com/profile.php?id=61593310559477" aria-label="Artisan Mart on Facebook" target="_blank" rel="noopener noreferrer"><Facebook fill="currentColor" aria-hidden="true" /></a>
-              <a href="https://www.instagram.com/artisan__mart/" aria-label="Artisan Mart on Instagram" target="_blank" rel="noopener noreferrer" style={{ background: "#111" }}><Instagram aria-hidden="true" /></a>
+              <a href="https://www.instagram.com/artisan__mart/" aria-label="Artisan Mart on Instagram" target="_blank" rel="noopener noreferrer" style={{ background: "radial-gradient(circle at 30% 105%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%)" }}><Instagram aria-hidden="true" /></a>
             </div>
           </section>
         </div>

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Info, Store, Heart, Package, BookOpen, ArrowUp, School, Building2, BriefcaseBusiness } from "lucide-react";
+import { Info, Store, Heart, Package, BookOpen, ArrowUp, ShoppingBag, School, Building2, BriefcaseBusiness } from "lucide-react";
 import "./AboutPage.css";
 const sections = [
  { id: "about-us", label: "About Us", icon: Info },
