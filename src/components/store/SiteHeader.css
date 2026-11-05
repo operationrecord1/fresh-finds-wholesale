@@ -238,10 +238,10 @@
  .store-mobile-menu a:focus-visible,.store-mobile-menu summary:focus-visible { outline-offset:-2px; }
 }
 
-.store-brand {display:inline-flex;max-width:100%;padding-block:8px;transition:transform .25s ease,filter .25s ease;transform-origin:left center}
-.artisan-wordmark {display:block;width:220px;max-width:100%;height:auto}
-.store-brand:hover {transform:translateY(-2px);filter:saturate(1.4) drop-shadow(0 5px 7px #009db126)}
-.store-brand:active {transform:scale(.97)}
+.store-brand {display:inline-flex;max-width:100%;padding-block:8px;transition:filter .25s ease;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
+.artisan-wordmark {display:block;width:220px;max-width:100%;height:auto;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.store-brand:hover {filter:saturate(1.2) brightness(1.08) drop-shadow(0 3px 6px #009bd52b)}
+.store-brand:active {filter:brightness(.93)}
 .store-brand:focus-visible {outline:2px solid #009db1;outline-offset:5px;border-radius:5px}
 @media(max-width:1024px){.artisan-wordmark{width:clamp(130px,25vw,210px)}}
 @media(prefers-reduced-motion:reduce){.store-brand{transition:none;transform:none}}
