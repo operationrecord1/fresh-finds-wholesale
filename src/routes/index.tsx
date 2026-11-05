@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 const PANELS: { slug: CollectionSlug; title: string; color: string }[] = [
-  { slug: "new-arrivals", title: "NEW ARRIVALS", color: "bg-sec-new" },
+  { slug: "new-arrivals", title: "NEW ARRIVALS", color: "bg-[#002655]" },
   { slug: "best-sellers", title: "BEST SELLERS", color: "bg-sec-best" },
   { slug: "reduced-price", title: "REDUCED PRICE", color: "bg-sec-reduced" },
   { slug: "closeouts", title: "CLOSEOUTS", color: "bg-sec-closeout" },
