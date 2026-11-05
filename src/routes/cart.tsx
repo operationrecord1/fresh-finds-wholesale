@@ -38,16 +38,7 @@ function CartPage() {
         </div>
         {lines.length > 0 && <button className="rounded border border-border bg-card px-4 py-2" onClick={requestClear}>Clear Cart</button>}
         <ExpressOrder />
-        <details className="rounded bg-card p-4">
-          <summary className="cursor-pointer font-bold">Estimate Shipping and Tax</summary>
-          <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            <select aria-label="Shipping country" className="rounded border p-2" defaultValue="US"><option value="US">United States</option></select>
-            <input className="rounded border p-2" aria-label="State or province" placeholder="State/Province" />
-            <input className="rounded border p-2" aria-label="Zip or postal code" placeholder="Zip/Postal Code" />
-          </div>
-          <button className="mt-3 rounded bg-accent px-4 py-2 font-bold text-accent-foreground" onClick={() => setMsg("Shipping rates are not available yet — a carrier rate integration is required.")}>Calculate Shipping</button>
-          {msg && <p className="mt-2 text-sm text-muted-foreground">{msg}</p>}
-        </details>
+
       </div>
       <aside className="cart-summary h-fit space-y-3">
         <h2 className="text-xl font-bold">Order Summary</h2>

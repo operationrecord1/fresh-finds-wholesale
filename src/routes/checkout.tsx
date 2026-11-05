@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { CreditCard, Landmark, CircleX, ChevronRight } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
@@ -17,14 +19,16 @@ const F = ({ label, req = true, type = "text" }: { label: string; req?: boolean;
 );
 const H = ({ n, t }: { n: number; t: string }) => <h2 className="mb-3 flex items-center gap-2 text-lg font-bold"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">{n}</span>{t}</h2>;
 
-function Checkout() {
+export function Checkout() {
   const { lines, subtotal } = useCart();
   const [same, setSame] = useState(true);
-  const [notice, setNotice] = useState("");
+  const [payment, setPayment] = useState("card");
+  const [paymentError, setPaymentError] = useState(false);
+  const submitRef = useRef<HTMLButtonElement>(null);
   if (!meetsMinimum(subtotal)) return <div className="p-10 text-center">Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link></div>;
   return (
-    <form className="mx-auto grid max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-3" onSubmit={(e) => { e.preventDefault(); setNotice("Order not submitted: payment processing and order submission are not connected yet."); }}>
-      <section className="rounded bg-card p-5">
+    <form className="mx-auto grid max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-3" onSubmit={(e) => { e.preventDefault(); setPaymentError(true); }}>
+      <section className="min-w-0 rounded bg-card p-5">
         <H n={1} t="Billing Address" />
         <div className="grid grid-cols-2 gap-3"><F label="First Name" /><F label="Last Name" /></div>
         <div className="mt-3 space-y-3"><F label="Company" req={false} /><F label="Email" type="email" /><F label="Telephone" type="tel" /><F label="Address" /><F label="City" />
@@ -35,23 +39,44 @@ function Checkout() {
           {!same && <div className="space-y-3 border-t pt-3"><F label="Shipping Address" /><F label="City" /><F label="Zip" /></div>}
         </div>
       </section>
-      <section className="space-y-6">
-        <div className="rounded bg-card p-5"><H n={2} t="Shipping Method" /><p className="text-sm text-muted-foreground">Please complete the address section to see shipping options.</p></div>
-        <div className="rounded bg-card p-5"><H n={3} t="Payment Method" />
-          {["Credit Card", "Apple Pay", "PayPal", "Amazon Pay"].map((m, i) => <label key={m} className="flex items-center gap-2 py-1"><input type="radio" name="pay" defaultChecked={i === 0} /> {m}</label>)}
-          <p className="mt-2 text-xs text-muted-foreground">Payment providers are not connected yet.</p>
+      <section className="min-w-0 space-y-6">
+        <div className="min-w-0 rounded bg-card p-5"><H n={2} t="Shipping Method" /><p className="text-sm text-muted-foreground">Please complete the address section to see shipping options.</p></div>
+        <div className="min-w-0 rounded bg-card p-5"><H n={3} t="Payment Method" />
+          <fieldset className="space-y-3">
+            <legend className="sr-only">Choose a payment method</legend>
+            {[
+              { value: "card", title: "Credit Card", detail: "Pay by credit card", Icon: CreditCard },
+              { value: "wire", title: "Wire Transfer", detail: "Pay by bank transfer", Icon: Landmark },
+            ].map(({ value, title, detail, Icon }) => (
+              <label key={value} className={`flex min-h-20 cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${payment === value ? "border-primary bg-primary/5" : "border-border hover:border-primary/60 hover:bg-muted/40"}`}>
+                <input type="radio" name="pay" value={value} checked={payment === value} onChange={() => setPayment(value)} className="h-4 w-4 shrink-0 accent-primary" />
+                <Icon aria-hidden="true" className="h-6 w-6 shrink-0 text-primary" />
+                <span className="min-w-0"><span className="block text-sm font-semibold">{title}</span><span className="mt-1 block text-xs text-muted-foreground">{detail}</span></span>
+              </label>
+            ))}
+          </fieldset>
+          <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{payment === "card" ? "Review your order before continuing with your selected payment method." : "Review your order before continuing. Transfer details are required before sending a bank payment."}</p>
         </div>
       </section>
-      <section className="rounded bg-card p-5">
+      <section className="min-w-0 rounded bg-card p-5">
         <h2 className="mb-3 text-lg font-bold">Review your order</h2>
         {lines.map((l) => { const p = getProduct(l.sku)!; return <div key={l.sku} className="flex justify-between border-b py-2 text-sm"><span>{p.sku} × {l.pieces}</span><span>{money(lineTotal(l.pieces, p.price ?? 0))}</span></div>; })}
         <div className="mt-3 flex justify-between font-bold"><span>Grand Total</span><span>{money(subtotal)}</span></div>
         <input placeholder="Coupon code" className="mt-3 w-full rounded border p-2" />
         <textarea placeholder="Comments" className="mt-3 w-full rounded border p-2" rows={3} />
         <button type="button" onClick={() => window.print()} className="mt-2 text-sm text-primary underline">Print</button>
-        <button className="mt-3 w-full rounded-full bg-accent py-3 font-bold text-accent-foreground">Place Your Order</button>
-        {notice && <p className="mt-3 text-sm font-semibold text-destructive">{notice}</p>}
+        <button ref={submitRef} type="submit" className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 font-bold text-accent-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">Place Your Order <ChevronRight size={18} aria-hidden="true" /></button>
       </section>
+      <Dialog open={paymentError} onOpenChange={setPaymentError}>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl bg-white p-6 text-center sm:p-8" onCloseAutoFocus={(event) => { event.preventDefault(); submitRef.current?.focus(); }}>
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600"><CircleX size={32} aria-hidden="true" /></span>
+          <DialogTitle className="text-xl leading-snug">Unable to complete payment</DialogTitle>
+          <DialogDescription className="leading-relaxed">Please try again later or contact us.</DialogDescription>
+          <p className="text-sm text-muted-foreground">Your cart and checkout information are still here.</p>
+          <button type="button" onClick={() => setPaymentError(false)} className="min-h-11 rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">Return to checkout</button>
+          <a href="tel:+17272255768" className="inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-2 font-semibold text-primary hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Contact us</a>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
