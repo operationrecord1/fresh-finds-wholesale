@@ -162,7 +162,6 @@
 .store-home-panels { grid-template-columns:repeat(2,minmax(0,1fr)); }
 .store-home-panels > section { min-width:0; }
 @media (max-width:1024px) {
- .store-container > .merch-hero { display:none; }
  .store-home-products { grid-template-columns:repeat(2,minmax(0,1fr)); }
  .store-home-products > :nth-child(n+3) { display:none; }
  .store-home-panels section > div:first-child { gap:8px; font-size:18px; }
