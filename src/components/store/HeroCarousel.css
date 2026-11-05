@@ -1,17 +1,15 @@
-.merch-hero { width:100%; aspect-ratio:30/7; margin-inline:auto; position:relative; overflow:hidden; border-radius:16px; background:#102a44; touch-action:pan-y; }
-.merch-hero > div[aria-live] { height:100%; }
-.merch-hero-image { display:block; width:100%; height:100%; object-fit:contain; }
-.merch-arrow { position:absolute; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:32px; height:44px; border-radius:6px; background:#ffffffdf; color:#123b55; box-shadow:0 1px 6px #102a4433; }
-.merch-prev {left:4px}.merch-next {right:4px}
-.merch-dots { position:absolute; bottom:0; left:50%; transform:translateX(-50%); display:flex; background:#102a4499; border-radius:12px 12px 0 0; }
-.merch-dots button { width:40px; height:24px; display:grid; place-items:center; }
-.merch-dots span { width:9px; height:9px; background:#ffffff80; border:1px solid white; border-radius:20px; }
-.merch-dots button[aria-pressed=true] span { width:25px; background:white; }
-.merch-hero :focus-visible { outline:3px solid #8dc63f; outline-offset:-3px; }
-@media(max-width:1024px) {
-  .merch-hero { aspect-ratio:3/1; border-radius:12px; }
-  .merch-arrow { display:none; }
-  .merch-dots { position:static; transform:none; justify-content:center; border-radius:0; }
-  .merch-hero > div[aria-live] { height:auto; }
-  .merch-hero-image { height:auto; aspect-ratio:3/1; }
-}
+.merch-hero{width:100%;aspect-ratio:30/7;position:relative;overflow:hidden;border-radius:18px;touch-action:pan-y;background:#f2eee6;color:#193f3d;container-type:inline-size}
+.merch-composition{height:100%;display:grid;grid-template-columns:65% 35%;align-items:stretch}
+.merch-copy{display:flex;flex-direction:column;justify-content:center;padding:2.5% 7%;position:relative;background:radial-gradient(ellipse at 0 100%,#fff8 0,transparent 65%)}
+.merch-eyebrow{font:700 clamp(9px,.8cqi,13px)/1.3 Arial,sans-serif;letter-spacing:.15em}
+.merch-copy h2{font-family:Arial,sans-serif;font-size:clamp(24px,3.05cqi,48px);font-weight:750;line-height:1.08;letter-spacing:-.045em;margin:12px 0}
+.merch-copy h2 span{display:block}.merch-accent{color:#138b85}
+.merch-copy p{font:400 clamp(12px,1.1cqi,17px)/1.5 Arial,sans-serif;max-width:42ch;margin:0}
+.merch-signature{font:600 clamp(9px,.8cqi,12px)/1.4 Arial,sans-serif;letter-spacing:.03em;margin-top:18px;opacity:.65}
+.merch-hero-image{width:100%;height:100%;min-height:0;display:block;object-fit:contain}
+.merch-assortment{background:#e7eedc}.merch-discovery{background:#eee3f7;color:#382c52}.merch-discovery .merch-accent{color:#7b43ae}
+.merch-arrow{position:absolute;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:30px;height:44px;border-radius:22px;background:#ffffffd9;color:#193f3d;transition:background .2s,box-shadow .2s}.merch-arrow:hover{background:white;box-shadow:0 3px 12px #183d3d22}.merch-prev{left:8px}.merch-next{right:8px}
+.merch-dots{position:absolute;bottom:5px;left:32.5%;transform:translateX(-50%);display:flex}.merch-dots button{width:36px;height:24px;display:grid;place-items:center}.merch-dots span{width:7px;height:7px;background:#193f3d40;border-radius:20px;transition:width .2s}.merch-dots button[aria-pressed=true] span{width:23px;background:#193f3d}.merch-hero :focus-visible{outline:2px solid #087f8c;outline-offset:2px}
+@media(max-width:1024px){.merch-hero{aspect-ratio:auto}.merch-composition{grid-template-columns:55% 45%;height:auto}.merch-copy{padding:24px}.merch-copy h2{font-size:clamp(21px,3.4cqi,34px)}.merch-hero-image{height:auto;align-self:center}.merch-arrow{display:none}.merch-dots{position:static;transform:none;justify-content:center;padding-bottom:5px}.merch-signature{margin-top:12px}}
+@media(max-width:600px){.merch-composition{grid-template-columns:1fr}.merch-copy{padding:24px 24px 20px}.merch-copy h2{font-size:clamp(25px,7cqi,36px)}.merch-copy p{font-size:13px}.merch-eyebrow{font-size:9px}.merch-signature{font-size:10px}.merch-hero-image{width:100%;height:auto;aspect-ratio:3/2}.merch-dots{padding-top:7px}}
+@media(prefers-reduced-motion:reduce){.merch-arrow,.merch-dots span{transition:none}}
