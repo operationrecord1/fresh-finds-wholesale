@@ -15,6 +15,9 @@ it("offers only the two methods and preserves checkout details after both failur
   expect(form.checkValidity()).toBe(true);
   for (const method of screen.getAllByRole("radio")) {
     fireEvent.click(method);
+    if ((method as HTMLInputElement).value === "card") {
+      for (const [label, value] of [["Name on card", "Test Customer"], ["Card number", "4242424242424242"], ["Expiry date", "12/39"], ["Security code", "123"]]) fireEvent.change(screen.getByLabelText(label), {target:{value}});
+    }
     fireEvent.submit(form);
     expect(screen.getByRole("dialog")).toHaveTextContent("Unable to complete payment");
     fireEvent.click(screen.getByRole("button", {name: "Return to checkout"}));

@@ -1,0 +1,34 @@
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { createRef } from "react";
+import { afterEach, expect, it, vi } from "vitest";
+import { act } from "react";
+import { PaymentDetails, cardError, type PaymentDetailsHandle } from "@/components/store/PaymentDetails";
+vi.mock("@tanstack/react-router", () => ({Link: ({children,to}: any) => <a href={to}>{children}</a>}));
+afterEach(cleanup);
+it("validates checksum, expiry boundaries and card-specific security codes", () => {
+  const now=new Date(2026,10,6);
+  expect(cardError("4242424242424242","11/26","123",now)).toEqual({number:"",expiry:"",cvv:""});
+  expect(cardError("4242424242424241","10/26","12",now).number).toBeTruthy();
+  expect(cardError("4242424242424242","10/26","123",now).expiry).toBeTruthy();
+  expect(cardError("378282246310005","12/39","1234",now).cvv).toBe("");
+  expect(cardError("0000000000000000","13/39","123",now).number).toBeTruthy();
+});
+it("keeps values out of form submission and storage, clears them after validation and on pagehide", () => {
+  const ref=createRef<PaymentDetailsHandle>();
+  const storage=vi.spyOn(Storage.prototype,"setItem");
+  const fetchSpy=vi.spyOn(globalThis,"fetch");
+  const {container}=render(<form><PaymentDetails ref={ref} method="card"/></form>);
+  act(()=>{expect(ref.current!.validate()).toBe(false)});
+  expect(screen.getByText("Enter a valid card number.")).toBeInTheDocument();
+  for(const [label,value] of [["Name on card","Test Customer"],["Card number","4242424242424242"],["Expiry date","12/39"],["Security code","123"]]) fireEvent.change(screen.getByLabelText(label),{target:{value}});
+  expect(screen.getByLabelText("Card number")).toHaveValue("4242 4242 4242 4242");
+  act(()=>{expect(ref.current!.validate()).toBe(true)});
+  expect(Array.from(new FormData(container.querySelector("form")!).entries())).toEqual([]);
+  expect(storage).not.toHaveBeenCalled();expect(fetchSpy).not.toHaveBeenCalled();
+  act(()=>ref.current!.clear());
+  expect(screen.getByLabelText("Security code")).toHaveValue("");
+  fireEvent.change(screen.getByLabelText("Card number"),{target:{value:"4242424242424242"}});
+  fireEvent(window,new Event("pagehide"));
+  expect(screen.getByLabelText("Card number")).toHaveValue("");
+  vi.restoreAllMocks();
+});

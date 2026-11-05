@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { CreditCard, Landmark, CircleX, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { PaymentDetails, type PaymentDetailsHandle } from "@/components/store/PaymentDetails";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
@@ -24,10 +25,11 @@ export function Checkout() {
   const [same, setSame] = useState(true);
   const [payment, setPayment] = useState("card");
   const [paymentError, setPaymentError] = useState(false);
+  const paymentRef = useRef<PaymentDetailsHandle>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
   if (!meetsMinimum(subtotal)) return <div className="p-10 text-center">Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link></div>;
   return (
-    <form className="mx-auto grid max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-3" onSubmit={(e) => { e.preventDefault(); setPaymentError(true); }}>
+    <form className="mx-auto grid max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-3" onSubmit={(e) => { e.preventDefault(); if (!paymentRef.current?.validate()) return; paymentRef.current.clear(); setPaymentError(true); }}>
       <section className="min-w-0 rounded bg-card p-5">
         <H n={1} t="Billing Address" />
         <div className="grid grid-cols-2 gap-3"><F label="First Name" /><F label="Last Name" /></div>
@@ -49,13 +51,13 @@ export function Checkout() {
               { value: "wire", title: "Wire Transfer", detail: "Pay by bank transfer", Icon: Landmark },
             ].map(({ value, title, detail, Icon }) => (
               <label key={value} className={`flex min-h-20 cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${payment === value ? "border-primary bg-primary/5" : "border-border hover:border-primary/60 hover:bg-muted/40"}`}>
-                <input type="radio" name="pay" value={value} checked={payment === value} onChange={() => setPayment(value)} className="h-4 w-4 shrink-0 accent-primary" />
+                <input type="radio" name="pay" value={value} checked={payment === value} onChange={() => { paymentRef.current?.clear(); setPayment(value); }} className="h-4 w-4 shrink-0 accent-primary" />
                 <Icon aria-hidden="true" className="h-6 w-6 shrink-0 text-primary" />
                 <span className="min-w-0"><span className="block text-sm font-semibold">{title}</span><span className="mt-1 block text-xs text-muted-foreground">{detail}</span></span>
               </label>
             ))}
           </fieldset>
-          <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{payment === "card" ? "Review your order before continuing with your selected payment method." : "Review your order before continuing. Transfer details are required before sending a bank payment."}</p>
+          <PaymentDetails key={payment} ref={paymentRef} method={payment} />
         </div>
       </section>
       <section className="min-w-0 rounded bg-card p-5">
@@ -72,9 +74,9 @@ export function Checkout() {
           <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600"><CircleX size={32} aria-hidden="true" /></span>
           <DialogTitle className="text-xl leading-snug">Unable to complete payment</DialogTitle>
           <DialogDescription className="leading-relaxed">Please try again later or contact us.</DialogDescription>
-          <p className="text-sm text-muted-foreground">Your cart and checkout information are still here.</p>
+          <p className="text-sm text-muted-foreground">Your cart and address information are still here.</p>
           <button type="button" onClick={() => setPaymentError(false)} className="min-h-11 rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">Return to checkout</button>
-          <a href="tel:+17272255768" className="inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-2 font-semibold text-primary hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Contact us</a>
+          <Link to="/contact" onClick={() => paymentRef.current?.clear()} className="inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-2 font-semibold text-primary hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">Contact us</Link>
         </DialogContent>
       </Dialog>
     </form>
