@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Boxes, HandHeart, BriefcaseBusiness, Phone, Megaphone, Facebook, ChevronDown, ArrowUp, X } from "lucide-react";
+import { Boxes, HandHeart, BriefcaseBusiness, Phone, Megaphone, Facebook, ChevronDown, ArrowUp, Instagram } from "lucide-react";
 import "./SiteFooter.css";
 
 const shortcuts = [
@@ -24,7 +23,6 @@ function FooterLink({ page, children }: { page: string; children: React.ReactNod
   return <Link to="/info/$page" params={{ page }}>{children}</Link>;
 }
 export function SiteFooter() {
-  const [notice, setNotice] = useState("");
   return (
     <footer className="artisan-footer" aria-label="Artisan Market footer">
       <nav className="footer-shortcuts footer-wrap" aria-label="Explore Artisan Market">
@@ -49,9 +47,8 @@ export function SiteFooter() {
             <Link to="/newsletter" className="footer-subscribe">Subscribe To Newsletter</Link>
             <div className="footer-social" aria-label="Social media">
               <a href="https://www.facebook.com/profile.php?id=61593310559477" aria-label="Artisan Mart on Facebook" target="_blank" rel="noopener noreferrer"><Facebook fill="currentColor" aria-hidden="true" /></a>
-              <button type="button" aria-label="X — coming soon" onClick={() => setNotice("Our X profile will be linked here soon.")}><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.5 22H2.3l8.2-9.4L.8 2h6.5l4.5 6.8L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z" /></svg></button>
+              <a href="https://www.instagram.com/artisan__mart/" aria-label="Artisan Mart on Instagram" target="_blank" rel="noopener noreferrer" style={{ background: "#111" }}><Instagram aria-hidden="true" /></a>
             </div>
-            {notice && <p className="footer-notice" role="status">{notice}<button type="button" aria-label="Dismiss social media notice" onClick={() => setNotice("")}><X size={16} /></button></p>}
           </section>
         </div>
         <div className="footer-wrap footer-top-row"><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}>Back to top <ArrowUp size={16} aria-hidden="true" /></button></div>

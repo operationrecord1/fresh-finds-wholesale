@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Info, Store, Heart, Package, BookOpen, ArrowUp, ShoppingBag, School, Building2, BriefcaseBusiness } from "lucide-react";
+import { Info, Store, Heart, Package, BookOpen, ArrowUp, School, Building2, BriefcaseBusiness } from "lucide-react";
 import "./AboutPage.css";
 const sections = [
  { id: "about-us", label: "About Us", icon: Info },
@@ -38,7 +38,6 @@ export function AboutPage() {
    <div className="about-content">
     <section id="about-us" tabIndex={-1} className="about-section about-overview" aria-labelledby="about-title">
      <h1 id="about-title">ABOUT US</h1><p className="about-lead">Wholesale essentials. Clear choices. A better way to buy in bulk.</p>
-     <div className="about-brand-panel"><ShoppingBag size={48} aria-hidden="true"/><strong>ARTISAN <span>MARKET</span></strong><p>General merchandise for your next opportunity.</p></div>
      <p>Artisan Market brings general merchandise, imports and closeouts into one place. Browse by category, compare item details and plan purchases around your business needs.</p>
      <p>Our focus is a straightforward wholesale experience: clear product information, visible quantities and an easy path from browsing to building an order.</p>
      <Link className="about-action" to="/collection/$slug" params={{slug:"imports"}}>Explore the catalog</Link>
