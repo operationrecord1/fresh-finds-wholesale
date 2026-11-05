@@ -1,1 +1,4 @@
-{"project":"Artisan Mart","deployment":"github-netlify-continuous","verification":"artisan-ci-20261104-01"}
+{
+  "release": "approved-branding-2026-11-05",
+  "sourceCommit": "dd6da2ecf7f522765936b61c5d64304b5394a0a8"
+}
