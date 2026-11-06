@@ -121,7 +121,7 @@ export function SiteHeader() {
 
         <div className="store-brand-contact">
             <Link to="/" className="store-brand leading-none" aria-label="Artisan Mart home" draggable={false} onDragStart={(e) => e.preventDefault()}>
-              <img className="artisan-wordmark" src={`${import.meta.env.BASE_URL}artismart-approved.svg`} alt="Artisan Mart" draggable={false} onDragStart={(e) => e.preventDefault()} />
+              <img className="artisan-wordmark" src={`${import.meta.env.BASE_URL}artisan-mart-approved.svg`} alt="Artisan Mart" draggable={false} onDragStart={(e) => e.preventDefault()} />
             </Link>
         </div>
             <form role="search" className="store-search relative" onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav({ to: "/search", search: { q: q.trim() } }); }}>

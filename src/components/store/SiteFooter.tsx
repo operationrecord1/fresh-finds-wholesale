@@ -31,7 +31,7 @@ export function SiteFooter() {
       <div className="footer-main">
         <div className="footer-wrap footer-columns">
           <section className="footer-contact" aria-labelledby="footer-brand">
-            <h2 id="footer-brand"><Link to="/" className="footer-brand-logo" aria-label="Artisan Mart home" draggable={false} onDragStart={(e) => e.preventDefault()}><img src={`${import.meta.env.BASE_URL}artismart-approved.svg`} alt="Artisan Mart" width={1272} height={278} draggable={false} /></Link></h2>
+            <h2 id="footer-brand"><Link to="/" className="footer-brand-logo" aria-label="Artisan Mart home" draggable={false} onDragStart={(e) => e.preventDefault()}><img src={`${import.meta.env.BASE_URL}artisan-mart-approved.svg`} alt="Artisan Mart" width={2052} height={346} draggable={false} /></Link></h2>
             <address>7901 4TH ST N, STE 18005<br />ST. PETERSBURG, FL 33702, US</address>
             
             
