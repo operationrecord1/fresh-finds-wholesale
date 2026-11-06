@@ -6,7 +6,7 @@ const conditions = [
  "All shipments are FOB our Carson, California warehouse meaning that all freight is paid by the customer unless expressly detailed.",
  "When offered Free Shipping is only valid within the contiguous 48 states unless expressed otherwise.",
  "Terms are prepaid unless open terms have been approved prior by our credit department.",
- "Visa, Discover, MasterCard, American Express and Paypal are all accepted forms of payment.",
+ "The payment methods listed at checkout are Credit Card and Wire Transfer.",
  "Orders processed via credit card are subject to an immediate hold for the full amount of the order including shipping. Once the order is shipped, the hold will the authorized and the charge will be validated. Artisan Mart is not responsible for any overage charges levied by the issuing credit card provider. If the card is declined at time of purchase, customer will be notified immediately.",
  "Wire transfers, money orders and checks are accepted forms of payment for orders completed offline.",
  "Orders worth less than $50 before shipping will be accessed a $5 handling fee at the time of checkout.",

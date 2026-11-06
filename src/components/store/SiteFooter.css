@@ -89,3 +89,6 @@
 .footer-shortcuts a:nth-child(4){padding:18px 12px;border:1px solid transparent;font-weight:600}
 .footer-shortcuts a:nth-child(4)>svg{box-sizing:content-box;width:30px;height:30px;padding:12px;border:1px solid transparent;flex-shrink:0}
 @media(max-width:600px){.footer-shortcuts a:nth-child(4){min-height:104px;padding:14px 8px;font-size:13px}.footer-shortcuts a:nth-child(4)>svg{width:26px;height:26px;padding:9px}}
+
+.footer-brand-logo{display:inline-block;max-width:100%;user-select:none;-webkit-user-drag:none}
+.footer-brand-logo img{display:block;width:220px;max-width:100%;height:auto;pointer-events:none;user-select:none;-webkit-user-drag:none}

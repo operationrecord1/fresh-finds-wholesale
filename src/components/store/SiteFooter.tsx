@@ -11,7 +11,7 @@ const shortcuts = [
 const aboutLinks: [string, string][] = [
   ["Industries Served", "industries-served"],
   ["Artisan Cares", "community-outreach"], ["Easy Shipping", "shipping"],
-  ["Contact Us", "contact"], ["Artisan Market Careers", "careers"], ["Blog", "blog"],
+  ["Contact Us", "contact"], ["Artisan Mart Careers", "careers"], ["Blog", "blog"],
 ];
 function FooterLink({ page, children }: { page: string; children: React.ReactNode }) {
   if (page === "careers") return <Link to="/about-us" hash="careers">{children}</Link>;
@@ -24,14 +24,14 @@ function FooterLink({ page, children }: { page: string; children: React.ReactNod
 }
 export function SiteFooter() {
   return (
-    <footer className="artisan-footer" aria-label="Artisan Market footer">
-      <nav className="footer-shortcuts footer-wrap" aria-label="Explore Artisan Market">
+    <footer className="artisan-footer" aria-label="Artisan Mart footer">
+      <nav className="footer-shortcuts footer-wrap" aria-label="Explore Artisan Mart">
         {shortcuts.map(({ title, page, icon: Icon }) => <FooterLink key={page} page={page}><Icon aria-hidden="true" /><span>{title}</span></FooterLink>)}
       </nav>
       <div className="footer-main">
         <div className="footer-wrap footer-columns">
           <section className="footer-contact" aria-labelledby="footer-brand">
-            <h2 id="footer-brand">Artisan Market</h2>
+            <h2 id="footer-brand"><Link to="/" className="footer-brand-logo" aria-label="Artisan Mart home" draggable={false} onDragStart={(e) => e.preventDefault()}><img src={`${import.meta.env.BASE_URL}artismart-approved.svg`} alt="Artisan Mart" width={1272} height={278} draggable={false} /></Link></h2>
             <address>7901 4TH ST N, STE 18005<br />ST. PETERSBURG, FL 33702, US</address>
             
             
@@ -54,7 +54,7 @@ export function SiteFooter() {
         <div className="footer-wrap footer-top-row"><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}>Back to top <ArrowUp size={16} aria-hidden="true" /></button></div>
       </div>
       <div className="footer-wrap footer-bottom">
-        <p>© {new Date().getFullYear()} Artisan Market. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Artisan Mart. All rights reserved.</p>
         <nav aria-label="Legal"><FooterLink page="terms-of-sale">Terms of Sale</FooterLink><FooterLink page="privacy">Privacy Policy</FooterLink></nav>
       </div>
     </footer>
