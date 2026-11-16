@@ -38,7 +38,7 @@ export function AboutPage() {
    <div className="about-content">
     <section id="about-us" tabIndex={-1} className="about-section about-overview" aria-labelledby="about-title">
      <h1 id="about-title">ABOUT US</h1><p className="about-lead">Wholesale essentials. Clear choices. A better way to buy in bulk.</p>
-     <p>Artisan Market brings general merchandise, imports and closeouts into one place. Browse by category, compare item details and plan purchases around your business needs.</p>
+     <p>Artisan Mart brings general merchandise, imports and closeouts into one place. Browse by category, compare item details and plan purchases around your business needs.</p>
      <p>Our focus is a straightforward wholesale experience: clear product information, visible quantities and an easy path from browsing to building an order.</p>
      <Link className="about-action" to="/collection/$slug" params={{slug:"imports"}}>Explore the catalog</Link>
     </section>
