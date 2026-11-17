@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { CreditCard, Landmark } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import "./PaymentDetails.css";
 
 export type PaymentDetailsHandle = { validate: () => boolean; clear: () => void };
 /** Length checks for demo card examples only; logos never change based on entered digits. */
@@ -16,7 +17,7 @@ export function cardError(number: string, expiry: string, cvv: string, now = new
   const digits = number.replace(/\D/g, "");
   let sum = 0;
   [...digits].reverse().forEach((c, i) => { let n = Number(c); if (i % 2) { n *= 2; if (n > 9) n -= 9; } sum += n; });
-  const [month, year] = expiry.split("/").map(Number);
+  const [month = Number.NaN, year = Number.NaN] = expiry.split("/").map(Number);
   return {
     number: !isSupportedDemoCardLength(digits) || /^0+$/.test(digits) || sum % 10 !== 0 ? "Enter a valid card number." : "",
     expiry: !/^\d{2}\/\d{2}$/.test(expiry) || month < 1 || month > 12 || new Date(2000 + year, month) <= now ? "Enter a valid, unexpired date (MM/YY)." : "",
@@ -61,7 +62,7 @@ export const PaymentDetails = forwardRef<PaymentDetailsHandle, { method: string 
       placeholder={options.placeholder}
       aria-invalid={!!errors[id]}
       aria-describedby={errors[id] ? id + "-error" : undefined}
-      className={"min-h-11 w-full min-w-0 rounded-lg border bg-white px-3 py-2 text-base font-normal outline-none transition-shadow focus:ring-2 focus:ring-primary/30 " + (id === "number" ? "flex-1 " : "mt-2 ") + (errors[id] ? "border-red-600" : "border-border focus:border-primary")}
+      className={"min-h-11 w-full min-w-0 rounded-lg border bg-white px-3 py-2 text-base font-normal outline-none transition-shadow focus:ring-2 focus:ring-primary/30 " + (id === "number" ? "payment-number-input " : "mt-2 ") + (errors[id] ? "border-red-600" : "border-border focus:border-primary")}
       onChange={e => {
         if (id === "number") {
           const digits = e.target.value.replace(/\D/g, "").slice(0, 19);
@@ -74,12 +75,12 @@ export const PaymentDetails = forwardRef<PaymentDetailsHandle, { method: string 
     />;
     return <label className="block min-w-0 text-sm font-medium" htmlFor={id}>
       {label}
-      {id === "number" ? <span className="mt-2 flex min-w-0 items-center gap-2">
+      {id === "number" ? <span className="payment-number-field">
         {input}
-        <span className="flex shrink-0 items-center gap-1 bg-white" aria-label="Supported card brands">
-          <img src={`${import.meta.env.BASE_URL}images/payment/visa.png`} alt="Visa" width={32} height={21} className="block h-[21px] w-[32px] object-contain" />
-          <img src={`${import.meta.env.BASE_URL}images/payment/mastercard.png`} alt="Mastercard" width={31} height={21} className="block h-[21px] w-[31px] object-contain" />
-          <img src={`${import.meta.env.BASE_URL}images/payment/amex.png`} alt="American Express" width={32} height={21} className="block h-[21px] w-[32px] object-contain" />
+        <span className="payment-number-brands" aria-label="Supported card brands">
+          <img src={`${import.meta.env.BASE_URL}images/payment/visa.svg`} alt="Visa" width={32} height={21} className="payment-brand-badge" />
+          <img src={`${import.meta.env.BASE_URL}images/payment/mastercard.svg`} alt="Mastercard" width={32} height={21} className="payment-brand-badge" />
+          <img src={`${import.meta.env.BASE_URL}images/payment/amex.svg`} alt="American Express" width={32} height={21} className="payment-brand-badge" />
         </span>
       </span> : input}
       {errors[id] && <span id={id + "-error"} role="alert" className="mt-1 block text-xs font-normal text-red-700">{errors[id]}</span>}

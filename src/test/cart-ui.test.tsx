@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { CartPage } from "@/routes/cart";
 import type { ReactNode } from "react";
@@ -21,7 +21,7 @@ vi.mock("@/components/store/ExpressOrder", () => ({ ExpressOrder: () => null }))
 vi.mock("@/components/store/LazyQuickView", () => ({
   QuickView: ({ p }: { p: { sku: string } | null }) => p ? <output data-testid="cart-edit-open">{p.sku}</output> : null,
 }));
-afterEach(() => { cleanup(); vi.clearAllMocks(); });
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.clearAllMocks(); });
 
 it("retains Change quantity and Remove in their respective side-by-side action columns", () => {
   render(<CartPage />);
@@ -40,22 +40,53 @@ it("keeps a fixed-size red 10px promo error with 15px separation, without changi
   render(<CartPage />);
   const field = screen.getByRole("textbox", { name: "Promo code" });
   const slot = screen.getByTestId("coupon-feedback-slot");
-  expect(slot).toHaveClass("h-[52px]");
-  expect((slot.parentElement as HTMLElement).style.marginBlockEnd).toBe("15px");
+  expect(slot).toHaveClass("h-[15px]");
+  expect((slot.parentElement as HTMLElement).style.marginBlockEnd).toBe("0");
+  expect(slot).toHaveClass("py-[2.5px]");
   expect(slot.parentElement?.nextElementSibling).toBe(screen.getByRole("combobox", { name: "Sales representative" }));
   const apply = screen.getByRole("button", { name: "Apply" });
   for (const code of ["artisan", "ARTISAN ", "VIP8", ""]) {
     fireEvent.change(field, { target: { value: code } });
     fireEvent.click(apply);
     expect(screen.getByRole("alert")).toHaveTextContent("Enter a valid coupon code.");
-    expect(screen.getByRole("alert")).toHaveClass("text-red-600", "text-[10px]", "py-[2.5px]");
+    expect(screen.getByRole("alert")).toHaveClass("text-red-600", "text-[10px]", "leading-[10px]");
     expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
     expect(screen.getAllByText("$580.00").length).toBeGreaterThan(0);
   }
   fireEvent.change(field, { target: { value: "ARTISAN" } });
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
+  fireEvent.click(apply);
+  expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
+  expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
+});
+
+
+it("restarts a full 20-second error on every Apply and immediately accepts ARTISAN", () => {
+  vi.useFakeTimers();
+  render(<CartPage />);
+  const field = screen.getByRole("textbox", { name: "Promo code" });
+  const apply = screen.getByRole("button", { name: "Apply" });
+  const slot = screen.getByTestId("coupon-feedback-slot");
+  fireEvent.change(field, { target: { value: "invalid" } });
+  fireEvent.click(apply);
+  expect(screen.getByRole("alert")).toHaveTextContent("Enter a valid coupon code.");
+  act(() => vi.advanceTimersByTime(10_000));
+  fireEvent.change(field, { target: { value: "another" } });
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  fireEvent.click(apply);
+  act(() => vi.advanceTimersByTime(19_999));
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  act(() => vi.advanceTimersByTime(1));
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
   fireEvent.click(apply);
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  fireEvent.change(field, { target: { value: "ARTISAN" } });
+  fireEvent.click(apply);
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
+  act(() => vi.advanceTimersByTime(20_000));
   expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
   expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
 });

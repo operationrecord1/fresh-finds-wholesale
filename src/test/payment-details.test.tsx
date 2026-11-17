@@ -20,7 +20,7 @@ it("keeps values out of form submission and storage, clears them after validatio
   const {container}=render(<form><PaymentDetails ref={ref} method="card"/></form>);
   act(()=>{expect(ref.current!.validate()).toBe(false)});
   expect(screen.getByText("Enter a valid card number.")).toBeInTheDocument();
-  for(const [label,value] of [["Name on card","Test Customer"],["Card number","4242424242424242"],["Expiry date","12/39"],["Security code","123"]]) fireEvent.change(screen.getByLabelText(label),{target:{value}});
+  for(const [label,value] of [["Name on card","Test Customer"],["Card number","4242424242424242"],["Expiry date","12/39"],["Security code","123"]] as const) fireEvent.change(screen.getByLabelText(label),{target:{value}});
   expect(screen.getByLabelText("Card number")).toHaveValue("4242 4242 4242 4242");
   act(()=>{expect(ref.current!.validate()).toBe(true)});
   expect(Array.from(new FormData(container.querySelector("form")!).entries())).toEqual([]);
@@ -38,11 +38,13 @@ it("renders the three local payment logos in reference order before, during and 
   const { container } = render(<PaymentDetails ref={ref} method="card" />);
   const badges = container.querySelectorAll('[aria-label="Supported card brands"] img');
   expect(badges).toHaveLength(3);
+  expect(screen.getByLabelText("Card number")).toHaveClass("payment-number-input");
+  expect(badges[0]?.closest(".payment-number-field")).toBe(screen.getByLabelText("Card number").parentElement);
   expect(Array.from(badges).map(img => img.getAttribute("alt"))).toEqual(["Visa", "Mastercard", "American Express"]);
   expect(Array.from(badges).map(img => img.getAttribute("src"))).toEqual([
-    expect.stringContaining("images/payment/visa.png"),
-    expect.stringContaining("images/payment/mastercard.png"),
-    expect.stringContaining("images/payment/amex.png"),
+    expect.stringContaining("images/payment/visa.svg"),
+    expect.stringContaining("images/payment/mastercard.svg"),
+    expect.stringContaining("images/payment/amex.svg"),
   ]);
   fireEvent.change(screen.getByLabelText("Card number"), { target: { value: "5555555555554444" } });
   expect(screen.getByAltText("Visa")).toBeInTheDocument();
@@ -59,7 +61,7 @@ it("accepts supported Visa, Mastercard and Amex lengths while preserving the 19-
     ["4222222222222", "123"], ["4242424242424242", "123"],
     ["4000000000000000006", "123"], ["5555555555554444", "123"],
     ["2221000000000009", "123"], ["378282246310005", "1234"],
-  ]) {
+  ] as const) {
     expect(isSupportedDemoCardLength(number)).toBe(true);
     expect(cardError(number, "12/39", cvv, now).number).toBe("");
   }

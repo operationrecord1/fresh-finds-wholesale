@@ -7,7 +7,8 @@ import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
-import { isValidDemoCoupon, INVALID_COUPON_MESSAGE, DEMO_COUPON_SUCCESS_MESSAGE } from "@/lib/demo-coupon";
+import { isValidDemoCoupon } from "@/lib/demo-coupon";
+import { useDemoCouponFeedback } from "@/hooks/useDemoCouponFeedback";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [
@@ -35,7 +36,7 @@ export function Checkout() {
   const [payment, setPayment] = useState("card");
   const [phase, setPhase] = useState<"idle" | "processing" | "success">("idle");
   const [coupon, setCoupon] = useState("");
-  const [couponMessage, setCouponMessage] = useState<"valid" | "invalid" | null>(null);
+  const { message: couponMessage, applyCoupon } = useDemoCouponFeedback();
   const processingTimer = useRef<number | null>(null);
   const paymentRef = useRef<PaymentDetailsHandle>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
@@ -43,7 +44,7 @@ export function Checkout() {
   const submitDemo = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (phase !== "idle") return;
-    if (coupon !== "" && !isValidDemoCoupon(coupon)) { setCouponMessage("invalid"); return; }
+    if (coupon !== "" && !isValidDemoCoupon(coupon)) { applyCoupon(coupon); return; }
     if (!paymentRef.current?.validate()) return;
     paymentRef.current.clear();
     setPhase("processing");
@@ -87,11 +88,11 @@ export function Checkout() {
         {lines.map((l) => { const p = getProduct(l.sku)!; return <div key={l.sku} className="flex justify-between border-b py-2 text-sm"><span>{p.sku} × {l.pieces}</span><span>{money(lineTotal(l.pieces, p.price ?? 0))}</span></div>; })}
         <div className="mt-3 flex justify-between font-bold"><span>Grand Total</span><span>{money(subtotal)}</span></div>
         <div className="mt-3"><div className="flex gap-[15px]">
-          <input aria-label="Coupon code" placeholder="Coupon code" value={coupon} onChange={e => { setCoupon(e.target.value); setCouponMessage(null); }} className="min-w-0 flex-1 rounded border p-2" />
-          <button type="button" onClick={() => setCouponMessage(isValidDemoCoupon(coupon) ? "valid" : "invalid")} className="rounded bg-primary px-3 font-semibold text-primary-foreground">Apply</button>
+          <input aria-label="Coupon code" placeholder="Coupon code" value={coupon} onChange={e => setCoupon(e.target.value)} className="min-w-0 flex-1 rounded border p-2" />
+          <button type="button" onClick={() => applyCoupon(coupon)} className="rounded bg-primary px-3 font-semibold text-primary-foreground">Apply</button>
         </div>
-        <DemoCouponFeedback message={couponMessage === "invalid" ? INVALID_COUPON_MESSAGE : couponMessage === "valid" ? DEMO_COUPON_SUCCESS_MESSAGE : ""} /></div>
-        <textarea placeholder="Comments" className="mt-[15px] w-full rounded border p-2" rows={3} />
+        <DemoCouponFeedback message={couponMessage} /></div>
+        <textarea placeholder="Comments" className="mt-0 block w-full rounded border p-2" rows={3} />
         <button ref={submitRef} type="submit" disabled={phase !== "idle"} className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 font-bold text-accent-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">{phase === "processing" ? <><LoaderCircle size={19} className="motion-safe:animate-spin" aria-hidden="true" />Processing your order...</> : <>Place Your Order <ChevronRight size={18} aria-hidden="true" /></>}</button>
       </section>
       <Dialog open={phase !== "idle"} onOpenChange={open => { if (!open && phase === "success") setPhase("idle"); }}>

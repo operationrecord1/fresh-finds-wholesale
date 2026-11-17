@@ -1,0 +1,38 @@
+/* Only the card-number field: the supported brands sit inside its white border. */
+.payment-number-field {
+  --payment-badge-width: 28px;
+  --payment-badge-gap: 4px;
+  position: relative;
+  display: block;
+  min-width: 0;
+  margin-top: 8px;
+}
+.payment-number-field .payment-number-input {
+  box-sizing: border-box;
+  padding-right: calc(3 * var(--payment-badge-width) + 2 * var(--payment-badge-gap) + 20px);
+  background-color: #fff;
+}
+.payment-number-brands {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--payment-badge-gap);
+  pointer-events: none;
+  background: #fff;
+}
+.payment-number-brands .payment-brand-badge {
+  display: block;
+  flex: none;
+  width: var(--payment-badge-width);
+  height: auto;
+  aspect-ratio: 32 / 21;
+  object-fit: contain;
+  border: 0;
+  box-shadow: none;
+}
+@media (max-width: 380px) {
+  .payment-number-field { --payment-badge-width: 24px; --payment-badge-gap: 3px; }
+}
