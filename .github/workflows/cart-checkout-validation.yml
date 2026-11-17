@@ -8,14 +8,16 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch original payment badge paths and license
+      - name: Inspect payment badge source archive
         run: |
-          mkdir -p /tmp/artisan-badges
-          for brand in visa mastercard amex; do
-            curl -fsSL "https://raw.githubusercontent.com/medipass/react-payment-inputs/master/src/images/$brand.js" -o "/tmp/artisan-badges/$brand.js"
-          done
-          curl -fsSL https://raw.githubusercontent.com/medipass/react-payment-inputs/master/LICENSE -o /tmp/artisan-badges/LICENSE.txt
+          mkdir -p /tmp/artisan-badges /tmp/badge-source
+          curl -fsSL https://codeload.github.com/medipass/react-payment-inputs/tar.gz/refs/heads/master -o /tmp/badge-source/source.tgz
+          tar -xzf /tmp/badge-source/source.tgz -C /tmp/badge-source
+          find /tmp/badge-source -iname '*amex*' -o -iname '*visa*' -o -iname '*mastercard*' -o -iname '*license*'
+          cp -r /tmp/badge-source/react-payment-inputs-master/src /tmp/artisan-badges/src
+          find /tmp/badge-source/react-payment-inputs-master -maxdepth 1 -iname '*license*' -exec cp {} /tmp/artisan-badges/ \;
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: artisan-badges
           path: /tmp/artisan-badges
