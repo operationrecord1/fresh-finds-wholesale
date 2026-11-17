@@ -8,17 +8,18 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect payment badge source archive
+      - name: Inspect legacy vector badge shapes
         run: |
-          mkdir -p /tmp/artisan-badges /tmp/badge-source
-          curl -fsSL https://codeload.github.com/medipass/react-payment-inputs/tar.gz/refs/heads/master -o /tmp/badge-source/source.tgz
-          tar -xzf /tmp/badge-source/source.tgz -C /tmp/badge-source
-          find /tmp/badge-source -iname '*amex*' -o -iname '*visa*' -o -iname '*mastercard*' -o -iname '*license*'
-          cp -r /tmp/badge-source/react-payment-inputs-master/src /tmp/artisan-badges/src
-          find /tmp/badge-source/react-payment-inputs-master -maxdepth 1 -iname '*license*' -exec cp {} /tmp/artisan-badges/ \;
+          mkdir -p /tmp/legacy-card /tmp/legacy-source
+          curl -fsSL https://codeload.github.com/medipass/react-credit-card-input/tar.gz/refs/heads/master -o /tmp/legacy-source/source.tgz
+          tar -xzf /tmp/legacy-source/source.tgz -C /tmp/legacy-source
+          cp -r /tmp/legacy-source/react-credit-card-input-master/src /tmp/legacy-card/src
+          find /tmp/legacy-source/react-credit-card-input-master -maxdepth 1 -iname '*licen*' -exec cp {} /tmp/legacy-card/ \;
+          curl -fsSL https://raw.githubusercontent.com/medipass/react-payment-inputs/master/package.json -o /tmp/legacy-card/package-source.json
+          curl -fsSL https://raw.githubusercontent.com/medipass/react-payment-inputs/master/LICENSE.md -o /tmp/legacy-card/payment-inputs-LICENSE.md || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: artisan-badges
-          path: /tmp/artisan-badges
+          name: artisan-legacy-vectors
+          path: /tmp/legacy-card
           retention-days: 1
