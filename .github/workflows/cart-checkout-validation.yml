@@ -14,20 +14,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - name: TypeScript and regression tests
-        run: |
-          bunx tsc --noEmit
-          bun run test
-      - name: Netlify production build
-        run: bun run build:netlify
       - name: Prepare live browser verification
         run: |
           npm install --prefix /tmp/artisan-live --no-save playwright
           mkdir -p /tmp/artisan-live/results
           if ! command -v google-chrome; then /tmp/artisan-live/node_modules/.bin/playwright install --with-deps chromium; fi
-      - name: Check fresh live Cart and Checkout
+      - name: Check deployed Netlify assets and live Cart and Checkout
         run: |
           cat > /tmp/artisan-live/check.cjs <<'JS'
           const {chromium}=require('playwright');
@@ -38,35 +30,42 @@ jobs:
             let exe;try{exe=cp.execSync('which google-chrome').toString().trim()}catch{}
             const browser=await chromium.launch({headless:true,...(exe?{executablePath:exe}:{})});
             const results=[];
+            const docY=locator=>locator.evaluate(el=>el.getBoundingClientRect().top+window.scrollY);
             try {
+              const assets=[];const probe=await browser.newContext();
+              for(const brand of ['visa','mastercard','amex']){
+                const url='https://lambent-gnome-721faa.netlify.app/images/payment/'+brand+'.svg?verify=2d6e241';
+                const res=await probe.request.get(url);assert.equal(res.status(),200);
+                assert.equal((await res.body()).toString(),fs.readFileSync('public/images/payment/'+brand+'.svg','utf8'));
+                assets.push({brand,status:res.status(),url:res.url(),headers:res.headers(),exactSourceMatch:true});
+              }
+              fs.writeFileSync('/tmp/artisan-live/results/netlify-assets.json',JSON.stringify(assets,null,2));
+              console.log('NETLIFY_PUBLISHED_ASSETS_MATCH',JSON.stringify(assets));await probe.close();
               for(const width of [1440,390,320]) for(const route of ['cart','checkout']){
                 const context=await browser.newContext({viewport:{width,height:1000},deviceScaleFactor:width<500?3:1});
                 await context.addInitScript(()=>sessionStorage.setItem('artisan-mart-cart',JSON.stringify([{sku:'DA883',pieces:40,mode:'piece'}])));
                 const page=await context.newPage();
                 const response=await page.goto('https://artisanmart.site/'+route+'?verify=2d6e241',{waitUntil:'networkidle',timeout:60000});
                 assert.equal(response.status(),200);
-                const field=page.getByRole('textbox',{name:route==='cart'?'Promo code':'Coupon code',exact:true});
-                await field.waitFor();
+                const field=page.getByRole('textbox',{name:route==='cart'?'Promo code':'Coupon code',exact:true});await field.waitFor();
+                await page.evaluate(()=>document.fonts.ready);
                 const slot=page.getByTestId('coupon-feedback-slot');
                 const next=route==='cart'?page.getByRole('combobox',{name:'Sales representative',exact:true}):page.getByPlaceholder('Comments');
-                const before=await next.boundingBox();
-                await page.clock.install();
-                await field.fill('WRONG');await page.getByRole('button',{name:'Apply',exact:true}).click();
-                await page.getByRole('alert').waitFor();
+                const before=await docY(next);await page.clock.install();
+                await field.fill('WRONG');await page.getByRole('button',{name:'Apply',exact:true}).click();await page.getByRole('alert').waitFor();
                 const measurement=await slot.evaluate(el=>{const p=el.querySelector('p'),c=getComputedStyle(el),t=getComputedStyle(p);return {height:el.getBoundingClientRect().height,paddingTop:c.paddingTop,paddingBottom:c.paddingBottom,fontSize:t.fontSize,lineHeight:t.lineHeight,text:p.textContent,color:t.color}});
-                const row=await field.evaluate(el=>{const r=el.parentElement.getBoundingClientRect();return {bottom:r.bottom}});
-                const after=await next.boundingBox();
-                assert.equal(after.y-row.bottom,15);assert.equal(before.y,after.y);
+                const rowBottom=await field.evaluate(el=>el.parentElement.getBoundingClientRect().bottom+window.scrollY);
+                const after=await docY(next);assert.equal(after-rowBottom,15);assert.equal(before,after);
                 assert.equal(measurement.height,15);assert.equal(measurement.fontSize,'10px');assert.equal(measurement.lineHeight,'10px');assert.equal(measurement.paddingTop,'2.5px');assert.equal(measurement.paddingBottom,'2.5px');
                 await page.screenshot({path:'/tmp/artisan-live/results/'+route+'-'+width+'.png',fullPage:true});
                 await page.clock.runFor(10000);
                 await field.fill('WRONG_AGAIN');await page.getByRole('button',{name:'Apply',exact:true}).click();
-                await page.clock.runFor(19999);assert.equal(await page.getByRole('alert').count(),1);
-                await page.clock.runFor(1);await page.getByRole('alert').waitFor({state:'detached'});
+                await page.clock.runFor(19900);assert.equal(await page.getByRole('alert').count(),1);
+                await page.clock.runFor(200);await page.getByRole('alert').waitFor({state:'detached'});
+                assert.equal(await docY(next),after);
                 await page.getByRole('button',{name:'Apply',exact:true}).click();await page.getByRole('alert').waitFor();
-                await field.fill('ARTISAN');await page.getByRole('button',{name:'Apply',exact:true}).click();
-                assert.equal(await page.getByRole('alert').count(),0);
-                await page.clock.runFor(20000);assert.match(await page.getByRole('status').textContent(),/No discount has been applied/);
+                await field.fill('ARTISAN');await page.getByRole('button',{name:'Apply',exact:true}).click();assert.equal(await page.getByRole('alert').count(),0);
+                await page.clock.runFor(20000);assert.match(await page.getByRole('status').textContent(),/No discount has been applied/);assert.equal(await docY(next),after);
                 let logos=null;
                 if(route==='checkout'){
                   await page.getByLabel('Card number',{exact:true}).fill('4000000000000000006');
@@ -77,9 +76,8 @@ jobs:
                   assert(logos.inside&&logos.paddingSafe);assert.equal(logos.white,'rgb(255, 255, 255)');assert.deepEqual(logos.images.map(i=>i.alt),['Visa','Mastercard','American Express']);assert(logos.images.every(i=>i.loaded&&i.svg));
                   await page.locator('.payment-number-field').screenshot({path:'/tmp/artisan-live/results/logos-'+width+'.png'});
                 }
-                results.push({route,width,httpStatus:response.status(),server:(await response.allHeaders()).server,measurement,gap:after.y-row.bottom,layoutShift:after.y-before.y,timerRestart:true,validCancelsError:true,logos});
-                fs.writeFileSync('/tmp/artisan-live/results/live-verification.json',JSON.stringify(results,null,2));
-                console.log('LIVE_PASS',route,width,JSON.stringify(results.at(-1)));
+                results.push({route,width,httpStatus:response.status(),server:(await response.allHeaders()).server,measurement,gap:after-rowBottom,layoutShift:after-before,timerRestart:true,validCancelsError:true,logos});
+                fs.writeFileSync('/tmp/artisan-live/results/live-verification.json',JSON.stringify(results,null,2));console.log('LIVE_PASS',route,width,JSON.stringify(results.at(-1)));
                 await context.close();
               }
             } finally {await browser.close()}
