@@ -8,14 +8,15 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch original vector glyphs and license for inspection
+      - name: Fetch original payment badge paths and license
         run: |
-          mkdir -p /tmp/artisan-wordmark
-          curl -fsSL https://raw.githubusercontent.com/AlexanderPoellmann/PaymentFont/master/fonts/paymentfont-webfont.svg -o /tmp/artisan-wordmark/paymentfont.svg
-          curl -fsSL https://raw.githubusercontent.com/AlexanderPoellmann/PaymentFont/master/LICENSE -o /tmp/artisan-wordmark/LICENSE.txt
-          curl -fsSL https://raw.githubusercontent.com/AlexanderPoellmann/PaymentFont/master/css/paymentfont.css -o /tmp/artisan-wordmark/mapping.css
+          mkdir -p /tmp/artisan-badges
+          for brand in visa mastercard amex; do
+            curl -fsSL "https://raw.githubusercontent.com/medipass/react-payment-inputs/master/src/images/$brand.js" -o "/tmp/artisan-badges/$brand.js"
+          done
+          curl -fsSL https://raw.githubusercontent.com/medipass/react-payment-inputs/master/LICENSE -o /tmp/artisan-badges/LICENSE.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: artisan-wordmark
-          path: /tmp/artisan-wordmark
+          name: artisan-badges
+          path: /tmp/artisan-badges
           retention-days: 1
