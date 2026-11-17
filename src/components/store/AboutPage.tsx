@@ -7,7 +7,7 @@ const sections = [
  { id: "industries-served", label: "Industries Served", icon: Store },
  { id: "artisan-cares", label: "Artisan Cares", icon: Heart },
  { id: "easy-shipping", label: "Easy Shipping", icon: Package },
- { id: "careers", label: "Artisan Market Careers", icon: BriefcaseBusiness },
+ { id: "careers", label: "Artisan Mart Careers", icon: BriefcaseBusiness },
  { id: "blog", label: "Blog", icon: BookOpen },
 ];
 export function AboutPage() {

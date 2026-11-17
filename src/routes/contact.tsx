@@ -5,7 +5,7 @@ import { MapPin, Mail, MessageSquare, Package, ArrowRight } from "lucide-react";
 import { meta } from "@/components/store/SimplePage";
 import "@/components/store/ContactPage.css";
 
-export const Route = createFileRoute("/contact")({ head: () => meta("Contact Us", "Contact Artisan Market about wholesale products, orders and closeouts."), component: Contact });
+export const Route = createFileRoute("/contact")({ head: () => meta("Contact Us", "Contact Artisan Mart about wholesale products, orders and closeouts."), component: Contact });
 function Contact() {
  const [topic, setTopic] = useState("new");
  const [ticket, setTicket] = useState<string | null>(null);

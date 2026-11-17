@@ -54,3 +54,23 @@ describe("purchase validation", () => {
     expect(validateQuantity(8, "piece", r("CB163"), 1100)).toBeTruthy();
   });
 });
+
+
+import { maximumQuantity } from "./wholesale";
+describe("stock-limited selections", () => {
+  const rules = { lot: 5, moq: 5, caseQty: 10, physicalCase: 10, innerPack: 1 };
+  it("uses at most 425 pieces or 42 complete cases for 425 in stock", () => {
+    expect(maximumQuantity("piece", rules, 425)).toBe(425);
+    expect(maximumQuantity("case", rules, 425)).toBe(42);
+    expect(maximumQuantity("piece", rules, 425, 400)).toBe(25);
+    expect(maximumQuantity("case", rules, 425, 400)).toBe(2);
+    expect(maximumQuantity("piece", rules, 425, 425)).toBe(0);
+    expect(maximumQuantity("piece", rules, 3)).toBe(0);
+    expect(maximumQuantity("piece", rules, null)).toBeUndefined();
+  });
+  it("rejects multiplication overflow without accepting unsafe cart totals", () => {
+    expect(validateQuantity(Number.MAX_SAFE_INTEGER, "case", rules, null)).toBeTruthy();
+    expect(validateQuantity(425, "piece", rules, 425)).toBeNull();
+    expect(validateQuantity(430, "piece", rules, 425)).toBeTruthy();
+  });
+});

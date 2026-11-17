@@ -1,0 +1,17 @@
+import { Link } from "@tanstack/react-router";
+import { money, ORDER_MINIMUM } from "@/lib/wholesale";
+
+/** Answers describe existing storefront controls, not new fulfillment or business policies. */
+export function SalesFAQ() {
+  return <div className="space-y-4">
+    <p>Find answers to common questions about browsing products and preparing your Artisan Mart cart.</p>
+    <details className="border-b pb-4"><summary className="cursor-pointer font-semibold">What is the minimum order amount?</summary><p className="mt-3">The merchandise subtotal must reach {money(ORDER_MINIMUM)} before you can proceed to checkout. Shipping and tax are not included in the cart subtotal.</p></details>
+    <details className="border-b pb-4"><summary className="cursor-pointer font-semibold">How do piece quantities and cases work?</summary><p className="mt-3">Each product shows its minimum piece quantity, lot increment, and purchasing-case quantity. Choose Order By Piece or Order By Case and follow that item's quantity requirements. A purchasing case may differ from the physical shipping carton.</p></details>
+    <details className="border-b pb-4"><summary className="cursor-pointer font-semibold">Can I select more than the available quantity?</summary><p className="mt-3">No. Your selection and the quantity already in your cart cannot exceed the displayed stock. The largest selectable quantity must also fit the product's lot or case size. Express Order and CSV entries are checked against the same stock limit.</p></details>
+    <details className="border-b pb-4"><summary className="cursor-pointer font-semibold">How do I use Express Order?</summary><p className="mt-3">Enter an item number and a positive whole-number quantity, then select Add To Order. You can also upload a CSV with a header row and two columns: item # and qty. Piece quantities round up to the next valid lot. Entries that exceed available stock after rounding are not added; review the displayed error.</p></details>
+    <details className="border-b pb-4"><summary className="cursor-pointer font-semibold">How do I change or remove cart items?</summary><p className="mt-3">Use Change quantity to edit an item, then select Update Cart. Use Remove to remove a single product, or Clear Cart for all products. Confirm the removal when prompted.</p></details>
+    <details className="border-b pb-4"><summary className="cursor-pointer font-semibold">Where can I find product details?</summary><p className="mt-3">Search by product name or item number, browse a category, or open a product's quick view. The full product page includes available photos, quantity information, descriptions, and specifications.</p></details>
+    <details className="border-b pb-4"><summary className="cursor-pointer font-semibold">How do I check a coupon code?</summary><p className="mt-3">Enter the code exactly as provided and click Apply in your cart or at checkout. The current demo accepts ARTISAN in uppercase. Acceptance does not apply a discount, and the displayed total stays unchanged.</p></details>
+    <details><summary className="cursor-pointer font-semibold">Where can I ask about shipping, returns, or a product?</summary><p className="mt-3">Review the <Link to="/terms-of-sale" className="text-primary underline">Terms of Sale</Link> or visit <Link to="/contact" className="text-primary underline">Contact Us</Link> for the listed contact options. This FAQ does not add or change shipping, return, or payment terms.</p></details>
+  </div>;
+}

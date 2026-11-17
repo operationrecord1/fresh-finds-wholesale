@@ -2,24 +2,32 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
-import { normalizePieces } from "@/lib/wholesale";
+import { normalizePieces, validateQuantity } from "@/lib/wholesale";
 
 type Row = { sku: string; qty: string };
 const blank = (): Row => ({ sku: "", qty: "" });
 
 export function ExpressOrder({ open = false }: { open?: boolean }) {
-  const { add } = useCart();
+  const { add, lines } = useCart();
   const [rows, setRows] = useState<Row[]>([blank(), blank(), blank()]);
   const [errors, setErrors] = useState<string[]>([]);
 
   const submit = (list: Row[]) => {
     const errs: string[] = []; let added = 0;
+    const quantities = new Map(lines.map(line => [line.sku, line.pieces]));
     list.filter((r) => r.sku.trim()).forEach((r) => {
       const p = getProduct(r.sku.trim());
       if (!p) { errs.push(`${r.sku}: item not found`); return; }
       if (!p.rules || p.price == null) { errs.push(`${p.sku}: purchasing data not verified`); return; }
-      const q = normalizePieces(Number(r.qty) || 0, p.rules); // round up to nearest quantity break
-      add(p.sku, q); added++;
+      const requested = Number(r.qty);
+      if (!Number.isSafeInteger(requested) || requested <= 0) { errs.push(`${p.sku}: enter a whole quantity greater than zero`); return; }
+      const q = normalizePieces(requested, p.rules); // preserve the existing lot-round-up behavior
+      const existing = quantities.get(p.sku) ?? 0;
+      const error = validateQuantity(q, "piece", p.rules, p.stock, existing);
+      if (error) { errs.push(`${p.sku}: ${error}`); return; }
+      if (add(p.sku, q) === false) { errs.push(`${p.sku}: the requested quantity is no longer available`); return; }
+      quantities.set(p.sku, existing + q);
+      added++;
     });
     setErrors(errs); if (added) toast.success(`${added} item(s) added to order`);
   };
@@ -47,7 +55,7 @@ export function ExpressOrder({ open = false }: { open?: boolean }) {
       <label className="mt-4 block text-sm">Upload CSV (two columns, header: item #, qty)
         <input type="file" accept=".csv" className="mt-1 block w-full min-w-0" onChange={(e) => e.target.files?.[0] && onCsv(e.target.files[0])} />
       </label>
-      {errors.length > 0 && <ul className="mt-2 text-sm text-destructive">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
+      {errors.length > 0 && <ul className="mt-2 text-sm text-destructive">{errors.map((e, i) => <li key={`${i}:${e}`}>{e}</li>)}</ul>}
     </details>
   );
 }

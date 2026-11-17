@@ -42,3 +42,32 @@ it("does not offer Add To Cart for supplier products with zero stock", () => {
   expect(screen.getByRole("status")).toHaveTextContent("Currently out of stock");
   expect(screen.queryByRole("button", {name:"Add To Cart"})).not.toBeInTheDocument();
 });
+
+
+it("caps typed/pasted quantities and mode switches at stock, including existing cart quantities", () => {
+  const product = { ...getProduct("DA883")!, stock: 425, rules: { ...getProduct("DA883")!.rules!, lot: 5, moq: 5, caseQty: 10 } };
+  render(<PurchasePanel p={product} />);
+  const pieces = screen.getByLabelText("Pieces quantity");
+  fireEvent.focus(pieces);
+  fireEvent.change(pieces, { target: { value: "999999" } });
+  expect(pieces).toHaveValue("425");
+  expect(screen.getByRole("button", { name: "Increase piece" })).toBeDisabled();
+  fireEvent.click(screen.getByLabelText(/Order By Case/));
+  expect(screen.getByLabelText("Case quantity")).toHaveValue("42");
+  expect(screen.getByRole("button", { name: "Increase case" })).toBeDisabled();
+  fireEvent.change(screen.getByLabelText("Case quantity"), { target: { value: "43" } });
+  expect(screen.getByLabelText("Case quantity")).toHaveValue("42");
+  cleanup();
+  cart.lines = [{ sku: product.sku, pieces: 400 }];
+  render(<PurchasePanel p={product} />);
+  fireEvent.change(screen.getByLabelText("Pieces quantity"), { target: { value: "425" } });
+  expect(screen.getByLabelText("Pieces quantity")).toHaveValue("25");
+});
+it("uses the full stock cap when editing rather than subtracting the item being edited", () => {
+  const product = { ...getProduct("DA883")!, stock: 425, rules: { ...getProduct("DA883")!.rules!, lot: 5, moq: 5, caseQty: 10 } };
+  cart.lines = [{ sku: product.sku, pieces: 400 }];
+  render(<PurchasePanel p={product} initialPieces={400} label="Update Cart" />);
+  fireEvent.click(screen.getByLabelText(/Order By Piece/));
+  fireEvent.change(screen.getByLabelText("Pieces quantity"), { target: { value: "426" } });
+  expect(screen.getByLabelText("Pieces quantity")).toHaveValue("425");
+});

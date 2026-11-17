@@ -44,3 +44,10 @@ it("supports keyboard toggle and Escape dismissal", () => {
   fireEvent.keyDown(document, { key: "Escape" });
   expect(trigger).toHaveAttribute("aria-expanded", "false");
 });
+
+
+it("removes the VIP8 promotional strip from the DOM for every viewport", () => {
+  const { container } = render(<SiteHeader />);
+  expect(container.querySelector(".store-promo")).toBeNull();
+  expect(screen.queryByText(/VIP8|8% OFF/)).not.toBeInTheDocument();
+});

@@ -15,10 +15,19 @@ export const lineTotal = (pieces: number, price: number) => Math.round(pieces * 
 export const meetsMinimum = (subtotal: number) => subtotal >= ORDER_MINIMUM;
 export const money = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+/** Maximum selectable units, respecting the existing piece lot or purchasing case. */
+export function maximumQuantity(mode: BuyMode, r: PurchaseRules, stock: number | null, existing = 0): number | undefined {
+  if (stock == null) return undefined;
+  const remaining = Math.max(0, stock - existing);
+  const maximum = mode === "case" ? Math.floor(remaining / r.caseQty) : Math.floor(remaining / r.lot) * r.lot;
+  return mode === "piece" && maximum < r.moq ? 0 : maximum;
+}
+
 /** Validate purchase input without silently changing the customer's quantity. */
 export function validateQuantity(value: number, mode: BuyMode, r: PurchaseRules, stock: number | null, existing = 0): string | null {
   if (!Number.isSafeInteger(value) || value <= 0) return "Enter a whole quantity greater than zero.";
   const pieces = mode === "case" ? value * r.caseQty : value;
+  if (!Number.isSafeInteger(pieces) || !Number.isSafeInteger(pieces + existing)) return "Enter a whole quantity within the available stock.";
   if (mode === "piece" && pieces < r.moq) return `Minimum order is ${r.moq} pieces.`;
   if (mode === "piece" && pieces % r.lot !== 0) {
     const lower = Math.max(normalizePieces(0, r), Math.floor(pieces / r.lot) * r.lot);
