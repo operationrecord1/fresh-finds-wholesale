@@ -3,7 +3,7 @@ on:
   push:
     branches: [validation/storefront-scope-20261117]
 permissions:
-  contents: read
+  contents: write
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -12,17 +12,69 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Restore checksum-verified proposed changes
+        run: |
+          mkdir -p /tmp/artisan-results /tmp/artisan-browser
+          python - <<'PY'
+          import base64, gzip, hashlib, json, pathlib
+          original_tail = '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'
+          encoded = base64.b64encode(pathlib.Path('.github/validation/scoped-payload.gz').read_bytes()).decode()
+          payload = base64.b64decode(encoded[:14156] + original_tail)
+          actual = hashlib.sha1(b'blob ' + str(len(payload)).encode() + b'\0' + payload).hexdigest()
+          assert actual == '6bb965d5622133454e7834415905bba2533bf3c4', actual
+          data = json.loads(gzip.decompress(payload))
+          pathlib.Path('/tmp/scoped-payload.json').write_text(json.dumps(data))
+          pathlib.Path('/tmp/scoped.patch').write_text(data['patch'])
+          pathlib.Path('/tmp/artisan-browser/check.cjs').write_text(data['browser'])
+          print('Validated proposal transport checksum')
+          PY
+          git fetch origin 2d6e24188dca6e22d78dbdc34b2d073bd6c08f4e
+          git checkout --detach 2d6e24188dca6e22d78dbdc34b2d073bd6c08f4e
+          git apply --check /tmp/scoped.patch
+          git apply /tmp/scoped.patch
+          git diff --check
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
-      - run: bunx tsc --noEmit
-      - run: bun run test
-      - run: bun run build:netlify
-      - name: Export inspected source
+      - name: TypeScript
+        run: bunx tsc --noEmit
+      - name: Regression tests
+        run: bun run test --maxWorkers=2
+      - name: Netlify production build
+        run: bun run build:netlify
+      - name: Desktop and mobile browser checks
         run: |
-          mkdir -p /tmp/artisan-scope
-          zip -qr /tmp/artisan-scope/source.zip . -x 'node_modules/*' '.git/*' 'dist/*' '.tanstack/*'
+          npm install --prefix /tmp/artisan-browser --no-save playwright
+          if ! command -v google-chrome; then /tmp/artisan-browser/node_modules/.bin/playwright install --with-deps chromium; fi
+          node /tmp/artisan-browser/check.cjs
+      - name: Create validated commit without updating production
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, hashlib, pathlib, os, urllib.request, subprocess
+          repo='operationrecord1/fresh-finds-wholesale'
+          base='2d6e24188dca6e22d78dbdc34b2d073bd6c08f4e'
+          data=json.loads(pathlib.Path('/tmp/scoped-payload.json').read_text())
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()+subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())
+          assert changed==set(data['manifest']), changed
+          entries=[]
+          for filename, expected in data['manifest'].items():
+            b=pathlib.Path(filename).read_bytes()
+            assert hashlib.sha256(b).hexdigest()==expected, filename
+            entries.append({'path':filename,'mode':'100644','type':'blob','content':b.decode()})
+          def api(endpoint,body=None):
+            req=urllib.request.Request('https://api.github.com/repos/'+repo+endpoint, data=json.dumps(body).encode() if body is not None else None,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+            with urllib.request.urlopen(req) as response:return json.load(response)
+          assert api('/branches/main')['commit']['sha']==base,'Production branch changed'
+          tree=api('/git/trees',{'base_tree':'3d7f3f840202e9ade7caffc9bdcb3df394026c1d','tree':entries})
+          commit=api('/git/commits',{'message':'Apply approved promotion, naming, stock limits and Sales FAQ fixes','tree':tree['sha'],'parents':[base]})
+          result={'commit':commit['sha'],'tree':tree['sha'],'base':base,'files':data['manifest'],'mainUpdated':False}
+          pathlib.Path('/tmp/artisan-results/candidate.json').write_text(json.dumps(result,indent=2))
+          print('VALIDATED_CANDIDATE',commit['sha'])
+          PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: artisan-scope-source
-          path: /tmp/artisan-scope
+          name: artisan-scoped-validation
+          path: /tmp/artisan-results
           retention-days: 1
