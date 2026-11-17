@@ -1,0 +1,28 @@
+name: Scoped storefront validation
+on:
+  push:
+    branches: [validation/storefront-scope-20261117]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx tsc --noEmit
+      - run: bun run test
+      - run: bun run build:netlify
+      - name: Export inspected source
+        run: |
+          mkdir -p /tmp/artisan-scope
+          zip -qr /tmp/artisan-scope/source.zip . -x 'node_modules/*' '.git/*' 'dist/*' '.tanstack/*'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artisan-scope-source
+          path: /tmp/artisan-scope
+          retention-days: 1
