@@ -1,0 +1,39 @@
+name: Cart checkout isolated validation
+on:
+  push:
+    branches: [validation/cart-checkout-final-20261117]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Baseline TypeScript
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/artisan-audit
+          bunx tsc --noEmit 2>&1 | tee /tmp/artisan-audit/typescript.txt
+      - name: Collect source and vector candidates
+        run: |
+          mkdir -p /tmp/artisan-audit/assets
+          zip -qr /tmp/artisan-audit/source.zip . -x 'node_modules/*' '.git/*'
+          for brand in visa mastercard amex; do
+            curl --retry 2 -fsSL "https://raw.githubusercontent.com/aaronfagan/svg-credit-card-payment-icons/main/flat-rounded/$brand.svg" -o "/tmp/artisan-audit/assets/$brand.svg" || true
+          done
+          for brand in visa mc amex; do
+            curl --retry 2 -fsSL "https://checkoutshopper-live.adyen.com/checkoutshopper/images/logos/$brand.svg" -o "/tmp/artisan-audit/assets/adyen-$brand.svg" || true
+          done
+          curl -fsSL https://raw.githubusercontent.com/aaronfagan/svg-credit-card-payment-icons/main/LICENSE -o /tmp/artisan-audit/assets/LICENSE.txt || true
+          ls -l /tmp/artisan-audit/assets
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artisan-inspection
+          path: /tmp/artisan-audit
+          retention-days: 1
