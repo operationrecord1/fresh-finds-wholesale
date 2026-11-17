@@ -8,25 +8,14 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - name: Prepare offline validation dependencies and vector candidates
+      - name: Fetch original vector glyphs and license for inspection
         run: |
-          mkdir -p /tmp/artisan-validation/assets
-          tar -czf /tmp/artisan-validation/node_modules.tgz node_modules
-          for brand in visa mastercard amex; do
-            curl --retry 1 -fsSL "https://www.gstatic.com/instantbuy/svg/$brand.svg" -o "/tmp/artisan-validation/assets/google-$brand.svg" || true
-            curl --retry 1 -fsSL "https://raw.githubusercontent.com/woocommerce/woocommerce-gateway-stripe/develop/assets/images/$brand.svg" -o "/tmp/artisan-validation/assets/woo-$brand.svg" || true
-          done
-          curl --retry 1 -fsSL https://raw.githubusercontent.com/paymentfont/PaymentFont/master/fonts/paymentfont-webfont.svg -o /tmp/artisan-validation/assets/paymentfont.svg || true
-          ls -lh /tmp/artisan-validation /tmp/artisan-validation/assets
+          mkdir -p /tmp/artisan-wordmark
+          curl -fsSL https://raw.githubusercontent.com/AlexanderPoellmann/PaymentFont/master/fonts/paymentfont-webfont.svg -o /tmp/artisan-wordmark/paymentfont.svg
+          curl -fsSL https://raw.githubusercontent.com/AlexanderPoellmann/PaymentFont/master/LICENSE -o /tmp/artisan-wordmark/LICENSE.txt
+          curl -fsSL https://raw.githubusercontent.com/AlexanderPoellmann/PaymentFont/master/css/paymentfont.css -o /tmp/artisan-wordmark/mapping.css
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: artisan-validation-tools
-          path: /tmp/artisan-validation
+          name: artisan-wordmark
+          path: /tmp/artisan-wordmark
           retention-days: 1
