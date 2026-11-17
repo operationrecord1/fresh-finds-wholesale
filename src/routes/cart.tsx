@@ -9,6 +9,7 @@ import { isValidDemoCoupon, INVALID_COUPON_MESSAGE, DEMO_COUPON_SUCCESS_MESSAGE 
 import { QuickView } from "@/components/store/LazyQuickView";
 import { ProductImage } from "@/components/store/ProductCard";
 import { ExpressOrder } from "@/components/store/ExpressOrder";
+import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/cart")({
   component: CartPage,
 });
 
-function CartPage() {
+export function CartPage() {
   const { lines, subtotal, requestRemove, requestClear } = useCart();
   const [edit, setEdit] = useState<{ p: Product; pieces: number } | null>(null);
   const [coupon, setCoupon] = useState("");
@@ -45,9 +46,9 @@ function CartPage() {
         <h2 className="text-xl font-bold">Order Summary</h2>
         <div className="flex justify-between"><span>Subtotal</span><span>{money(subtotal)}</span></div>
         <div className="flex justify-between text-lg font-bold"><span>Merchandise total</span><span>{money(subtotal)}</span></div>
-        <p className="text-sm text-muted-foreground">Shipping and tax are not included.</p><div className="flex gap-[15px]"><input aria-label="Promo code" value={coupon} onChange={(e) => { setCoupon(e.target.value); setMsg(""); }} placeholder="Promo code" className="min-w-0 flex-1 rounded border p-2" />
+        <p className="text-sm text-muted-foreground">Shipping and tax are not included.</p><div className="cart-promo-block" style={{ marginBlockEnd: "15px" }}><div className="flex gap-[15px]"><input aria-label="Promo code" value={coupon} onChange={(e) => { setCoupon(e.target.value); setMsg(""); }} placeholder="Promo code" className="min-w-0 flex-1 rounded border p-2" />
           <button className="rounded bg-primary px-3 text-primary-foreground" onClick={() => setMsg(isValidDemoCoupon(coupon) ? DEMO_COUPON_SUCCESS_MESSAGE : INVALID_COUPON_MESSAGE)}>Apply</button></div>
-        {msg && <p role={msg === INVALID_COUPON_MESSAGE ? "alert" : "status"} className="cart-feedback">{msg}</p>}
+        <DemoCouponFeedback message={msg} /></div>
         <select aria-label="Sales representative" className="w-full rounded border p-2" defaultValue="web"><option value="web">Sales Rep: Web Customer</option></select>
         {ok ? <Link to="/checkout" className="block rounded-full bg-accent py-3 text-center font-bold text-accent-foreground">Proceed to Checkout</Link>
             : <button disabled className="w-full rounded-full bg-accent py-3 font-bold text-accent-foreground opacity-50">Proceed to Checkout</button>}

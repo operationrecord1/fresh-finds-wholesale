@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createRef } from "react";
 import { afterEach, expect, it, vi } from "vitest";
 import { act } from "react";
-import { PaymentDetails, cardError, type PaymentDetailsHandle } from "@/components/store/PaymentDetails";
+import { PaymentDetails, cardError, isSupportedDemoCardLength, type PaymentDetailsHandle } from "@/components/store/PaymentDetails";
 vi.mock("@tanstack/react-router", () => ({Link: ({children,to}: any) => <a href={to}>{children}</a>}));
 afterEach(cleanup);
 it("validates checksum, expiry boundaries and card-specific security codes", () => {
@@ -33,12 +33,40 @@ it("keeps values out of form submission and storage, clears them after validatio
   vi.restoreAllMocks();
 });
 
-it("shows the authentic Visa logo for any nonempty card digits, and hides it after clearing", () => {
-  const ref=createRef<PaymentDetailsHandle>();
-  render(<PaymentDetails ref={ref} method="card"/>);
-  expect(screen.queryByAltText("Visa")).not.toBeInTheDocument();
-  fireEvent.change(screen.getByLabelText("Card number"), {target:{value:"5555555555554444"}});
+it("renders the three local payment logos in reference order before, during and after input", () => {
+  const ref = createRef<PaymentDetailsHandle>();
+  const { container } = render(<PaymentDetails ref={ref} method="card" />);
+  const badges = container.querySelectorAll('[aria-label="Supported card brands"] img');
+  expect(badges).toHaveLength(3);
+  expect(Array.from(badges).map(img => img.getAttribute("alt"))).toEqual(["Visa", "Mastercard", "American Express"]);
+  expect(Array.from(badges).map(img => img.getAttribute("src"))).toEqual([
+    expect.stringContaining("images/payment/visa.png"),
+    expect.stringContaining("images/payment/mastercard.png"),
+    expect.stringContaining("images/payment/amex.png"),
+  ]);
+  fireEvent.change(screen.getByLabelText("Card number"), { target: { value: "5555555555554444" } });
   expect(screen.getByAltText("Visa")).toBeInTheDocument();
-  act(()=>ref.current!.clear());
-  expect(screen.queryByAltText("Visa")).not.toBeInTheDocument();
+  expect(screen.getByAltText("Mastercard")).toBeInTheDocument();
+  expect(screen.getByAltText("American Express")).toBeInTheDocument();
+  act(() => ref.current!.clear());
+  expect(screen.getByLabelText("Card number")).toHaveValue("");
+  expect(container.querySelectorAll('[aria-label="Supported card brands"] img')).toHaveLength(3);
+});
+
+it("accepts supported Visa, Mastercard and Amex lengths while preserving the 19-digit input limit", () => {
+  const now = new Date(2026, 10, 6);
+  for (const [number, cvv] of [
+    ["4222222222222", "123"], ["4242424242424242", "123"],
+    ["4000000000000000006", "123"], ["5555555555554444", "123"],
+    ["2221000000000009", "123"], ["378282246310005", "1234"],
+  ]) {
+    expect(isSupportedDemoCardLength(number)).toBe(true);
+    expect(cardError(number, "12/39", cvv, now).number).toBe("");
+  }
+  for (const number of ["411111111111111", "555555555555444", "3782822463100050", "6011111111111117"]) {
+    expect(isSupportedDemoCardLength(number)).toBe(false);
+  }
+  render(<PaymentDetails method="card" />);
+  fireEvent.change(screen.getByLabelText("Card number"), { target: { value: "40000000000000000061234" } });
+  expect(screen.getByLabelText("Card number")).toHaveValue("4000 0000 0000 0000 006");
 });

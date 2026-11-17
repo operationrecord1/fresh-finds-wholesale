@@ -11,6 +11,8 @@
 .cart-line-total strong { font-size:19px; }
 .cart-item button { display:flex; align-items:center; gap:5px; min-height:44px; font-size:13px; color:#147eac; text-decoration:underline; }
 .cart-line-total button { color:#a13c3c; }
+.cart-quantity > button, .cart-line-total > button { margin-top:auto; align-self:flex-start; justify-content:flex-start; white-space:nowrap; line-height:20px; }
+@media(max-width:600px) { .cart-line-total > button { align-self:flex-end; } }
 .cart-summary { border:1px solid #d8e4ec; background:white; border-radius:16px; padding:24px; }
 .cart-summary input, .cart-summary select { min-height:44px; }
 .cart-summary > a, .cart-summary > button { min-height:48px; }

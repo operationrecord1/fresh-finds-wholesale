@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CreditCard, Landmark, CheckCircle2, LoaderCircle, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PaymentDetails, type PaymentDetailsHandle } from "@/components/store/PaymentDetails";
+import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
@@ -85,13 +86,12 @@ export function Checkout() {
         <h2 className="mb-3 text-lg font-bold">Review your order</h2>
         {lines.map((l) => { const p = getProduct(l.sku)!; return <div key={l.sku} className="flex justify-between border-b py-2 text-sm"><span>{p.sku} × {l.pieces}</span><span>{money(lineTotal(l.pieces, p.price ?? 0))}</span></div>; })}
         <div className="mt-3 flex justify-between font-bold"><span>Grand Total</span><span>{money(subtotal)}</span></div>
-        <div className="mt-3 flex gap-[15px]">
+        <div className="mt-3"><div className="flex gap-[15px]">
           <input aria-label="Coupon code" placeholder="Coupon code" value={coupon} onChange={e => { setCoupon(e.target.value); setCouponMessage(null); }} className="min-w-0 flex-1 rounded border p-2" />
           <button type="button" onClick={() => setCouponMessage(isValidDemoCoupon(coupon) ? "valid" : "invalid")} className="rounded bg-primary px-3 font-semibold text-primary-foreground">Apply</button>
         </div>
-        {couponMessage && <p role={couponMessage === "invalid" ? "alert" : "status"} className={"mt-2 text-sm " + (couponMessage === "invalid" ? "text-destructive" : "text-primary")}>{couponMessage === "invalid" ? INVALID_COUPON_MESSAGE : DEMO_COUPON_SUCCESS_MESSAGE}</p>}
-        <textarea placeholder="Comments" className="mt-3 w-full rounded border p-2" rows={3} />
-        <button type="button" onClick={() => window.print()} className="mt-2 text-sm text-primary underline">Print</button>
+        <DemoCouponFeedback message={couponMessage === "invalid" ? INVALID_COUPON_MESSAGE : couponMessage === "valid" ? DEMO_COUPON_SUCCESS_MESSAGE : ""} /></div>
+        <textarea placeholder="Comments" className="mt-[15px] w-full rounded border p-2" rows={3} />
         <button ref={submitRef} type="submit" disabled={phase !== "idle"} className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 font-bold text-accent-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">{phase === "processing" ? <><LoaderCircle size={19} className="motion-safe:animate-spin" aria-hidden="true" />Processing your order...</> : <>Place Your Order <ChevronRight size={18} aria-hidden="true" /></>}</button>
       </section>
       <Dialog open={phase !== "idle"} onOpenChange={open => { if (!open && phase === "success") setPhase("idle"); }}>

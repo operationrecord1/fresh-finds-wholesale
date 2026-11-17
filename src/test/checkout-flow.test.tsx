@@ -35,18 +35,25 @@ it("keeps phone and both ZIP inputs numeric-only even for pasted text", () => {
   expect(shippingZip).toHaveValue("12345");
 });
 
-it("accepts only uppercase ARTISAN without adding a discount", () => {
+it("accepts only uppercase ARTISAN without adding a discount and retains a fixed error slot", () => {
   const { form } = readyCheckout();
+  const slot = screen.getByTestId("coupon-feedback-slot");
+  expect(slot).toHaveClass("h-[52px]");
+  expect(screen.getByPlaceholderText("Comments")).toHaveClass("mt-[15px]");
+  expect(screen.queryByText("Print")).not.toBeInTheDocument();
   const coupon = screen.getByRole("textbox", { name: "Coupon code" });
   for (const bad of ["artisan", "ARTISAN ", "VIP8", ""]) {
     fireEvent.change(coupon, { target: { value: bad } });
     fireEvent.click(screen.getByRole("button", { name: "Apply" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Enter a valid coupon code.");
+    expect(screen.getByRole("alert")).toHaveClass("text-red-600", "text-[10px]", "py-[2.5px]");
+    expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
     expect(form).toHaveTextContent("$580.00");
   }
   fireEvent.change(coupon, { target: { value: "ARTISAN" } });
   fireEvent.click(screen.getByRole("button", { name: "Apply" }));
   expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
+  expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
   expect(form).toHaveTextContent("$580.00");
 });
 
