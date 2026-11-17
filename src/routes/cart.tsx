@@ -5,6 +5,7 @@ import { useState } from "react";
 import { getProduct, type Product } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { lineTotal, meetsMinimum, money, ORDER_MINIMUM } from "@/lib/wholesale";
+import { isValidDemoCoupon, INVALID_COUPON_MESSAGE, DEMO_COUPON_SUCCESS_MESSAGE } from "@/lib/demo-coupon";
 import { QuickView } from "@/components/store/LazyQuickView";
 import { ProductImage } from "@/components/store/ProductCard";
 import { ExpressOrder } from "@/components/store/ExpressOrder";
@@ -44,9 +45,9 @@ function CartPage() {
         <h2 className="text-xl font-bold">Order Summary</h2>
         <div className="flex justify-between"><span>Subtotal</span><span>{money(subtotal)}</span></div>
         <div className="flex justify-between text-lg font-bold"><span>Merchandise total</span><span>{money(subtotal)}</span></div>
-        <p className="text-sm text-muted-foreground">Shipping and tax are not included.</p><div className="flex gap-2"><input aria-label="Promo code" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Promo code" className="min-w-0 flex-1 rounded border p-2" />
-          <button className="rounded bg-primary px-3 text-primary-foreground" onClick={() => setMsg(coupon ? `Promo codes are not available yet. No discount has been applied.` : "")}>Apply</button></div>
-        {msg && <p role="status" className="cart-feedback">{msg}</p>}
+        <p className="text-sm text-muted-foreground">Shipping and tax are not included.</p><div className="flex gap-[15px]"><input aria-label="Promo code" value={coupon} onChange={(e) => { setCoupon(e.target.value); setMsg(""); }} placeholder="Promo code" className="min-w-0 flex-1 rounded border p-2" />
+          <button className="rounded bg-primary px-3 text-primary-foreground" onClick={() => setMsg(isValidDemoCoupon(coupon) ? DEMO_COUPON_SUCCESS_MESSAGE : INVALID_COUPON_MESSAGE)}>Apply</button></div>
+        {msg && <p role={msg === INVALID_COUPON_MESSAGE ? "alert" : "status"} className="cart-feedback">{msg}</p>}
         <select aria-label="Sales representative" className="w-full rounded border p-2" defaultValue="web"><option value="web">Sales Rep: Web Customer</option></select>
         {ok ? <Link to="/checkout" className="block rounded-full bg-accent py-3 text-center font-bold text-accent-foreground">Proceed to Checkout</Link>
             : <button disabled className="w-full rounded-full bg-accent py-3 font-bold text-accent-foreground opacity-50">Proceed to Checkout</button>}

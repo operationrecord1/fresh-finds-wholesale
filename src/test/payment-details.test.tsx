@@ -32,3 +32,13 @@ it("keeps values out of form submission and storage, clears them after validatio
   expect(screen.getByLabelText("Card number")).toHaveValue("");
   vi.restoreAllMocks();
 });
+
+it("shows the authentic Visa logo for any nonempty card digits, and hides it after clearing", () => {
+  const ref=createRef<PaymentDetailsHandle>();
+  render(<PaymentDetails ref={ref} method="card"/>);
+  expect(screen.queryByAltText("Visa")).not.toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("Card number"), {target:{value:"5555555555554444"}});
+  expect(screen.getByAltText("Visa")).toBeInTheDocument();
+  act(()=>ref.current!.clear());
+  expect(screen.queryByAltText("Visa")).not.toBeInTheDocument();
+});

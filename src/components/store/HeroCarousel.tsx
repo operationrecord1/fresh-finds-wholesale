@@ -16,7 +16,9 @@ export function HeroCarousel(){
  onTouchEnd={e=>{const t=e.changedTouches[0],s=start.current;if(t&&s&&Math.abs(t.clientX-s.x)>50&&Math.abs(t.clientX-s.x)>Math.abs(t.clientY-s.y))move(t.clientX<s.x?1:-1);start.current=null}}>
  {index > 0 ? <div className="campaign-banner" style={{backgroundImage:`url(${import.meta.env.BASE_URL}images/campaign-${slide.theme}.webp)`}} aria-live="polite" aria-atomic="true">
  <div className="campaign-products campaign-left">{slide.skus?.slice(0,2).map(sku=>{const p=PRODUCTS.find(p=>p.sku===sku);return p?<img key={sku} src={`${import.meta.env.BASE_URL}${p.images[0]}`} alt={p.title}/>:null})}</div>
- <div className="campaign-copy"><span>{slide.eyebrow}</span><h2>{slide.title}</h2><p>{slide.description}</p><Link to="/collection/$slug" params={{slug:"best-sellers"}} className="campaign-shop">SHOP NOW <span aria-hidden="true">→</span></Link></div>
+ <div className="campaign-copy"><span>{slide.eyebrow}</span><h2>{slide.title}</h2><p>{slide.description}</p>{slide.theme === "pet"
+  ? <Link to="/category/$slug" params={{slug:"pet-supplies"}} className="campaign-shop">SHOP NOW <span aria-hidden="true">→</span></Link>
+  : <Link to="/collection/$slug" params={{slug:"best-sellers"}} className="campaign-shop">SHOP NOW <span aria-hidden="true">→</span></Link>}</div>
  <div className="campaign-products campaign-right">{slide.skus?.slice(2).map(sku=>{const p=PRODUCTS.find(p=>p.sku===sku);return p?<img key={sku} src={`${import.meta.env.BASE_URL}${p.images[0]}`} alt={p.title}/>:null})}</div>
  </div> : <div className="merch-composition" aria-live="polite" aria-atomic="true">
  <div className="merch-copy"><span className="merch-eyebrow">{slide.eyebrow}</span><h2>{slide.title.split('\n').map((line,i)=><span key={line} className={i===1?'merch-accent':''}>{line}</span>)}</h2><p>{slide.description}</p><span className="merch-signature">Artisan Mart<span aria-hidden="true"> / </span>Wholesale, thoughtfully.</span></div>
