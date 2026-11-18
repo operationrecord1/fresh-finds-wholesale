@@ -90,7 +90,6 @@ export const PaymentDetails = forwardRef<PaymentDetailsHandle, { method: string 
     {method === "card" ? <>
       <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold"><CreditCard size={18} aria-hidden="true"/>Card details</h3>
       <div className="space-y-4">{field("holder","Name on card",{max:100})}{field("number","Card number",{numeric:true,max:23,placeholder:"Card number"})}<div className="grid grid-cols-2 gap-3">{field("expiry","Expiry date",{numeric:true,max:5,placeholder:"MM/YY"})}{field("cvv","Security code",{numeric:true,max:4,secret:true,placeholder:"CVV"})}</div></div>
-      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Use the billing address entered in step 1. Demo only: use test card details. No payment information is submitted or stored.</p>
     </> : <>
       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold"><Landmark size={18} aria-hidden="true"/>Bank transfer instructions</h3>
       <p className="text-sm leading-relaxed text-muted-foreground">Contact our team for verified beneficiary, account and routing details before arranging a transfer.</p>
