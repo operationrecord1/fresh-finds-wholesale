@@ -48,7 +48,7 @@ function comparePng(a,b){
 const raw=fs.readFileSync('src/data/catalog.ts','utf8');
 const start=raw.indexOf('export const PRODUCTS: Product[] = [');
 assert(start>=0,'catalog declaration missing');
-const open=raw.indexOf('[',start);
+const open=raw.indexOf('= [',start)+2;
 const end=raw.indexOf('\n];',open);
 assert(end>open,'catalog array terminator missing');
 const PRODUCTS=JSON.parse(raw.slice(open,end+2));
@@ -151,7 +151,7 @@ await check('demo login and registration validation',async()=>{
 await check('checkout validation, payment methods, and demo confirmation',async()=>{
   await page.evaluate(()=>sessionStorage.removeItem('artisan-mart-cart'));
   await ready(page,LIVE+'/product/da883');
-  await page.getByLabel('Order By Case').check();
+  await page.getByRole('radio',{name:/Order By Case/}).check();
   await page.getByLabel('Case quantity').fill('4');
   await page.locator('button.purchase-submit').click();
   await ready(page,LIVE+'/cart');
