@@ -16,7 +16,7 @@ export function AccountForm({ register = false }: { register?: boolean }) {
  const [lastName,setLastName]=useState("");
  const [emailValue,setEmailValue]=useState("");
  const [submitted,setSubmitted]=useState(false);
- const emailError=(emailValue.length>0||submitted) && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(emailValue.trim())?"Enter a valid email address.":null;
+ const emailError=(emailValue.length>0||submitted) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue.trim())?"Enter a valid email address.":null;
  const phoneError=register&&(phone.length>0||submitted)?validatePhoneNumber(phone):null;
  const firstError=register&&(firstName.length>0||submitted)&&(!firstName.trim()||firstName.trim().length>120)?"Enter a valid first name.":null;
  const lastError=register&&(lastName.length>0||submitted)&&(!lastName.trim()||lastName.trim().length>120)?"Enter a valid last name.":null;
@@ -49,7 +49,7 @@ export function AccountForm({ register = false }: { register?: boolean }) {
   const email=String(form.get("email")??"").trim().toLowerCase();
   const password=String(form.get("password")??"");
   if(!artisanSupabase){setMessage("Account service is temporarily unavailable.");return;}
-  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {setMessage("Enter a valid email address.");return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {setMessage("Enter a valid email address.");return;}
   if(register && (!firstName.trim()||!lastName.trim()||!toE164Phone(phone))) {setMessage("Please correct the required fields.");return;}
   if(register&&password!==confirmation){
    setMessage("Your passwords do not match. Please check both fields.");return;
