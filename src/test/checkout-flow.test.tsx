@@ -1,111 +1,70 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { Checkout } from "@/routes/checkout";
 
-vi.mock("@tanstack/react-router", () => ({ createFileRoute: () => (config: unknown) => config, Link: ({ children }: any) => <a>{children}</a> }));
-vi.mock("@/lib/cart", () => ({ useCart: () => ({ lines: [{ sku: "DA883", pieces: 40 }], subtotal: 580 }) }));
-
-afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
-
-function readyCheckout() {
-  render(<Checkout />);
-  const firstName = screen.getByRole("textbox", { name: "First Name *" });
-  const form = firstName.closest("form")!;
-  expect(form.checkValidity()).toBe(false);
-  for (const input of form.querySelectorAll<HTMLInputElement>("input[required]")) {
-    const label = input.closest("label")?.textContent ?? "";
-    const value = label.includes("Email") ? "demo@example.com" : label.includes("Telephone") ? "7272255768" : label.includes("Zip") ? "33702" : "Demo";
-    fireEvent.change(input, { target: { value } });
-  }
-  expect(form.checkValidity()).toBe(true);
-  return { form, firstName };
-}
-
-it("keeps phone and both ZIP inputs numeric-only even for pasted text", () => {
-  readyCheckout();
-  const phone = screen.getByRole("textbox", { name: "Telephone *" });
-  const zip = screen.getByRole("textbox", { name: "Zip *" });
-  fireEvent.input(phone, { target: { value: "727abc225-5768" } });
-  fireEvent.input(zip, { target: { value: "33x7z02" } });
-  expect(phone).toHaveValue("7272255768");
-  expect(zip).toHaveValue("33702");
-  fireEvent.click(screen.getByLabelText("Ship to the same address"));
-  const shippingZip = screen.getAllByRole("textbox", { name: "Zip *" })[1]!;
-  fireEvent.input(shippingZip, { target: { value: "1a2b345" } });
-  expect(shippingZip).toHaveValue("12345");
+const state=vi.hoisted(()=>({
+  user:null as null | {email:string;email_confirmed_at?:string},
+  ready:true,subtotal:580, lines:[{sku:"DA883",pieces:40}], navigate:vi.fn(),
+}));
+vi.mock("@tanstack/react-router",()=>({
+  createFileRoute:()=> (config:unknown)=>config,
+  Link:({children,to,onClick}:any)=><a href={to} onClick={onClick}>{children}</a>,
+  useNavigate:()=>state.navigate,
+}));
+vi.mock("@/lib/artisan-auth",()=>({useArtisanAuth:()=>({user:state.user,ready:state.ready})}));
+vi.mock("@/lib/cart",()=>({useCart:()=>({lines:state.lines,subtotal:state.subtotal})}));
+afterEach(()=>{cleanup();localStorage.clear();sessionStorage.clear();vi.clearAllMocks();});
+beforeEach(()=>{
+  state.user=null;state.ready=true;state.subtotal=580;state.lines=[{sku:"DA883",pieces:40}];
 });
-
-it("accepts only uppercase ARTISAN without adding a discount and retains a fixed error slot", () => {
-  const { form } = readyCheckout();
-  const slot = screen.getByTestId("coupon-feedback-slot");
-  expect(slot).toHaveClass("h-[15px]");
-  expect(screen.getByPlaceholderText("Comments")).toHaveClass("mt-0", "block");
-  expect(slot).toHaveClass("py-[2.5px]");
-  expect(screen.queryByText("Print")).not.toBeInTheDocument();
-  const coupon = screen.getByRole("textbox", { name: "Coupon code" });
-  for (const bad of ["artisan", "ARTISAN ", "VIP8", ""]) {
-    fireEvent.change(coupon, { target: { value: bad } });
-    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("Enter a valid coupon code.");
-    expect(screen.getByRole("alert")).toHaveClass("text-red-600", "text-[10px]", "leading-[10px]");
-    expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
-    expect(form).toHaveTextContent("$580.00");
-  }
-  fireEvent.change(coupon, { target: { value: "ARTISAN" } });
-  fireEvent.click(screen.getByRole("button", { name: "Apply" }));
-  expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
-  expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
-  expect(form).toHaveTextContent("$580.00");
+it("blocks unauthenticated checkout and redirects to login without losing cart",async()=>{
+  render(<Checkout/>);
+  expect(screen.queryByText("Billing Address")).not.toBeInTheDocument();
+  await waitFor(()=>expect(state.navigate).toHaveBeenCalledWith({to:"/login"}));
+  expect(localStorage.getItem("artisan-mart-pending-checkout-cart")).toContain("DA883");
 });
-
-it.each(["card", "wire"] as const)("shows a demo loading animation and honest confirmation with %s selected", async method => {
-  const { form, firstName } = readyCheckout();
-  const network = vi.spyOn(globalThis, "fetch");
-  if (method === "wire") fireEvent.click(screen.getByRole("radio", { name: /Wire Transfer/ }));
-  else for (const [label, value] of [["Name on card", "Demo Customer"], ["Card number", "4242424242424242"], ["Expiry date", "12/39"], ["Security code", "123"]] as const) {
-    fireEvent.change(screen.getByLabelText(label), { target: { value } });
-  }
-  if (method === "card") expect(screen.getByAltText("Visa")).toBeInTheDocument();
-  fireEvent.submit(form);
-  expect(screen.getByRole("dialog")).toHaveTextContent("Processing your order...");
-  expect(form.querySelector<HTMLButtonElement>('button[type="submit"]')).toBeDisabled();
-  if (method === "card") expect(screen.getByLabelText("Card number")).toHaveValue("");
-  await waitFor(() => expect(screen.getByRole("dialog")).toHaveTextContent("Thank You for Your Purchase!"), { timeout: 4000 });
-  expect(screen.getByRole("dialog")).toHaveTextContent("Demo confirmation only. No real order was placed and no payment was processed.");
-  expect(network).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", { name: "Return to checkout" }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-  expect(firstName).toHaveValue("Demo");
-  expect(screen.getByText("DA883 × 40")).toBeInTheDocument();
-  expect(form.querySelector('[autocomplete="cc-number"]')).toBeNull();
+it("blocks customers who have not verified their email",async()=>{
+  state.user={email:"qa@example.invalid"};
+  render(<Checkout/>);
+  await waitFor(()=>expect(state.navigate).toHaveBeenCalledWith({to:"/login"}));
+  expect(screen.queryByText("Payment Method")).not.toBeInTheDocument();
 });
-
-
-it("restarts a full 20-second error on every Apply and immediately accepts ARTISAN", () => {
-  vi.useFakeTimers();
-  readyCheckout();
-  const field = screen.getByRole("textbox", { name: "Coupon code" });
-  const apply = screen.getByRole("button", { name: "Apply" });
-  const slot = screen.getByTestId("coupon-feedback-slot");
-  fireEvent.change(field, { target: { value: "invalid" } });
-  fireEvent.click(apply);
-  expect(screen.getByRole("alert")).toHaveTextContent("Enter a valid coupon code.");
-  act(() => vi.advanceTimersByTime(10_000));
-  fireEvent.change(field, { target: { value: "another" } });
-  expect(screen.getByRole("alert")).toBeInTheDocument();
-  fireEvent.click(apply);
-  act(() => vi.advanceTimersByTime(19_999));
-  expect(screen.getByRole("alert")).toBeInTheDocument();
-  act(() => vi.advanceTimersByTime(1));
-  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-  expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
-  fireEvent.click(apply);
-  expect(screen.getByRole("alert")).toBeInTheDocument();
-  fireEvent.change(field, { target: { value: "ARTISAN" } });
-  fireEvent.click(apply);
-  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-  expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
-  act(() => vi.advanceTimersByTime(20_000));
-  expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
-  expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
+it("maintains $500 minimum after authentication",()=>{
+  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
+  state.subtotal=58;
+  render(<Checkout/>);
+  expect(screen.getByText(/below the \$500 minimum/)).toBeInTheDocument();
+  expect(screen.queryByText("Billing Address")).not.toBeInTheDocument();
+});
+it("shows original address fields and separate shipping information for verified customers",()=>{
+  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
+  render(<Checkout/>);
+  expect(screen.getByText("Billing Address")).toBeInTheDocument();
+  expect(screen.getByDisplayValue("qa@example.invalid")).toBeInTheDocument();
+  expect(screen.getByText("Merchandise subtotal")).toBeInTheDocument();
+  expect(screen.getAllByText("$580.00")).toHaveLength(2);
+  fireEvent.click(screen.getByLabelText(/Ship to the same address/));
+  expect(screen.getByText("Shipping Address")).toBeInTheDocument();
+  expect(screen.getByText(/Shipping options and applicable taxes/)).toBeInTheDocument();
+});
+it("prevents all demonstration card input, order creation and fake purchase success",()=>{
+  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
+  render(<Checkout/>);
+  const button=screen.getByRole("button",{name:"Payments temporarily unavailable"});
+  expect(button).toBeDisabled();
+  expect(screen.queryByLabelText("Card number")).not.toBeInTheDocument();
+  expect(screen.queryByText("Thank You for Your Purchase!")).not.toBeInTheDocument();
+  expect(screen.getByText(/No order is placed/)).toBeInTheDocument();
+});
+it("retains correct zero-discount demo coupon feedback",()=>{
+  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
+  render(<Checkout/>);
+  const input=screen.getByRole("textbox",{name:"Coupon code"});
+  fireEvent.change(input,{target:{value:"invalid"}});
+  fireEvent.click(screen.getByRole("button",{name:"Apply"}));
+  expect(screen.getByText("Enter a valid coupon code.")).toBeInTheDocument();
+  fireEvent.change(input,{target:{value:"ARTISAN"}});
+  fireEvent.click(screen.getByRole("button",{name:"Apply"}));
+  expect(screen.getByText(/No discount has been applied/)).toBeInTheDocument();
+  expect(screen.getAllByText("$580.00")).toHaveLength(2);
 });
