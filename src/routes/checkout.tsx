@@ -129,7 +129,7 @@ export function Checkout(){
     <div className="flex items-start gap-3 rounded-xl border border-border p-4">
      <LockKeyhole size={24} className="shrink-0 text-primary" aria-hidden="true"/>
      <div><p className="font-semibold">Secure card payment</p>
-      <p className="mt-1 text-sm text-muted-foreground">Secure checkout is being connected. We are not collecting card information or accepting payments yet.</p>
+      <p className="mt-1 text-sm text-muted-foreground">{sandboxPreview?"Sandbox test payment. Use a Stripe test card; no real charge will occur.":"Secure checkout is being connected. We are not collecting card information or accepting payments yet."}</p>
      </div>
     </div>
    </div>
@@ -163,7 +163,7 @@ export function Checkout(){
      Please check the order status before trying to pay again.
    </p>}
    <p className="mt-3 text-center text-xs text-muted-foreground">
-    No order is placed, payment accepted or stock reserved until checkout is enabled.
+    {sandboxPreview?"Sandbox orders are isolated from live customer orders and inventory.":"No order is placed, payment accepted or stock reserved until checkout is enabled."}
    </p>
   </section>
  </main>;
