@@ -1,0 +1,40 @@
+name: Supabase Catalog Preview Regression (isolated)
+on:
+  push:
+    branches:
+      - development/supabase-backend-20261125
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-supabase-preview-regression
+  cancel-in-progress: true
+jobs:
+  catalog-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out development branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright and PNG decoder
+        run: |
+          mkdir -p /tmp/artisan-preview-audit
+          npm install --prefix /tmp/artisan-preview-audit --no-save --ignore-scripts playwright@1.56.1 pngjs@7.0.0
+          /tmp/artisan-preview-audit/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test real Supabase-backed development preview
+        env:
+          NODE_PATH: /tmp/artisan-preview-audit/node_modules
+          CI: 'true'
+        run: node scripts/supabase-catalog-regression.cjs
+      - name: Preserve reports and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-supabase-preview-browser-audit
+          path: hosting-regression-results/
+          if-no-files-found: warn
+          retention-days: 7
