@@ -1,0 +1,35 @@
+name: Artisan Mart Production Authentication Smoke
+on:
+  push:
+    branches: [release/artisan-auth-20261125]
+    paths:
+      - scripts/auth-production-smoke.cjs
+      - .github/workflows/artisan-auth-production-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  production-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install isolated Playwright
+        run: |
+          mkdir -p /tmp/artisan-auth-prod
+          npm install --prefix /tmp/artisan-auth-prod --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-auth-prod/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test live production authentication routes and guest cart
+        env:
+          NODE_PATH: /tmp/artisan-auth-prod/node_modules
+        run: node scripts/auth-production-smoke.cjs
+      - name: Save sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-auth-production-evidence
+          path: auth-production-smoke-results/
+          retention-days: 5
+          if-no-files-found: warn
