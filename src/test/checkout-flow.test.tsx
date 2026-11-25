@@ -47,6 +47,15 @@ it("shows original address fields and separate shipping information for verified
   expect(screen.getByText("Shipping Address")).toBeInTheDocument();
   expect(screen.getByText(/Shipping options and applicable taxes/)).toBeInTheDocument();
 });
+it("displays approved zero shipping, zero eligible-reseller tax and zero fees",()=>{
+  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
+  render(<Checkout/>);
+  expect(screen.getByText(/Free shipping on every order/)).toBeInTheDocument();
+  expect(screen.getByText(/Sales tax \(eligible resellers\)/)).toBeInTheDocument();
+  expect(screen.getByText(/Additional checkout fees/)).toBeInTheDocument();
+  expect(screen.getByText(/Total before applicable discounts/)).toBeInTheDocument();
+  expect(screen.getAllByText("$580.00")).toHaveLength(3);
+});
 it("prevents all demonstration card input, order creation and fake purchase success",()=>{
   state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
   render(<Checkout/>);
