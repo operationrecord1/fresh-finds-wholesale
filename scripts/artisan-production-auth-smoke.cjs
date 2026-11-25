@@ -58,6 +58,19 @@ async function run(name,callback){try{const detail=await callback();checks.push(
    await go("/forgot-password");await page.screenshot({path:OUT+"/forgot-mobile.png",animations:"disabled"});
    return "390px mobile screenshots";
  });
+ await run("Anonymous account page does not reveal customer profile",async()=>{
+   await page.setViewportSize({width:1365,height:900});
+   await go("/account");
+   await page.getByText(/Please sign in to view your account/i).waitFor({timeout:10000});
+   assert.equal(await page.getByText(/Signed in as/i).count(),0);
+   return "Protected account data not shown to logged-out visitor";
+ });
+ await run("Reset Password without recovery token is rejected",async()=>{
+   await go("/reset-password");
+   await page.getByText(/recovery link is invalid, expired, or already used/i).waitFor({timeout:10000});
+   assert.equal(await page.locator('input[name="password"]').count(),0);
+   return "Recovery form unavailable without valid session";
+ });
  await run("No client exceptions",async()=>{assert.deepEqual(errors,[]);return "none";});
  fs.writeFileSync(OUT+"/results.json",JSON.stringify({origin:BASE,at:new Date().toISOString(),checks},null,2));
  await browser.close();process.exitCode=checks.some(x=>x.status==="FAIL")?1:0;
