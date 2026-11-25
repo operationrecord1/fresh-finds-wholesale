@@ -19,9 +19,7 @@ export const Route = createFileRoute("/checkout")({
  ] }),
  component: Checkout,
 });
-const F = ({label,name,req=true,type="text",numericOnly=false,defaultValue}:{
- label:string;name:string;req?:boolean;type?:string;numericOnly?:boolean;defaultValue?:string | undefined;
-}) => (
+const F = ({label,name,req=true,type="text",numericOnly=false,defaultValue}:{label:string;name:string;req?:boolean;type?:string;numericOnly?:boolean;defaultValue?:string | undefined;}) => (
  <label className="block text-sm">{label}{req && <span className="text-destructive"> *</span>}
   <input name={name} required={req} type={type} defaultValue={defaultValue}
    inputMode={numericOnly?"numeric":undefined} pattern={numericOnly?"[0-9]*":undefined}
@@ -42,8 +40,10 @@ export function Checkout(){
  const [payBusy,setPayBusy]=useState(false);
  const [payError,setPayError]=useState("");
  const pendingAttempt=useRef<{signature:string;key:string}|null>(null);
- const paymentEnabled=import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
  const sandboxPreview=typeof window!=="undefined"&&window.location.hostname.endsWith(".artisanmart-staging.pages.dev");
+ const paymentEnabled=sandboxPreview
+  ? import.meta.env["VITE_ARTISAN_SANDBOX_CHECKOUT_ENABLED"]==="true"
+  : import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
  const openPayment=async()=>{
   if(!paymentEnabled||payBusy||!artisanSupabase||!user?.email_confirmed_at)return;
   setPayError("");setPayBusy(true);
