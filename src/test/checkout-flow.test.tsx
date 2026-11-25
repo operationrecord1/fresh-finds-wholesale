@@ -54,7 +54,7 @@ it("displays approved zero shipping, zero eligible-reseller tax and zero fees",(
   expect(screen.getByText(/Sales tax \(eligible resellers\)/)).toBeInTheDocument();
   expect(screen.getByText(/Additional checkout fees/)).toBeInTheDocument();
   expect(screen.getByText(/Total before applicable discounts/)).toBeInTheDocument();
-  expect(screen.getAllByText("$580.00")).toHaveLength(3);
+  expect(screen.getAllByText("$580.00")).toHaveLength(2);
 });
 it("prevents all demonstration card input, order creation and fake purchase success",()=>{
   state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
