@@ -46,7 +46,7 @@ export function Checkout(){
  const verified=!!user?.email_confirmed_at;
  useEffect(()=>{
   if(!ready || verified)return;
-  preserveCartForCheckout(lines);
+  preserveCartForCheckout(lines,loadCheckoutCoupon());
   void navigate({to:"/login"});
  },[ready,verified,navigate,lines]);
 
