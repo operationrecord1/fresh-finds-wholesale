@@ -17,7 +17,7 @@ describe("Authentication cart and coupon continuity",()=>{
   preserveCartForCheckout(line,"ARTISAN");
   synchronizeCheckoutCart([{sku:"DA883",pieces:80,mode:"case"}]);
   expect(loadCheckoutCoupon()).toBe("ARTISAN");
-  expect(loadCheckoutCart()?.[0].pieces).toBe(80);
+  expect(loadCheckoutCart()?.[0]?.pieces).toBe(80);
  });
  it("removes saved coupon and cart when cart is cleared",()=>{
   preserveCartForCheckout(line,"ARTISAN");
