@@ -24,7 +24,7 @@ async function test(name,cb){try{const detail=await cb();results.push({name,stat
   await el.fill("+442071838750");assert((await el.inputValue()).startsWith("+44"));
   assert.equal(await el.getAttribute("aria-invalid"),"false");
   await el.fill("+8801712345678");assert.equal(await el.getAttribute("aria-invalid"),"false");
-  await el.fill("abc++(212) 555-0123");assert.equal(await el.inputValue(),"+1 (212) 555-0123");
+  await el.fill("abc++1(212) 555-0123");assert.equal(await el.inputValue(),"+1 (212) 555-0123");
   await el.fill("123");await page.getByText(/Enter a valid phone number with its country code/i).waitFor();
   await el.fill("+12125550123");
   assert.equal(await page.locator("input[name=phone][aria-invalid=true]").count(),0);
