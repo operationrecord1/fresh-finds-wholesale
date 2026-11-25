@@ -26,10 +26,10 @@ function validateProduct(row: CatalogRow): boolean {
   && (row.stock === null || (Number.isSafeInteger(row.stock) && row.stock >= 0));
 }
 
-export async function loadAuthoritativeCatalog() {
+export async function loadAuthoritativeCatalog(force = false) {
  // Unit tests retain their source-observed static catalog fixtures, not network dependencies.
  if (import.meta.env.MODE === "test" || typeof window === "undefined") return;
- if (Date.now() - lastLoaded < 5000) return;
+ if (!force && Date.now() - lastLoaded < 5000) return;
  if (inflight) return inflight;
 
  const api = import.meta.env['VITE_ARTISAN_SUPABASE_URL'] as string | undefined;
@@ -107,6 +107,12 @@ export async function loadAuthoritativeCatalog() {
   // Apply all state together only after every database response passes validation.
   products.sort((a,b) => (originalOrder.get(a.sku) ?? Number.MAX_SAFE_INTEGER) -
                          (originalOrder.get(b.sku) ?? Number.MAX_SAFE_INTEGER));
+  const changed = PRODUCTS.length !== products.length || products.some((p,i) => {
+    const previous = PRODUCTS[i];
+    return !previous || p.sku !== previous.sku || p.price !== previous.price ||
+      p.stock !== previous.stock || p.title !== previous.title ||
+      p.description !== previous.description || JSON.stringify(p.images) !== JSON.stringify(previous.images);
+  });
   PRODUCTS.splice(0, PRODUCTS.length, ...products);
   CATEGORIES.splice(0, CATEGORIES.length, ...categories.map(c => c.name));
   PRICE_BANDS.splice(0, PRICE_BANDS.length, ...priceBands.map(b => ({
@@ -118,7 +124,9 @@ export async function loadAuthoritativeCatalog() {
    };
   }
   configureDemoCoupon((coupons[0] as DemoCoupon).code, (coupons[0] as DemoCoupon).message);
+  const hadPreviousLoad = lastLoaded > 0;
   lastLoaded = Date.now();
+  if (changed && hadPreviousLoad) window.dispatchEvent(new Event('artisan-catalog-updated'));
  })().finally(() => { inflight = null; });
  return inflight;
 }
