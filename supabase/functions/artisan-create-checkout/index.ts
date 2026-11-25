@@ -30,7 +30,7 @@ function requiredEnv(){
  return !!PROJECT_URL&&!!ANON_KEY&&!!SERVICE_KEY&&
   !!STRIPE_KEY&&((STRIPE_MODE==="test"&&STRIPE_KEY.startsWith("sk_test_"))||
                   (STRIPE_MODE==="live"&&(STRIPE_KEY.startsWith("sk_live_")||STRIPE_KEY.startsWith("rk_live_"))))&&
-  EXPECTED_ACCOUNT==="acct_1UfSeU3jvjbD68qx";
+  (STRIPE_MODE==="live"?EXPECTED_ACCOUNT==="acct_1UfSeU3jvjbD68qx":/^acct_[A-Za-z0-9]{10,}$/.test(EXPECTED_ACCOUNT));
 }
 async function stripeRequest(path:string,method:"GET"|"POST",params?:URLSearchParams){
  const response=await fetch("https://api.stripe.com/v1/"+path,{
