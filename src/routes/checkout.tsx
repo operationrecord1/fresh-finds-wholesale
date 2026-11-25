@@ -138,7 +138,9 @@ export function Checkout(){
     <span>{p.sku} × {l.pieces}</span><span>{money(lineTotal(l.pieces,p.price??0))}</span>
    </div>:null;})}
    <div className="mt-3 flex justify-between font-bold"><span>Merchandise subtotal</span><span>{money(subtotal)}</span></div>
-   <p className="mt-2 text-sm text-muted-foreground">Shipping and tax are not included. The final order total will be verified by our secure checkout.</p>
+   <p className="mt-2 text-sm">Shipping: {money(0)} · Sales tax (eligible resellers): {money(0)} · Additional checkout fees: {money(0)}</p>
+   <p className="mt-2 text-sm font-bold">Total before applicable discounts: {money(subtotal)}</p>
+   <p className="mt-2 text-xs text-muted-foreground">Reseller eligibility is verified separately. Final totals are checked by our secure checkout server.</p>
    <div className="mt-3">
     <div className="flex gap-[15px]">
      <input aria-label="Coupon code" placeholder="Coupon code" value={coupon} onChange={e=>setCoupon(e.target.value)}
