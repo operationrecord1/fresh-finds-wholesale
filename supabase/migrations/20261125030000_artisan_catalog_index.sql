@@ -1,0 +1,1 @@
+create index if not exists artisan_product_collections_slug_idx on public.artisan_product_collections(collection_slug);
