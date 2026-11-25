@@ -81,8 +81,8 @@ Deno.serve(async(req:Request)=>{
       !Array.isArray(body.items)||body.items.length>100||
       !body.billing||!body.shipping)
    return respond(400,{error:"Invalid checkout details"},origin);
-  const {data:created,error:createError}=await (sandbox?admin:scoped).rpc(sandbox?"artisan_sandbox_begin_checkout":"artisan_begin_checkout",{ 
-   ...(sandbox?{p_customer_id:user.id}:{}),
+  const {data:created,error:createError}=await admin.rpc(sandbox?"artisan_sandbox_begin_checkout":"artisan_begin_checkout_service",{ 
+   p_customer_id:user.id,
    p_idempotency_key:body.idempotencyKey,p_items:body.items,
    p_billing:body.billing,p_shipping:body.shipping,
    p_coupon:typeof body.coupon==="string"?body.coupon:null,
@@ -159,7 +159,7 @@ Deno.serve(async(req:Request)=>{
    session=await r.json();
   }catch{
    if(sandbox)await admin.rpc("artisan_sandbox_cancel_unattached",{p_order:orderId});
-   else await scoped.rpc("artisan_cancel_pending_order",{p_order:orderId});
+   else await admin.rpc("artisan_cancel_pending_order_service",{p_order:orderId,p_customer_id:user.id});
    return respond(503,{error:"Secure payment session unavailable. Your stock reservation was not confirmed."},origin);
   }
   if(session.livemode!==(mode==="live")||!session.id||
