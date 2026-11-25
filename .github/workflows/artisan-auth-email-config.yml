@@ -1,0 +1,59 @@
+name: Artisan Auth SMTP and Branded Template Management
+on:
+  push:
+    branches: [fix/artisan-auth-email-config-gate-20261125]
+    paths:
+      - scripts/artisan-auth-management-config.cjs
+      - .github/workflows/artisan-auth-email-config.yml
+      - supabase/email-templates/**
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'verify reads current Supabase Auth settings; apply writes branded templates and optional Brevo SMTP'
+        required: true
+        default: verify
+        type: choice
+        options:
+          - verify
+          - apply
+permissions:
+  contents: read
+jobs:
+  syntax:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate local Management API script syntax
+        run: node --check scripts/artisan-auth-management-config.cjs
+      - name: Verify Go-template URLs are present
+        run: |
+          grep -F -q '{{ .ConfirmationURL }}' supabase/email-templates/confirm-signup.html
+          grep -F -q '{{ .ConfirmationURL }}' supabase/email-templates/reset-password.html
+  configure:
+    if: github.event_name == 'workflow_dispatch'
+    needs: syntax
+    runs-on: ubuntu-24.04
+    environment: artisan-auth-management
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify or safely configure Supabase Auth
+        env:
+          SUPABASE_MANAGEMENT_TOKEN: ${{ secrets.SUPABASE_MANAGEMENT_TOKEN }}
+          BREVO_SMTP_LOGIN: ${{ secrets.BREVO_SMTP_LOGIN }}
+          BREVO_SMTP_KEY: ${{ secrets.BREVO_SMTP_KEY }}
+          AUTH_CONFIG_MODE: ${{ inputs.mode }}
+        run: node scripts/artisan-auth-management-config.cjs
+      - name: Upload sanitized config evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-auth-config-verification
+          path: auth-config-verification/report.json
+          retention-days: 5
+          if-no-files-found: warn
