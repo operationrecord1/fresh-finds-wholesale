@@ -1,0 +1,40 @@
+name: Artisan Mart Auth-Only Browser E2E
+on:
+  push:
+    branches: [release/artisan-auth-20261125]
+    paths:
+      - scripts/auth-only-browser-e2e.cjs
+      - .github/workflows/artisan-auth-browser-e2e.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-auth-only-browser
+  cancel-in-progress: true
+jobs:
+  browser-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated browser dependencies
+        run: |
+          mkdir -p /tmp/artisan-auth-browser
+          npm install --prefix /tmp/artisan-auth-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-auth-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Run real Supabase registration and branded page tests
+        env:
+          NODE_PATH: /tmp/artisan-auth-browser/node_modules
+          ARTISAN_AUTH_PREVIEW_URL: https://213e5095.artisanmart-staging.pages.dev
+        run: node scripts/auth-only-browser-e2e.cjs
+      - name: Save sanitized checks and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-auth-browser-results
+          path: auth-only-qa-results/
+          retention-days: 5
+          if-no-files-found: warn
