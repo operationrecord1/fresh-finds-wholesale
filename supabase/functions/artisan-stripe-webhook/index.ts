@@ -8,6 +8,7 @@ const WEBHOOK_SECRET=Deno.env.get("ARTISAN_STRIPE_WEBHOOK_SECRET")??"";
 const STRIPE_MODE=Deno.env.get("ARTISAN_STRIPE_MODE")??"";
 const EXPECTED_ACCOUNT=Deno.env.get("ARTISAN_STRIPE_ACCOUNT_ID")??"";
 const expectedLive=STRIPE_MODE==="live";
+const sandbox=!expectedLive;
 
 function result(code:number,body:Record<string,unknown>){
  return new Response(JSON.stringify(body),{status:code,headers:{"Content-Type":"application/json","Cache-Control":"no-store"}});
@@ -54,18 +55,20 @@ Deno.serve(async(req:Request)=>{
    if(charge.livemode!==expectedLive||!charge.paid||charge.currency!=="usd"||
       !charge.payment_intent||charge.amount_refunded<=0)return result(409,{error:"Refund not verified"});
    const intent=typeof charge.payment_intent==="string"?charge.payment_intent:charge.payment_intent.id;
-   const {data:order,error}=await admin.from("artisan_orders")
-     .select("id,total_cents,checkout_session_id,payment_status,payment_intent_id")
-     .eq("payment_intent_id",intent).maybeSingle();
+   const {data:order,error}=sandbox
+      ? await admin.rpc("artisan_sandbox_order_by_payment_intent",{p_intent:intent})
+      : await admin.from("artisan_orders")
+        .select("id,total_cents,checkout_session_id,payment_status,payment_intent_id")
+        .eq("payment_intent_id",intent).maybeSingle();
    if(error||!order)return result(409,{error:"Refund has no matching order"});
    if(order.payment_status==="refunded"&&charge.amount_refunded===order.total_cents)
      return result(200,{received:true,already_refunded:true});
    const outcome=charge.amount_refunded>=order.total_cents?"refunded":"partially_refunded";
-   const {error:dbError}=await admin.rpc("artisan_settle_verified_stripe_event",{
-    p_order:order.id,p_event_id:event.id,p_session_id:order.checkout_session_id,
-    p_payment_intent:intent,p_amount_cents:charge.amount_refunded,
-    p_currency:"usd",p_outcome:outcome,p_live:expectedLive,
-   });
+   const {error:dbError}=await admin.rpc(
+    sandbox?"artisan_sandbox_settle_session":"artisan_settle_verified_stripe_event",
+    {p_order:order.id,p_event_id:event.id,p_session_id:order.checkout_session_id,
+     p_payment_intent:intent,p_amount_cents:charge.amount_refunded,p_outcome:outcome,
+     ...(!sandbox?{p_currency:"usd",p_live:expectedLive}:{})});
    if(dbError)throw dbError;
    return result(200,{received:true});
   }
@@ -78,9 +81,11 @@ Deno.serve(async(req:Request)=>{
     typeof session.amount_total!=="number"||!session.client_reference_id||
     session.metadata?.order_id!==session.client_reference_id)
     return result(409,{error:"Checkout Session proof mismatch"});
-  const {data:order,error:orderError}=await admin.from("artisan_orders")
-    .select("id,checkout_session_id,total_cents,currency,customer_id,payment_status")
-    .eq("id",session.client_reference_id).maybeSingle();
+  const {data:order,error:orderError}=sandbox
+    ? await admin.rpc("artisan_sandbox_order_details",{p_order:session.client_reference_id})
+    : await admin.from("artisan_orders")
+       .select("id,checkout_session_id,total_cents,currency,customer_id,payment_status")
+       .eq("id",session.client_reference_id).maybeSingle();
   if(orderError||!order||order.checkout_session_id!==session.id||
     order.total_cents!==session.amount_total||order.currency!=="usd"||
     order.customer_id!==session.metadata?.customer_id)
@@ -103,11 +108,11 @@ Deno.serve(async(req:Request)=>{
     // payment. Never mark it paid until Stripe independently reports paid.
     return result(200,{received:true,payment_pending:true});
   }
-  const {error:settleError}=await admin.rpc("artisan_settle_verified_stripe_event",{
-   p_order:order.id,p_event_id:event.id,p_session_id:session.id,
-   p_payment_intent:intent,p_amount_cents:session.amount_total,
-   p_currency:session.currency,p_outcome:outcome,p_live:expectedLive,
-  });
+  const {error:settleError}=await admin.rpc(
+   sandbox?"artisan_sandbox_settle_session":"artisan_settle_verified_stripe_event",
+   {p_order:order.id,p_event_id:event.id,p_session_id:session.id,
+    p_payment_intent:intent,p_amount_cents:session.amount_total,p_outcome:outcome,
+    ...(!sandbox?{p_currency:session.currency,p_live:expectedLive}:{})});
   if(settleError)throw settleError;
   return result(200,{received:true});
  }catch{
