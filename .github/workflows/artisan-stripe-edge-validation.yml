@@ -5,6 +5,7 @@ on:
     paths:
       - supabase/functions/artisan-create-checkout/**
       - supabase/functions/artisan-stripe-webhook/**
+      - supabase/functions/artisan-stripe-webhook-live/**
       - .github/workflows/artisan-stripe-edge-validation.yml
   workflow_dispatch:
 permissions:
@@ -27,3 +28,5 @@ jobs:
         run: deno test --no-config supabase/functions/artisan-stripe-webhook/stripe-signature.test.ts
       - name: Typecheck signed Stripe webhook service
         run: deno check --no-config supabase/functions/artisan-stripe-webhook/index.ts
+      - name: Typecheck isolated live Stripe webhook service
+        run: deno check --no-config supabase/functions/artisan-stripe-webhook-live/index.ts
