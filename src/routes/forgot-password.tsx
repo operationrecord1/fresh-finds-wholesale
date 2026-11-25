@@ -13,10 +13,12 @@ function ForgotPassword(){
   const [busy,setBusy]=useState(false);
   const [complete,setComplete]=useState(false);
   const [error,setError]=useState("");
+  const invalidEmail=email.length>0&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email.trim());
   const submit=async(e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     if(busy)return;
     setError("");
+    if(invalidEmail||!email.trim()){setError("Enter a valid email address.");return;}
     if(!artisanSupabase){setError("Account recovery is temporarily unavailable.");return;}
     setBusy(true);
     try{
@@ -25,7 +27,7 @@ function ForgotPassword(){
       });
       // Never disclose whether an account exists. The auth provider's
       // abuse prevention and request throttling remain authoritative.
-      if(result && ![429,422].includes(result.status??0)){
+      if(result && result.status!==429){
         throw result;
       }
       if(result?.status===429){setError("Too many requests. Please try again later.");return;}
@@ -53,7 +55,7 @@ function ForgotPassword(){
           <Link to="/login" className="account-submit">Back to Login</Link></>:
           <><p className="account-description">Enter the email address associated with your Artisan Mart account.</p>
           <form onSubmit={submit}>
-            <label>Email address <span>*</span><input name="email" type="email" autoComplete="email" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)}/></label>
+            <label>Email address <span>*</span><input name="email" type="email" autoComplete="email" required maxLength={254} value={email} aria-invalid={invalidEmail} onChange={e=>{setEmail(e.target.value);setError("");}}/>{invalidEmail&&<span role="alert" className="account-field-error">Enter a valid email address.</span>}</label>
             <button className="account-submit" disabled={busy} type="submit">{busy?"Sending...":"Send Reset Link"}<ArrowRight size={18}/></button>
             {error&&<p role="alert" className="account-message">{error}</p>}
           </form></>}
