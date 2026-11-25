@@ -1,0 +1,37 @@
+name: Artisan Phone and Precheckout Browser Regression
+on:
+  push:
+    branches: [fix/auth-validation-20261125]
+    paths:
+      - scripts/artisan-validation-browser.cjs
+      - .github/workflows/artisan-phone-browser.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright and PNG tooling
+        run: |
+          mkdir -p /tmp/artisan-phone-browser
+          npm install --prefix /tmp/artisan-phone-browser --no-save --ignore-scripts playwright@1.56.1 pngjs@7.0.0
+          /tmp/artisan-phone-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify original storefront and live field validation on isolated preview
+        env:
+          NODE_PATH: /tmp/artisan-phone-browser/node_modules
+          ARTISAN_PHONE_PREVIEW: https://426a351b.artisanmart-staging.pages.dev
+        run: node scripts/artisan-validation-browser.cjs
+      - name: Preserve independent browser proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-phone-precheckout-evidence
+          path: artisan-validation-browser-results/
+          retention-days: 5
+          if-no-files-found: warn
