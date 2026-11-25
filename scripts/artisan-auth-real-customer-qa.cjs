@@ -1,0 +1,77 @@
+const {chromium}=require("playwright");
+const {randomBytes}=require("node:crypto");
+const fs=require("node:fs");
+const assert=require("node:assert/strict");
+const BASE="https://artisanmart.site";
+const RUN=process.env.GITHUB_RUN_ID;
+if(!/^[0-9]+$/.test(RUN||""))throw Error("GitHub run identifier required");
+const EMAIL="operation.record1+artisan-live-authqa-"+RUN+"@gmail.com";
+const PASSWORD="Qa!"+randomBytes(18).toString("base64url")+"9Ab";
+const output="auth-live-customer-qa";fs.mkdirSync(output,{recursive:true});
+const checks=[];
+const check=(name,value,detail)=>{checks.push({name,status:value?"PASS":"FAIL",detail});console.log((value?"PASS":"FAIL")+" | "+name+" | "+detail);};
+const pause=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
+(async()=>{
+ const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
+ const ctx=await browser.newContext({viewport:{width:1350,height:900},locale:"en-US"});
+ const page=await ctx.newPage();
+ const go=async(path)=>{const r=await page.goto(BASE+path,{waitUntil:"domcontentloaded",timeout:30000});assert(r&&r.ok(),"HTTP "+r?.status());await page.waitForLoadState("networkidle",{timeout:15000}).catch(()=>{});};
+ try{
+  await go("/register");
+  await page.locator("input[name=firstName]").fill("Artisan");
+  await page.locator("input[name=lastName]").fill("QA");
+  await page.locator("input[name=phone]").fill("2125550123");
+  await page.locator("input[name=email]").fill(EMAIL);
+  await page.locator("input[name=password]").fill(PASSWORD);
+  await page.locator("input[name=confirmation]").fill(PASSWORD);
+  await page.locator('input[name="agreement"]').check();
+  const responsePromise=page.waitForResponse(r=>r.url().includes("/auth/v1/signup")&&r.request().method()==="POST",{timeout:25000});
+  await page.getByRole("button",{name:/Create account/i}).click();
+  const signup=await responsePromise;
+  const payload=await signup.json().catch(()=>({}));
+  check("Real signup",signup.status()===200&&!!(payload.user?.id||payload.id),"HTTP "+signup.status()+"; identity "+Boolean(payload.user?.id||payload.id));
+  assert.equal(signup.status(),200);
+  await page.getByRole("heading",{name:"Check Your Email"}).waitFor({timeout:15000});
+  check("Confirmation required",!payload.session,"Signup did not grant an unconfirmed session");
+  console.log("READY_FOR_INBOX_VERIFICATION: "+EMAIL);
+  // Remain in the same browser process, retaining a private in-memory test password.
+  let verified=false;
+  for(let i=0;i<24;i++){
+   await pause(10000);
+   await go("/login");
+   await page.locator("input[name=email]").fill(EMAIL);
+   await page.locator("input[name=password]").fill(PASSWORD);
+   const responsePromise=page.waitForResponse(r=>r.url().includes("/auth/v1/token")&&r.request().method()==="POST",{timeout:16000});
+   await page.getByRole("button",{name:/Sign in/i}).click();
+   const resp=await responsePromise;
+   if(resp.status()===200){verified=true;break;}
+   if(i===0)check("Unverified login rejected",resp.status()>=400,"HTTP "+resp.status());
+  }
+  check("Verified login",verified,"Supabase password grant after genuine email link activation");
+  if(!verified)throw Error("Email was not confirmed before controlled test timeout");
+  await page.waitForURL(/\/(account|checkout)/,{timeout:15000});
+  await go("/account");
+  await page.getByText(/Signed in as/i).waitFor({timeout:15000});
+  check("Private account",true,"Account page accessible after verified sign-in");
+  await page.locator('input[value="Artisan"]').first().waitFor({timeout:15000}).catch(()=>{});
+  const fields=page.locator('section input[type="text"],section input:not([type])');
+  await page.reload({waitUntil:"networkidle"});
+  await page.getByText(/Signed in as/i).waitFor({timeout:15000});
+  check("Session persistence",true,"Reload retained verified customer");
+  await page.setViewportSize({width:390,height:844});
+  const menu=page.locator('button[aria-haspopup="menu"]').last();
+  await menu.click();
+  await page.getByRole("menuitem",{name:"Logout"}).waitFor({timeout:10000});
+  check("Mobile account dropdown",true,"390px account menu present");
+  await page.screenshot({path:output+"/mobile-account.png"});
+  await page.getByRole("menuitem",{name:"Logout"}).click();
+  await go("/account");
+  await page.getByText(/Please sign in to view your account/i).waitFor({timeout:12000});
+  check("Logout private route protection",true,"Private account unavailable after logout");
+ }catch(e){
+  check("Full verified customer flow",false,String(e.message).slice(0,300));
+ }
+ fs.writeFileSync(output+"/checks.json",JSON.stringify({email:EMAIL,checks,verified_at:new Date().toISOString()},null,2));
+ await browser.close();
+ if(checks.some(x=>x.status==="FAIL"))process.exitCode=1;
+})().catch(e=>{console.error("Fatal "+String(e.message));process.exitCode=1;});
