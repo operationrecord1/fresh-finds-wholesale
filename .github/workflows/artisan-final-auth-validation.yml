@@ -1,7 +1,7 @@
 name: Artisan Final Auth Validation and Precheckout Gate
 on:
   push:
-    branches: [fix/auth-validation-20261125]
+    branches: [fix/auth-validation-20261125, fix/artisan-account-profile-validation-20261125]
   workflow_dispatch:
 permissions:
   contents: read

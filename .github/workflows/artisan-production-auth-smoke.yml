@@ -1,0 +1,43 @@
+name: Artisan Production Authentication Smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - src/components/store/AccountForm.tsx
+      - src/components/store/AccountForm.css
+      - src/routes/forgot-password.tsx
+      - src/routes/account.tsx
+      - src/lib/artisan-email.ts
+      - scripts/artisan-production-auth-smoke.cjs
+      - .github/workflows/artisan-production-auth-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  production-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright
+        run: |
+          mkdir -p /tmp/artisan-production-browser
+          npm install --prefix /tmp/artisan-production-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-production-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Allow Cloudflare Pages to roll out main before checking production
+        run: sleep 90
+      - name: Test production authentication pages (non-destructive)
+        env:
+          NODE_PATH: /tmp/artisan-production-browser/node_modules
+        run: node scripts/artisan-production-auth-smoke.cjs
+      - name: Preserve browser results and mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-production-auth-smoke
+          path: artisan-production-auth-smoke/
+          retention-days: 7
+          if-no-files-found: warn

@@ -15,12 +15,16 @@ export function CustomerAccountMenu(){
     setOpen(false);
     if(!user||!artisanSupabase)return;
     let active=true;
-    artisanSupabase.from("artisan_profiles").select("first_name,last_name")
-      .eq("user_id",user.id).maybeSingle().then(({data,error})=>{
-        if(!active||error||!data)return;
-        setProfileName([data.first_name,data.last_name].filter(Boolean).join(" ").trim());
-      });
-    return()=>{active=false;};
+    const fetchName=()=>{
+      Promise.resolve(artisanSupabase!.from("artisan_profiles").select("first_name,last_name")
+       .eq("user_id",user.id).maybeSingle()).then(({data,error})=>{
+         if(!active||error||!data)return;
+         setProfileName([data.first_name,data.last_name].filter(Boolean).join(" ").trim());
+       }).catch(()=>{ /* Retain the known auth identity if profile read fails. */ });
+    };
+    fetchName();
+    window.addEventListener("artisan-customer-profile-updated",fetchName);
+    return()=>{active=false;window.removeEventListener("artisan-customer-profile-updated",fetchName);};
   },[user?.id]);
   useEffect(()=>{
     if(!open)return;

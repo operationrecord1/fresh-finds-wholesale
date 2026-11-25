@@ -12,3 +12,9 @@
 .account-password-requirements li.account-rule-unsatisfied{color:#b42332}
 .account-password-requirements li.account-rule-satisfied{color:#357344}
 .account-password-requirements li span{display:inline-block;width:15px}
+
+/* Consent uses the existing checkbox and link styling; no layout redesign. */
+.account-card .account-agreement{margin:0 0 18px}
+.account-card .account-agreement .account-checkbox{margin-bottom:0}
+.account-agreement a{color:#126c9b;text-decoration:underline;text-underline-offset:2px}
+.account-agreement input[aria-invalid="true"]{outline:2px solid #b42332;outline-offset:2px}

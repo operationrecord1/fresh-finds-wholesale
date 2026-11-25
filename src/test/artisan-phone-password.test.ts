@@ -1,3 +1,4 @@
+import { isValidArtisanEmail } from "@/lib/artisan-email";
 import { describe,expect,it } from "vitest";
 import { cleanPhoneInput,formatPhoneInput,toE164Phone,validatePhoneNumber } from "@/lib/artisan-phone";
 import { passwordChecks,validateArtisanPassword } from "@/lib/artisan-password";
@@ -30,5 +31,18 @@ describe("Original password policy live states",()=>{
   expect(validateArtisanPassword("MyLongPassword9!")).toBeNull();
   expect(validateArtisanPassword("password")).not.toBeNull();
   expect(validateArtisanPassword("LONGPASSWORD9!")).not.toBeNull();
+ });
+});
+
+describe("Consistent auth email validation",()=>{
+ it("accepts legitimate production customer addresses",()=>{
+  expect(isValidArtisanEmail("customer@example.com")).toBe(true);
+  expect(isValidArtisanEmail("name+orders@artisanmart.site")).toBe(true);
+  expect(isValidArtisanEmail(" customer@example.com ")).toBe(true);
+ });
+ it("rejects malformed, whitespace and excessively long addresses",()=>{
+  for(const email of ["","not-an-email","abc@example","abc @example.com","abc@example com","a".repeat(255)+"@example.com"]){
+   expect(isValidArtisanEmail(email)).toBe(false);
+  }
  });
 });
