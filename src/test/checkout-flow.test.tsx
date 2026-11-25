@@ -45,7 +45,7 @@ it("shows original address fields and separate shipping information for verified
   expect(screen.getAllByText("$580.00")).toHaveLength(2);
   fireEvent.click(screen.getByLabelText(/Ship to the same address/));
   expect(screen.getByText("Shipping Address")).toBeInTheDocument();
-  expect(screen.getByText(/Shipping options and applicable taxes/)).toBeInTheDocument();
+  expect(screen.getByText(/Free shipping on every order/)).toBeInTheDocument();
 });
 it("displays approved zero shipping, zero eligible-reseller tax and zero fees",()=>{
   state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
