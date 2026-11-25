@@ -43,6 +43,7 @@ export function Checkout(){
  const [payError,setPayError]=useState("");
  const pendingAttempt=useRef<{signature:string;key:string}|null>(null);
  const paymentEnabled=import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
+ const sandboxPreview=typeof window!=="undefined"&&window.location.hostname.endsWith(".artisanmart-staging.pages.dev");
  const openPayment=async()=>{
   if(!paymentEnabled||payBusy||!artisanSupabase||!user?.email_confirmed_at)return;
   setPayError("");setPayBusy(true);
@@ -88,6 +89,7 @@ export function Checkout(){
   Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link>
  </div>;
  return <main className="mx-auto grid max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-3">
+  {sandboxPreview&&<div role="status" className="lg:col-span-3 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">Sandbox checkout: Stripe test cards only; no real charges are processed.</div>}
   <section className="min-w-0 rounded bg-card p-5">
    <H n={1} t="Billing Address"/>
    <div className="grid grid-cols-2 gap-3"><F name="first_name" label="First Name"/><F name="last_name" label="Last Name"/></div>
