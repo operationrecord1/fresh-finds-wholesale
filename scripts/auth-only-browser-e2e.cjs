@@ -26,7 +26,7 @@ async function check(name,fn){
    assert((await page.locator(".account-layout").count())===1);
    await page.getByRole("link",{name:"Forgot your password?"}).click();
    await page.waitForURL(/\/forgot-password$/);
-   await page.getByRole("heading",{name:"Forgot Your Password?"}).waitFor();
+   await page.getByRole("heading",{name:"Forgot Your Password?"}).last().waitFor();
    assert(await page.getByRole("link",{name:"Back to Login"}).count());
    return "Existing auth visual shell reused and dedicated Forgot Password route works";
  });
@@ -75,8 +75,8 @@ async function check(name,fn){
    const response=await responsePromise;
    assert.equal(response.status(),200,"Signup returned HTTP "+response.status());
    const data=await response.json();
-   assert(data.user?.id,"Signup response missing user identity");
-   assert(!data.session,"Email-confirmation requirement unexpectedly bypassed");
+   assert(data.user?.id||data.id,"Signup response missing user identity");
+   assert(!data.session&&!data.access_token,"Email-confirmation requirement unexpectedly bypassed");
    await page.getByRole("heading",{name:"Check Your Email"}).waitFor({timeout:10000});
    assert(await page.getByText(/Resend available/i).count());
    return {status:response.status(),created:true,emailConfirmationRequired:true};
