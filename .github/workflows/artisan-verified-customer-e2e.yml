@@ -1,0 +1,37 @@
+name: Artisan Mart Verified Customer E2E
+on:
+  push:
+    branches: [release/artisan-auth-20261125]
+    paths:
+      - scripts/auth-verified-browser-e2e.cjs
+      - .github/workflows/artisan-verified-customer-e2e.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verified-customer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright Chromium
+        run: |
+          mkdir -p /tmp/artisan-auth-verified
+          npm install --prefix /tmp/artisan-auth-verified --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-auth-verified/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify actual customer login after external email confirmation
+        env:
+          NODE_PATH: /tmp/artisan-auth-verified/node_modules
+          AUTH_PREVIEW_URL: https://c2510c1c.artisanmart-staging.pages.dev
+        run: node scripts/auth-verified-browser-e2e.cjs
+      - name: Preserve sanitized results and mobile screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-verified-customer-qa
+          path: auth-verified-qa/
+          retention-days: 3
+          if-no-files-found: warn
