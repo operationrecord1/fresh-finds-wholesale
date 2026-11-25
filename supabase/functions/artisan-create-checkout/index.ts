@@ -49,6 +49,9 @@ Deno.serve(async(req:Request)=>{
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(origin)});
  if(req.method!=="POST")return respond(405,{error:"Method not allowed"},origin);
  if(!requiredEnv())return respond(503,{error:"Secure checkout is not configured yet."},origin);
+ // Test-mode orders must use separate sandbox stock and order tables.
+ // Until that isolated path is tested, never reserve live Artisan Mart inventory.
+ if(STRIPE_MODE==="test")return respond(503,{error:"Isolated sandbox order processing is not enabled yet."},origin);
  const length=Number(req.headers.get("content-length")??0);
  if(length>16000)return respond(413,{error:"Request too large"},origin);
  const header=req.headers.get("authorization")??"";
