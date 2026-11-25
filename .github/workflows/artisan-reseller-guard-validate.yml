@@ -1,0 +1,30 @@
+name: Artisan Checkout Server Reseller Gate Validation
+on:
+  push:
+    branches: [fix/artisan-reseller-auth-guard-20261125]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Verify checkout Edge Function only trusts server-owned reseller approval
+        run: |
+          grep -Fq 'user.app_metadata?.artisan_reseller_approved!==true' supabase/functions/artisan-create-checkout/index.ts
+          grep -Fq 'if(!sandbox&&user.app_metadata?' supabase/functions/artisan-create-checkout/index.ts
+          grep -Fq 'email_confirmed_at' supabase/functions/artisan-create-checkout/index.ts
+          grep -Fq 'artisan_begin_checkout_service' supabase/functions/artisan-create-checkout/index.ts
+          grep -Fq 'artisan_sandbox_begin_checkout' supabase/functions/artisan-create-checkout/index.ts
+          ! grep -Eq 'sk_live_[A-Za-z0-9]{16}|whsec_[A-Za-z0-9]{16}' supabase/functions/artisan-create-checkout/index.ts
+      - name: Install pinned storefront dependencies
+        run: bun install --frozen-lockfile
+      - name: Execute full existing regression suite
+        run: bun run test
+      - name: Cloudflare build and route generation
+        run: bun run build:cloudflare
+      - name: TypeScript
+        run: bunx tsc --noEmit
