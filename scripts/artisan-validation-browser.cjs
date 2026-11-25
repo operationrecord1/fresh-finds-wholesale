@@ -2,6 +2,7 @@ const {chromium}=require("playwright");
 const {PNG}=require("pngjs");
 const fs=require("node:fs");
 const assert=require("node:assert/strict");
+const {randomBytes}=require("node:crypto");
 const BASE=process.env.ARTISAN_PHONE_PREVIEW;
 if(!BASE||!/^https:\/\/[a-z0-9-]+\.artisanmart-staging\.pages\.dev$/.test(BASE))throw Error("Verified preview URL missing");
 const OUT="artisan-validation-browser-results";fs.mkdirSync(OUT,{recursive:true});
@@ -60,6 +61,25 @@ async function test(name,cb){try{const detail=await cb();results.push({name,stat
   await page.locator('input[name=email]').fill("qa@example.invalid");
   assert.equal(await page.locator(".account-field-error").count(),0);
   return "Required field red errors displayed and cleared";
+ });
+ await test("Actual Supabase registration stores E.164 and requires email confirmation",async()=>{
+  await go(page,BASE+"/register");
+  await page.locator('input[name=firstName]').fill("Artisan");
+  await page.locator('input[name=lastName]').fill("Phone QA");
+  await page.locator('input[name=phone]').fill("2125550123");
+  await page.locator('input[name=email]').fill("operation.record1+artisan-phoneqa-20261125@gmail.com");
+  const password="StrongQa!"+randomBytes(15).toString("base64url")+"9Ab";
+  await page.locator('input[name=password]').fill(password);
+  await page.locator('input[name=confirmation]').fill(password);
+  const resPromise=page.waitForResponse(r=>r.url().includes("/auth/v1/signup")&&r.request().method()==="POST",{timeout:16000});
+  await page.getByRole("button",{name:/Create account/i}).click();
+  const response=await resPromise;
+  assert.equal(response.status(),200,"Supabase signup rejected HTTP "+response.status());
+  const data=await response.json();
+  assert(data.user?.id||data.id,"Auth user missing");
+  assert(!data.session&&!data.access_token,"Email verification was bypassed");
+  await page.getByRole("heading",{name:"Check Your Email"}).waitFor({timeout:9000});
+  return {registered:true,verified:false,expectedStoredE164:"+12125550123"};
  });
  await test("Phone/registration responsive layout",async()=>{
   for(const [w,h] of [[1365,900],[820,1180],[390,844]]){
