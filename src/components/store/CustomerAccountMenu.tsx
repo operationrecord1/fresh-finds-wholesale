@@ -16,8 +16,8 @@ export function CustomerAccountMenu(){
     if(!user||!artisanSupabase)return;
     let active=true;
     const fetchName=()=>{
-      artisanSupabase!.from("artisan_profiles").select("first_name,last_name")
-       .eq("user_id",user.id).maybeSingle().then(({data,error})=>{
+      Promise.resolve(artisanSupabase!.from("artisan_profiles").select("first_name,last_name")
+       .eq("user_id",user.id).maybeSingle()).then(({data,error})=>{
          if(!active||error||!data)return;
          setProfileName([data.first_name,data.last_name].filter(Boolean).join(" ").trim());
        }).catch(()=>{ /* Retain the known auth identity if profile read fails. */ });
