@@ -8,7 +8,7 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -123,6 +123,31 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [catalogState, setCatalogState] = useState<"loading" | "ready" | "error">(
+    import.meta.env.MODE === "test" ? "ready" : "loading",
+  );
+  useEffect(() => {
+    if (catalogState !== "loading") return;
+    let mounted = true;
+    loadAuthoritativeCatalog()
+      .then(() => { if (mounted) setCatalogState("ready"); })
+      .catch((error) => {
+        console.error("Artisan Mart catalog initialization failed", error);
+        if (mounted) setCatalogState("error");
+      });
+    return () => { mounted = false; };
+  }, [catalogState]);
+  // Never render embedded historical product prices when the authoritative
+  // database has not been verified. Keep the original storefront once loaded.
+  if (catalogState !== "ready") {
+    return <div role={catalogState === "error" ? "alert" : "status"} className="mx-auto max-w-lg px-6 py-20 text-center">
+      <h1 className="text-xl font-bold text-primary">{catalogState === "error" ? "Product catalog temporarily unavailable" : "Loading products..."}</h1>
+      {catalogState === "error" && <>
+        <p className="mt-3 text-sm text-muted-foreground">We couldn't load current product information. No outdated prices are being displayed.</p>
+        <button type="button" className="mt-5 rounded bg-primary px-5 py-3 text-primary-foreground" onClick={() => setCatalogState("loading")}>Try again</button>
+      </>}
+    </div>;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
