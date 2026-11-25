@@ -1,0 +1,36 @@
+name: Artisan Mart Production Verified Customer Journey
+on:
+  push:
+    branches: [release/artisan-auth-20261125]
+    paths:
+      - scripts/auth-production-verified-e2e.cjs
+      - .github/workflows/artisan-auth-production-verified.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-auth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install isolated Chromium Playwright
+        run: |
+          mkdir -p /tmp/artisan-auth-production-verified
+          npm install --prefix /tmp/artisan-auth-production-verified --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-auth-production-verified/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test production email-confirmed real customer journey
+        env:
+          NODE_PATH: /tmp/artisan-auth-production-verified/node_modules
+          AUTH_PREVIEW_URL: https://artisanmart.site
+        run: node scripts/auth-production-verified-e2e.cjs
+      - name: Preserve sanitized QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-prod-verified-customer
+          path: auth-production-verified-qa/
+          retention-days: 3
+          if-no-files-found: warn
