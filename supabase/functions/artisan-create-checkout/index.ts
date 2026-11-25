@@ -3,18 +3,18 @@ import { createClient } from "npm:@supabase/supabase-js@2.119.2";
 const PROJECT_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-const STRIPE_KEY = Deno.env.get("ARTISAN_STRIPE_SECRET_KEY") ?? "";
-const STRIPE_MODE = Deno.env.get("ARTISAN_STRIPE_MODE") ?? "";
-const EXPECTED_ACCOUNT = Deno.env.get("ARTISAN_STRIPE_ACCOUNT_ID") ?? "";
+
+
+
 const PRODUCTION = "https://artisanmart.site";
 
-function allowedOrigin(origin:string):boolean {
+function allowedOrigin(origin:string,mode:string):boolean {
  try {
   const u=new URL(origin);
   return u.protocol==="https:" && (
    u.hostname==="artisanmart.site" ||
    u.hostname==="www.artisanmart.site" ||
-   (STRIPE_MODE==="test" && u.hostname.endsWith(".artisanmart-staging.pages.dev"))
+   (mode==="test" && u.hostname.endsWith(".artisanmart-staging.pages.dev"))
   );
  }catch{return false;}
 }
@@ -26,15 +26,15 @@ function cors(origin:string):HeadersInit {
 function respond(code:number,body:Record<string,unknown>,origin:string){
  return new Response(JSON.stringify(body),{status:code,headers:{...cors(origin),"Content-Type":"application/json"}});
 }
-function requiredEnv(){
+function requiredEnv(key:string,mode:string,account:string){
  return !!PROJECT_URL&&!!ANON_KEY&&!!SERVICE_KEY&&
-  !!STRIPE_KEY&&((STRIPE_MODE==="test"&&STRIPE_KEY.startsWith("sk_test_"))||
-                  (STRIPE_MODE==="live"&&(STRIPE_KEY.startsWith("sk_live_")||STRIPE_KEY.startsWith("rk_live_"))))&&
-  (STRIPE_MODE==="live"?EXPECTED_ACCOUNT==="acct_1UfSeU3jvjbD68qx":/^acct_[A-Za-z0-9]{10,}$/.test(EXPECTED_ACCOUNT));
+  !!key&&((mode==="test"&&key.startsWith("sk_test_"))||
+                  (mode==="live"&&(key.startsWith("sk_live_")||key.startsWith("rk_live_"))))&&
+  (mode==="live"?account==="acct_1UfSeU3jvjbD68qx":account==="acct_1Uf3Yu3sdabWE5fZ");
 }
-async function stripeRequest(path:string,method:"GET"|"POST",params?:URLSearchParams){
+async function stripeRequest(path:string,method:"GET"|"POST",key:string,params?:URLSearchParams){
  const response=await fetch("https://api.stripe.com/v1/"+path,{
-  method,headers:{"Authorization":"Bearer "+STRIPE_KEY,
+  method,headers:{"Authorization":"Bearer "+key,
    ...(method==="POST"?{"Content-Type":"application/x-www-form-urlencoded"}:{})},
   ...(params?{body:params.toString()}:{}),
   signal:AbortSignal.timeout(12000),
@@ -45,13 +45,16 @@ async function stripeRequest(path:string,method:"GET"|"POST",params?:URLSearchPa
 
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get("origin")??"";
- if(!allowedOrigin(origin))return new Response("Forbidden origin",{status:403});
+ let host="";try{host=new URL(origin).hostname;}catch{}
+ const mode=Deno.env.get("ARTISAN_STRIPE_MODE")??(host.endsWith(".artisanmart-staging.pages.dev")?"test":"live");
+ const expectedAccount=mode==="test"?"acct_1Uf3Yu3sdabWE5fZ":"acct_1UfSeU3jvjbD68qx";
+ if(!allowedOrigin(origin,mode))return new Response("Forbidden origin",{status:403});
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(origin)});
  if(req.method!=="POST")return respond(405,{error:"Method not allowed"},origin);
- if(!requiredEnv())return respond(503,{error:"Secure checkout is not configured yet."},origin);
+
  // Test-mode orders must use separate sandbox stock and order tables.
  // Until that isolated path is tested, never reserve live Artisan Mart inventory.
- const sandbox=STRIPE_MODE==="test";
+ const sandbox=mode==="test";
  const length=Number(req.headers.get("content-length")??0);
  if(length>16000)return respond(413,{error:"Request too large"},origin);
  const header=req.headers.get("authorization")??"";
@@ -66,6 +69,13 @@ Deno.serve(async(req:Request)=>{
   const user=userData?.user;
   if(userError||!user?.id||!user.email_confirmed_at)
    return respond(401,{error:"Verified customer login required"},origin);
+  const {data:storedKey,error:secretError}=await admin.rpc("artisan_stripe_runtime_secret",{
+   p_mode:mode,p_kind:"api_key",
+  });
+  const key=typeof storedKey==="string"&&storedKey?
+    storedKey:(Deno.env.get("ARTISAN_STRIPE_SECRET_KEY")??"");
+  if(secretError||!requiredEnv(key,mode,expectedAccount))
+    return respond(503,{error:"Secure checkout credentials are not available."},origin);
   const body=await req.json();
   if(!body||typeof body!=="object"||typeof body.idempotencyKey!=="string"||
       !Array.isArray(body.items)||body.items.length>100||
@@ -96,9 +106,9 @@ Deno.serve(async(req:Request)=>{
    return respond(503,{error:"The secure shipping/tax quote is not available."},origin);
 
   if(order.checkout_session_id){
-   const previous=await stripeRequest("checkout/sessions/"+encodeURIComponent(order.checkout_session_id),"GET");
+   const previous=await stripeRequest("checkout/sessions/"+encodeURIComponent(order.checkout_session_id),"GET",key);
    if(previous.status==="open"&&previous.url&&previous.client_reference_id===orderId &&
-      previous.livemode===(STRIPE_MODE==="live"))
+      previous.livemode===(mode==="live"))
     return respond(200,{checkout_url:previous.url,order_number:created.order_number,reused:true},origin);
    return respond(409,{error:"Checkout session is no longer open. Please start a new order."},origin);
   }
@@ -110,8 +120,8 @@ Deno.serve(async(req:Request)=>{
       .eq("order_id",orderId).order("sku");
   if(itemsError||!items?.length||items.reduce((n:number,it:{line_total_cents:number})=>n+it.line_total_cents,0)!==order.total_cents)
    return respond(409,{error:"Order amount could not be independently verified."},origin);
-  const account=await stripeRequest("account","GET");
-  if(account.id!==EXPECTED_ACCOUNT||account.charges_enabled!==true)
+  const account=await stripeRequest("account","GET",key);
+  if(account.id!==expectedAccount||account.charges_enabled!==true)
    return respond(503,{error:"Payment account unavailable."},origin);
   const params=new URLSearchParams();
   params.set("mode","payment");
@@ -119,7 +129,7 @@ Deno.serve(async(req:Request)=>{
   params.set("customer_email",String(user.email));
   params.set("billing_address_collection","required");
   params.set("shipping_address_collection[allowed_countries][0]","US");
-  const returnOrigin=STRIPE_MODE==="test"?origin:PRODUCTION;
+  const returnOrigin=mode==="test"?origin:PRODUCTION;
   params.set("success_url",returnOrigin+"/order-confirmation?session_id={CHECKOUT_SESSION_ID}");
   params.set("cancel_url",returnOrigin+"/checkout?payment_cancelled=1");
   params.set("client_reference_id",orderId);
@@ -140,7 +150,7 @@ Deno.serve(async(req:Request)=>{
   let session;
   try{
    const r=await fetch("https://api.stripe.com/v1/checkout/sessions",{
-    method:"POST",headers:{"Authorization":"Bearer "+STRIPE_KEY,
+    method:"POST",headers:{"Authorization":"Bearer "+key,
      "Content-Type":"application/x-www-form-urlencoded",
      "Idempotency-Key":"artisan-order-"+orderId},
     body:params.toString(),signal:AbortSignal.timeout(15000),
@@ -152,7 +162,7 @@ Deno.serve(async(req:Request)=>{
    else await scoped.rpc("artisan_cancel_pending_order",{p_order:orderId});
    return respond(503,{error:"Secure payment session unavailable. Your stock reservation was not confirmed."},origin);
   }
-  if(session.livemode!==(STRIPE_MODE==="live")||!session.id||
+  if(session.livemode!==(mode==="live")||!session.id||
      !session.url||session.client_reference_id!==orderId||
      session.amount_total!==order.total_cents||session.currency!=="usd"){
    return respond(502,{error:"Payment session verification failed; do not retry this transaction."},origin);
@@ -162,7 +172,7 @@ Deno.serve(async(req:Request)=>{
     p_expires_at:new Date(session.expires_at*1000).toISOString(),
   });
   if(attachError){
-   try{await stripeRequest("checkout/sessions/"+encodeURIComponent(session.id)+"/expire","POST",new URLSearchParams());}
+   try{await stripeRequest("checkout/sessions/"+encodeURIComponent(session.id)+"/expire","POST",key,new URLSearchParams());}
    catch{/* Keep pending reservation: never release if Stripe expiry wasn't confirmed. */}
    return respond(503,{error:"Could not finalize payment session; please contact support before retrying."},origin);
   }
