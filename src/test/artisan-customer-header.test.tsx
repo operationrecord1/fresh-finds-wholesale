@@ -18,6 +18,7 @@ vi.mock("@/lib/artisan-auth",()=>({
 beforeEach(()=>{
  vi.stubGlobal("ResizeObserver",class{observe(){}disconnect(){}});
  vi.stubGlobal("matchMedia",()=>({matches:false}));
+ Object.defineProperty(document,"fonts",{configurable:true,value:{ready:Promise.resolve()}});
 });
 afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.clearAllMocks();});
 it("shows customer name in one clickable account area with dropdown Logout",()=>{
