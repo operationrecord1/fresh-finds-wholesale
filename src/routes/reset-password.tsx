@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { Eye, EyeOff, LockKeyhole } from "lucide-react";
 import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
-import { PASSWORD_REQUIREMENTS, validateArtisanPassword } from "@/lib/artisan-password";
+import { validateArtisanPassword } from "@/lib/artisan-password";
+import { PasswordChecklist } from "@/components/store/PasswordChecklist";
 import "@/components/store/AccountForm.css";
 
 export const Route = createFileRoute("/reset-password")({
@@ -17,6 +18,7 @@ function ResetPassword(){
   const [busy,setBusy]=useState(false);
   const [done,setDone]=useState(false);
   const [message,setMessage]=useState("");
+  const confirmationError=confirm.length>0&&confirm!==password?"Passwords do not match.":null;
   const save=async(e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     if(busy||done)return;
@@ -59,8 +61,8 @@ function ResetPassword(){
          <form onSubmit={save}>
            <label>New password <span>*</span><div className="account-password"><input name="password" type={visible?"text":"password"} autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)} minLength={12} required aria-describedby="reset-requirements"/>
              <button type="button" onClick={()=>setVisible(!visible)} aria-label={visible?"Hide password":"Show password"}>{visible?<EyeOff size={19}/>:<Eye size={19}/>}</button></div></label>
-           <label>Confirm password <span>*</span><input name="confirmation" type={visible?"text":"password"} autoComplete="new-password" value={confirm} onChange={e=>setConfirm(e.target.value)} minLength={12} required/></label>
-           <p className="account-description" id="reset-requirements">{PASSWORD_REQUIREMENTS}</p>
+           <label>Confirm password <span>*</span><input name="confirmation" type={visible?"text":"password"} autoComplete="new-password" value={confirm} onChange={e=>setConfirm(e.target.value)} minLength={12} required aria-invalid={!!confirmationError}/>{confirmationError&&<span className="account-field-error" role="alert">{confirmationError}</span>}</label>
+           <PasswordChecklist password={password} id="reset-requirements"/>
            <button type="submit" className="account-submit" disabled={busy}>{busy?"Updating...":"Update Password"}</button>
            {message&&<p className="account-message" role="alert">{message}</p>}
          </form>}
