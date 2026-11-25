@@ -10,6 +10,7 @@ import { QuickView } from "@/components/store/LazyQuickView";
 import { ProductImage } from "@/components/store/ProductCard";
 import { ExpressOrder } from "@/components/store/ExpressOrder";
 import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
+import { preserveCartForCheckout } from "@/lib/artisan-checkout-intent";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [
@@ -50,7 +51,7 @@ export function CartPage() {
           <button className="rounded bg-primary px-3 text-primary-foreground" onClick={() => applyCoupon(coupon)}>Apply</button></div>
         <DemoCouponFeedback message={message} /></div>
         <select aria-label="Sales representative" style={{ marginBlockStart: 0 }} className="w-full rounded border p-2" defaultValue="web"><option value="web">Sales Rep: Web Customer</option></select>
-        {ok ? <Link to="/checkout" className="block rounded-full bg-accent py-3 text-center font-bold text-accent-foreground">Proceed to Checkout</Link>
+        {ok ? <Link to="/checkout" onClick={()=>preserveCartForCheckout(lines)} className="block rounded-full bg-accent py-3 text-center font-bold text-accent-foreground">Proceed to Checkout</Link>
             : <button disabled className="w-full rounded-full bg-accent py-3 font-bold text-accent-foreground opacity-50">Proceed to Checkout</button>}
       </aside>
       <QuickView p={edit?.p ?? null} initialPieces={edit?.pieces} onClose={() => setEdit(null)} />
