@@ -1,0 +1,35 @@
+name: Artisan Supabase Auth and Build Validation
+on:
+  push:
+    branches: [development/supabase-backend-20261125]
+    paths:
+      - src/lib/artisan-auth.tsx
+      - src/components/store/AccountForm.tsx
+      - src/components/store/SiteHeader.tsx
+      - src/routes/account.tsx
+      - src/routes/reset-password.tsx
+      - src/routes/__root.tsx
+      - package.json
+      - bun.lock
+      - .github/workflows/supabase-auth-validation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-supabase-auth-validation
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Verify exact dependencies
+        run: bun install --frozen-lockfile
+      - name: Run existing and new unit tests
+        run: bun run test
+      - name: Check TypeScript
+        run: bunx tsc --noEmit
+      - name: Build isolated Cloudflare SPA
+        run: bun run build:cloudflare
