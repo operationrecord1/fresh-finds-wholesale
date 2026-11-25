@@ -3,6 +3,7 @@ import { getProduct } from "@/data/catalog";
 import { lineTotal, maximumQuantity, validateQuantity, type BuyMode } from "./wholesale";
 import { CartConfirmation } from "@/components/store/CartConfirmation";
 import { toast } from "sonner";
+import { loadCheckoutCart, synchronizeCheckoutCart } from "@/lib/artisan-checkout-intent";
 
 export interface CartLine { sku: string; pieces: number; mode?: BuyMode }
 interface CartCtx {
@@ -23,7 +24,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const returnFocus = useRef<HTMLElement | null>(null);
   useEffect(() => {
     try {
-      const stored: unknown = JSON.parse(sessionStorage.getItem(KEY) || "[]");
+      const sessionValue = sessionStorage.getItem(KEY);
+      const stored: unknown = sessionValue !== null
+        ? JSON.parse(sessionValue)
+        : loadCheckoutCart() ?? [];
       if (!Array.isArray(stored)) return;
       const valid = new Map<string, CartLine>();
       for (const line of stored) {
@@ -58,7 +62,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const next = update(linesRef.current);
     linesRef.current = next;
     setLines(next);
-    try { sessionStorage.setItem(KEY, JSON.stringify(next)); } catch { /* Keep the in-memory cart usable if storage is unavailable. */ }
+    try { sessionStorage.setItem(KEY, JSON.stringify(next)); synchronizeCheckoutCart(next); } catch { /* Keep the in-memory cart usable if storage is unavailable. */ }
   };
   const validChange = (sku: string, pieces: number, mode: BuyMode, existing: number) => {
     const p = getProduct(sku);
