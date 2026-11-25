@@ -1,0 +1,21 @@
+name: Artisan Stripe Signature Full Unit Validation
+on:
+  push:
+    branches: [test/artisan-stripe-webhook-signature-20261125]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install pinned storefront dependencies
+        run: bun install --frozen-lockfile
+      - name: Stripe signature and all storefront tests
+        run: bun run test
+      - name: Build Cloudflare assets
+        run: bun run build:cloudflare
+      - name: Strict TypeScript
+        run: bunx tsc --noEmit
