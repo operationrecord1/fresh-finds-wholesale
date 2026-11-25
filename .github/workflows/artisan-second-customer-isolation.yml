@@ -1,0 +1,32 @@
+name: Artisan Actual Second Customer Isolation QA
+on:
+  push:
+    branches: [test/artisan-second-customer-isolation-20261125]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright browser
+        run: |
+          mkdir -p /tmp/artisan-secondqa
+          npm install --prefix /tmp/artisan-secondqa --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-secondqa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Execute genuine second customer QA
+        env:
+          NODE_PATH: /tmp/artisan-secondqa/node_modules
+        run: node scripts/artisan-isolation-real-e2e.cjs
+      - name: Save sanitized QA results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-isolation-qa
+          path: artisan-isolation-qa/
+          retention-days: 3
