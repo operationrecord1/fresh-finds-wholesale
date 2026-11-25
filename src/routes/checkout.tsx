@@ -39,6 +39,11 @@ export function Checkout(){
  const [coupon,setCoupon]=useState("");
  const [submitting,setSubmitting]=useState(false);
  const [checkoutError,setCheckoutError]=useState("");
+ const [returnedFromStripe,setReturnedFromStripe]=useState(false);
+ useEffect(()=>{
+  if(typeof window==="undefined")return;
+  setReturnedFromStripe(new URLSearchParams(window.location.search).get("payment_cancelled")==="1");
+ },[]);
  const idempotencyKey=useRef<string|null>(null);
  const enabled=import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
  const {message:couponMessage,applyCoupon}=useDemoCouponFeedback();
@@ -154,6 +159,10 @@ export function Checkout(){
     className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 font-bold text-accent-foreground disabled:opacity-60">
     {!enabled?"Payments temporarily unavailable":submitting?"Preparing secure checkout...":"Continue to secure Stripe payment"}
    </button>
+   {returnedFromStripe&&<p role="status" className="mt-3 text-sm text-amber-800">
+     You returned from Stripe Checkout without a verified payment. Your payment status may still be pending.
+     Please check the order status before trying to pay again.
+   </p>}
    {checkoutError&&<p role="alert" className="mt-3 text-sm text-destructive">{checkoutError}</p>}
    {!enabled&&<p className="mt-3 text-center text-xs text-muted-foreground">
     No order is placed, payment accepted or stock reserved until checkout is enabled.
