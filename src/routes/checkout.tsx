@@ -5,7 +5,7 @@ import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { useArtisanAuth } from "@/lib/artisan-auth";
-import { preserveCartForCheckout } from "@/lib/artisan-checkout-intent";
+import { preserveCartForCheckout, loadCheckoutCoupon } from "@/lib/artisan-checkout-intent";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
 import { useDemoCouponFeedback } from "@/hooks/useDemoCouponFeedback";
 
@@ -36,7 +36,7 @@ export function Checkout(){
  const {lines,subtotal}=useCart();
  const navigate=useNavigate();
  const [same,setSame]=useState(true);
- const [coupon,setCoupon]=useState("");
+ const [coupon,setCoupon]=useState(() => loadCheckoutCoupon());
  const [returnedFromStripe,setReturnedFromStripe]=useState(false);
  useEffect(()=>{
   if(typeof window==="undefined")return;
