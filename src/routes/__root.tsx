@@ -16,6 +16,7 @@ import { CartProvider, CartReady } from "@/lib/cart";
 import { SiteHeader } from "@/components/store/SiteHeader";
 import { SiteFooter } from "@/components/store/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
+import { loadAuthoritativeCatalog } from "@/lib/artisan-live-catalog";
 
 function NotFoundComponent() {
   return (
@@ -78,6 +79,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  beforeLoad: async () => { await loadAuthoritativeCatalog(); },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
