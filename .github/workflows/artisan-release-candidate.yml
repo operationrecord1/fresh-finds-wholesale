@@ -1,0 +1,63 @@
+name: Artisan Mart Exact Release Candidate Validation
+on:
+  push:
+    branches: [development/supabase-backend-20261125]
+    paths:
+      - src/**
+      - supabase/functions/**
+      - supabase/migrations/**
+      - bun.lock
+      - package.json
+      - scripts/prepare-cloudflare.mjs
+      - .github/workflows/artisan-release-candidate.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-exact-release-validation
+  cancel-in-progress: true
+jobs:
+  storefront:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install pinned dependencies
+        run: bun install --frozen-lockfile
+      - name: Run all frontend unit tests
+        run: bun run test
+      - name: Build production-equivalent Cloudflare output
+        run: bun run build:cloudflare
+      - name: Verify TypeScript and route definitions
+        run: bunx tsc --noEmit
+      - name: Reject server secrets in client bundle
+        run: |
+          if grep -R -E 'rk_live_51|sk_test_51|whsec_[A-Za-z0-9]{15}' dist/client; then
+            echo 'Secret-like value detected in frontend bundle'
+            exit 1
+          fi
+      - name: Upload static build validation record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-release-frontend
+          path: dist/client/
+          retention-days: 3
+          if-no-files-found: warn
+  stripe-edge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Check authenticated Stripe Checkout Edge function
+        run: deno check --no-config supabase/functions/artisan-create-checkout/index.ts
+      - name: Check test webhook
+        run: deno check --no-config supabase/functions/artisan-stripe-webhook/index.ts
+      - name: Check live webhook
+        run: deno check --no-config supabase/functions/artisan-stripe-webhook-live/index.ts
+      - name: Verify signed webhook HMAC and replay timestamp rejection
+        run: deno test --no-config supabase/functions/artisan-stripe-webhook/stripe-signature.test.ts
