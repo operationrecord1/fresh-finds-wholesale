@@ -19,9 +19,7 @@ export const Route = createFileRoute("/checkout")({
  ] }),
  component: Checkout,
 });
-const F = ({label,name,req=true,type="text",numericOnly=false,defaultValue}:{
- label:string;name:string;req?:boolean;type?:string;numericOnly?:boolean;defaultValue?:string | undefined;
-}) => (
+const F = ({label,name,req=true,type="text",numericOnly=false,defaultValue}:{label:string;name:string;req?:boolean;type?:string;numericOnly?:boolean;defaultValue?:string | undefined;}) => (
  <label className="block text-sm">{label}{req && <span className="text-destructive"> *</span>}
   <input name={name} required={req} type={type} defaultValue={defaultValue}
    inputMode={numericOnly?"numeric":undefined} pattern={numericOnly?"[0-9]*":undefined}
@@ -42,7 +40,10 @@ export function Checkout(){
  const [payBusy,setPayBusy]=useState(false);
  const [payError,setPayError]=useState("");
  const pendingAttempt=useRef<{signature:string;key:string}|null>(null);
- const paymentEnabled=import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
+ const sandboxPreview=typeof window!=="undefined"&&window.location.hostname.endsWith(".artisanmart-staging.pages.dev");
+ const paymentEnabled=sandboxPreview
+  ? import.meta.env["VITE_ARTISAN_SANDBOX_CHECKOUT_ENABLED"]==="true"
+  : import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
  const openPayment=async()=>{
   if(!paymentEnabled||payBusy||!artisanSupabase||!user?.email_confirmed_at)return;
   setPayError("");setPayBusy(true);
@@ -88,6 +89,7 @@ export function Checkout(){
   Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link>
  </div>;
  return <main className="mx-auto grid max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-3">
+  {sandboxPreview&&<div role="status" className="lg:col-span-3 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">Sandbox checkout: Stripe test cards only; no real charges are processed.</div>}
   <section className="min-w-0 rounded bg-card p-5">
    <H n={1} t="Billing Address"/>
    <div className="grid grid-cols-2 gap-3"><F name="first_name" label="First Name"/><F name="last_name" label="Last Name"/></div>
@@ -127,7 +129,7 @@ export function Checkout(){
     <div className="flex items-start gap-3 rounded-xl border border-border p-4">
      <LockKeyhole size={24} className="shrink-0 text-primary" aria-hidden="true"/>
      <div><p className="font-semibold">Secure card payment</p>
-      <p className="mt-1 text-sm text-muted-foreground">Secure checkout is being connected. We are not collecting card information or accepting payments yet.</p>
+      <p className="mt-1 text-sm text-muted-foreground">{sandboxPreview?"Sandbox test payment. Use a Stripe test card; no real charge will occur.":paymentEnabled?"You will complete payment securely on Stripe Checkout. Card details are handled by Stripe.":"Secure checkout is temporarily unavailable."}</p>
      </div>
     </div>
    </div>
@@ -161,7 +163,7 @@ export function Checkout(){
      Please check the order status before trying to pay again.
    </p>}
    <p className="mt-3 text-center text-xs text-muted-foreground">
-    No order is placed, payment accepted or stock reserved until checkout is enabled.
+    {sandboxPreview?"Sandbox orders are isolated from live customer orders and inventory.":paymentEnabled?"Your order is confirmed after Stripe verifies payment.":"No order is placed, payment accepted or stock reserved while checkout is unavailable."}
    </p>
   </section>
  </main>;
