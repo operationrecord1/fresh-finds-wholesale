@@ -68,6 +68,13 @@ const pause=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
   await go("/account");
   await page.getByText(/Please sign in to view your account/i).waitFor({timeout:12000});
   check("Logout private route protection",true,"Private account unavailable after logout");
+  await go("/login");
+  await page.locator("input[name=email]").fill(EMAIL);
+  await page.locator("input[name=password]").fill("DefinitelyWrongPassword!12345");
+  const denied=page.waitForResponse(r=>r.url().includes("/auth/v1/token")&&r.request().method()==="POST",{timeout:12000});
+  await page.getByRole("button",{name:/Sign in/i}).click();
+  const deniedResponse=await denied;
+  check("Incorrect password rejected for confirmed customer",deniedResponse.status()>=400,"Supabase grant HTTP "+deniedResponse.status());
  }catch(e){
   check("Full verified customer flow",false,String(e.message).slice(0,300));
  }
