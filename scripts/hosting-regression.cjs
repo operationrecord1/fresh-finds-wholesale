@@ -215,7 +215,7 @@ await check('125 product pages render title/SKU/price/stock and 354 images load'
         await p.getByText('Item # '+item.sku,{exact:false}).first().waitFor({timeout:16000});
         const text=await p.locator('body').innerText({timeout:8000});
         assert(text.includes(item.sku),'SKU not present');
-        assert(text.replace(/\\s+/g,' ').includes(item.title.replace(/\\s+/g,' ')),'title not present');
+        assert(text.replace(/\s+/g,' ').includes(item.title.replace(/\s+/g,' ')),'title not present');
         if(item.price!=null) assert(text.includes('$'+item.price.toFixed(2)),'price mismatch');
         if(item.stock!=null) assert(text.includes(item.stock.toLocaleString('en-US')),'stock mismatch');
         if(item.description)assert(text.includes(item.description.slice(0,35)),'description mismatch');
