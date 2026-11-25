@@ -108,7 +108,7 @@ Deno.serve(async(req:Request)=>{
    : await admin.from("artisan_order_items")
       .select("sku,title_snapshot,quantity,unit_price_cents,line_total_cents")
       .eq("order_id",orderId).order("sku");
-  if(itemsError||!items?.length||items.reduce((n,it)=>n+it.line_total_cents,0)!==order.total_cents)
+  if(itemsError||!items?.length||items.reduce((n:number,it:{line_total_cents:number})=>n+it.line_total_cents,0)!==order.total_cents)
    return respond(409,{error:"Order amount could not be independently verified."},origin);
   const account=await stripeRequest("account","GET");
   if(account.id!==EXPECTED_ACCOUNT||account.charges_enabled!==true)
