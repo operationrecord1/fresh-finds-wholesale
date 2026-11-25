@@ -6,7 +6,7 @@ const SERVICE_ROLE=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")??"";
 let STRIPE_KEY=Deno.env.get("ARTISAN_STRIPE_SECRET_KEY")??"";
 let WEBHOOK_SECRET=Deno.env.get("ARTISAN_STRIPE_WEBHOOK_SECRET")??"";
 const STRIPE_MODE="live";
-const EXPECTED_ACCOUNT=Deno.env.get("ARTISAN_STRIPE_ACCOUNT_ID")??(STRIPE_MODE==="test"?"acct_1Uf3Yu3sdabWE5fZ":"acct_1UfSeU3jvjbD68qx");
+const EXPECTED_ACCOUNT=Deno.env.get("ARTISAN_STRIPE_ACCOUNT_ID")??"acct_1UfSeU3jvjbD68qx";
 const expectedLive=STRIPE_MODE==="live";
 const sandbox=!expectedLive;
 
