@@ -8,6 +8,7 @@ if(!BASE||!/^https:\/\/[a-z0-9-]+\.artisanmart-staging\.pages\.dev$/.test(BASE))
 const OUT="artisan-validation-browser-results";fs.mkdirSync(OUT,{recursive:true});
 const results=[];const errors=[];
 let qaPassword="";
+const QA_EMAIL="operation.record1+artisan-phoneqa-"+(process.env.GITHUB_RUN_ID||"local")+"@gmail.com";
 async function test(name,cb){try{const detail=await cb();results.push({name,status:"PASS",detail});console.log("PASS | "+name+" | "+JSON.stringify(detail).slice(0,300));}catch(e){results.push({name,status:"FAIL",detail:String(e.message).slice(0,700)});console.log("FAIL | "+name+" | "+String(e.message).slice(0,320));}}
 (async()=>{
  const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
@@ -68,7 +69,7 @@ async function test(name,cb){try{const detail=await cb();results.push({name,stat
   await page.locator('input[name=firstName]').fill("Artisan");
   await page.locator('input[name=lastName]').fill("Phone QA");
   await page.locator('input[name=phone]').fill("2125550123");
-  await page.locator('input[name=email]').fill("operation.record1+artisan-phoneqa-20261125@gmail.com");
+  await page.locator('input[name=email]').fill(QA_EMAIL);
   const password="StrongQa!"+randomBytes(15).toString("base64url")+"9Ab";qaPassword=password;
   await page.locator('input[name=password]').fill(password);
   await page.locator('input[name=confirmation]').fill(password);
@@ -84,7 +85,7 @@ async function test(name,cb){try{const detail=await cb();results.push({name,stat
  });
  await test("Unverified login is blocked and offers Resend Verification",async()=>{
   await go(page,BASE+"/login");
-  await page.locator('input[name=email]').fill("operation.record1+artisan-phoneqa-20261125@gmail.com");
+  await page.locator('input[name=email]').fill(QA_EMAIL);
   await page.getByRole("button",{name:/Sign in/i}).click();
   await page.getByText("Enter your password.",{exact:false}).first().waitFor({timeout:7000});
   await page.locator('input[name=password]').fill(qaPassword);
