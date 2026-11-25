@@ -125,7 +125,7 @@ Deno.serve(async(req:Request)=>{
    return respond(503,{error:"Payment account unavailable."},origin);
   const params=new URLSearchParams();
   params.set("mode","payment");
-  params.set("payment_method_types[0]","card");
+  params.set("allowed_payment_method_types[0]","card");
   params.set("customer_email",String(user.email));
   params.set("billing_address_collection","required");
   params.set("shipping_address_collection[allowed_countries][0]","US");
