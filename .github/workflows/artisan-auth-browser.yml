@@ -1,0 +1,36 @@
+name: Artisan Supabase Authentication Browser QA
+on:
+  push:
+    branches: [development/supabase-backend-20261125]
+    paths:
+      - scripts/artisan-auth-browser.cjs
+      - .github/workflows/artisan-auth-browser.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  auth-qa:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          mkdir -p /tmp/artisan-auth-qa
+          npm install --prefix /tmp/artisan-auth-qa --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-auth-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test isolated customer-auth preview
+        env:
+          NODE_PATH: /tmp/artisan-auth-qa/node_modules
+        run: node scripts/artisan-auth-browser.cjs
+      - name: Publish sanitized result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-auth-qa
+          path: artisan-auth-test-results/
+          if-no-files-found: warn
+          retention-days: 7
