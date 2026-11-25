@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - development/supabase-backend-20261125
+    paths:
+      - scripts/supabase-catalog-regression.cjs
+      - .github/workflows/supabase-preview-regression.yml
   workflow_dispatch:
 permissions:
   contents: read
