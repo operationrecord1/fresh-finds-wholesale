@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build:pages": "vite build --config vite.pages.config.ts && node scripts/prepare-pages.mjs",
-    "build:netlify": "DEPLOY_TARGET=netlify vite build --config vite.pages.config.ts && node scripts/prepare-netlify.mjs"
+    "build:netlify": "DEPLOY_TARGET=netlify vite build --config vite.pages.config.ts && node scripts/prepare-netlify.mjs",
+    "build:cloudflare": "DEPLOY_TARGET=cloudflare vite build --config vite.pages.config.ts && node scripts/prepare-cloudflare.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
