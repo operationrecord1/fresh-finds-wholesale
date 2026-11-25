@@ -45,6 +45,7 @@ function comparePng(a,b){
   }
   return {changed, total:x.width*x.height, ratio:changed/(x.width*x.height), meanDiff:diffSum/(x.width*x.height),shaProduction:sha(fs.readFileSync(a)),shaNetlify:sha(fs.readFileSync(b))};
 }
+(async () => {
 const raw=fs.readFileSync('src/data/catalog.ts','utf8');
 const start=raw.indexOf('export const PRODUCTS: Product[] = [');
 assert(start>=0,'catalog declaration missing');
@@ -247,3 +248,5 @@ fs.writeFileSync(path.join(out,'report.json'),JSON.stringify({date:new Date().to
 await context.close();await browser.close();
 console.log('TOTAL '+results.length+' PASS '+results.filter(x=>x.status==='PASS').length+' FAIL '+results.filter(x=>x.status==='FAIL').length);
 process.exitCode=results.some(x=>x.status==='FAIL')?1:0;
+
+})().catch(e=>{console.error('FATAL AUDIT ERROR:',e.stack||e);process.exitCode=1;});
