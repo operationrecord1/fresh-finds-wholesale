@@ -1,0 +1,39 @@
+name: Artisan Final Auth Validation and Precheckout Gate
+on:
+  push:
+    branches: [fix/auth-validation-20261125]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-auth-validation-fix
+  cancel-in-progress: true
+jobs:
+  release-validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install pinned dependencies
+        run: bun install --frozen-lockfile
+      - name: Run all existing and new test cases
+        run: bun run test
+      - name: Compile complete Cloudflare storefront
+        run: bun run build:cloudflare
+      - name: Strict TypeScript check
+        run: bunx tsc --noEmit
+      - name: Ensure client bundle has no server credentials
+        run: |
+          if grep -R -E 'rk_live_51|sk_test_51|whsec_[A-Za-z0-9]{20}' dist/client; then
+            echo 'Client bundle has a secret-like value'
+            exit 1
+          fi
+      - name: Preserve build artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-auth-precheckout-build
+          path: dist/client
+          retention-days: 3
+          if-no-files-found: warn
