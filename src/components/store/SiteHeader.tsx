@@ -5,8 +5,11 @@ import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
 import { MiniCart } from "./MiniCart";
+import { useArtisanAuth } from "@/lib/artisan-auth";
+import { toast } from "sonner";
 
 export function SiteHeader() {
+  const { user, signOut } = useArtisanAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileToggle = useRef<HTMLButtonElement>(null);
   const mobilePanel = useRef<HTMLElement>(null);
@@ -147,7 +150,7 @@ export function SiteHeader() {
 
           </div>
           <div className="store-account-links leading-tight">
-            <Link to="/login" className="store-login-link"><span className="store-login-desktop">Login Or <br />Register</span><span className="store-login-mobile">Login</span></Link>
+            {user ? <><Link to="/account" className="store-login-link">My Account</Link><button type="button" className="store-login-link" onClick={() => { signOut().catch(() => toast.error("Could not sign out. Please try again.")); }}>Log out</button></> : <Link to="/login" className="store-login-link"><span className="store-login-desktop">Login Or <br />Register</span><span className="store-login-mobile">Login</span></Link>}
             <MiniCart />
             <Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
           </div>
