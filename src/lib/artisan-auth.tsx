@@ -1,8 +1,8 @@
 import { createClient, type User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-const url = import.meta.env.VITE_ARTISAN_SUPABASE_URL as string | undefined;
-const key = import.meta.env.VITE_ARTISAN_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+const url = import.meta.env['VITE_ARTISAN_SUPABASE_URL'] as string | undefined;
+const key = import.meta.env['VITE_ARTISAN_SUPABASE_PUBLISHABLE_KEY'] as string | undefined;
 
 // The project URL and publishable key are safe for browsers; the private
 // service-role key is NEVER bundled here.
