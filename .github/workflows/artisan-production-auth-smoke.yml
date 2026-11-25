@@ -7,6 +7,10 @@ on:
       - src/components/store/AccountForm.css
       - src/routes/forgot-password.tsx
       - src/routes/account.tsx
+      - src/routes/checkout.tsx
+      - src/routes/order-confirmation.tsx
+      - src/components/store/CustomerOrderHistory.tsx
+      - src/lib/artisan-order-status.ts
       - src/lib/artisan-email.ts
       - scripts/artisan-production-auth-smoke.cjs
       - .github/workflows/artisan-production-auth-smoke.yml
