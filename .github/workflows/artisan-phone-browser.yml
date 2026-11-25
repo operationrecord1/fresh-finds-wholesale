@@ -25,7 +25,7 @@ jobs:
       - name: Verify original storefront and live field validation on isolated preview
         env:
           NODE_PATH: /tmp/artisan-phone-browser/node_modules
-          ARTISAN_PHONE_PREVIEW: https://828425e1.artisanmart-staging.pages.dev
+          ARTISAN_PHONE_PREVIEW: https://4621d10a.artisanmart-staging.pages.dev
         run: node scripts/artisan-validation-browser.cjs
       - name: Preserve independent browser proof
         if: always()
