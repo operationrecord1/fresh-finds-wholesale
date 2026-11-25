@@ -33,7 +33,7 @@ function OrderConfirmation(){
     .finally(()=>{if(active)setLoading(false);});
   return()=>{active=false;};
  },[ready,user?.id,user?.email_confirmed_at,sessionId,retry]);
- const paid=receipt?.status==="paid"&&receipt.payment_status==="paid";
+ const paid=receipt?.status==="confirmed"&&receipt.payment_status==="paid";
  return <main className="mx-auto max-w-[820px] px-4 py-10">
   <section className="rounded-xl border bg-card p-6 sm:p-8">
    <h1 className="text-3xl font-bold">Order Confirmation</h1>
