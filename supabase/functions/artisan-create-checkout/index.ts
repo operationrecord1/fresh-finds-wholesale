@@ -51,7 +51,7 @@ Deno.serve(async(req:Request)=>{
  if(!requiredEnv())return respond(503,{error:"Secure checkout is not configured yet."},origin);
  // Test-mode orders must use separate sandbox stock and order tables.
  // Until that isolated path is tested, never reserve live Artisan Mart inventory.
- if(STRIPE_MODE==="test")return respond(503,{error:"Isolated sandbox order processing is not enabled yet."},origin);
+ const sandbox=STRIPE_MODE==="test";
  const length=Number(req.headers.get("content-length")??0);
  if(length>16000)return respond(413,{error:"Request too large"},origin);
  const header=req.headers.get("authorization")??"";
@@ -71,7 +71,8 @@ Deno.serve(async(req:Request)=>{
       !Array.isArray(body.items)||body.items.length>100||
       !body.billing||!body.shipping)
    return respond(400,{error:"Invalid checkout details"},origin);
-  const {data:created,error:createError}=await scoped.rpc("artisan_begin_checkout",{
+  const {data:created,error:createError}=await (sandbox?admin:scoped).rpc(sandbox?"artisan_sandbox_begin_checkout":"artisan_begin_checkout",{ 
+   ...(sandbox?{p_customer_id:user.id}:{}),
    p_idempotency_key:body.idempotencyKey,p_items:body.items,
    p_billing:body.billing,p_shipping:body.shipping,
    p_coupon:typeof body.coupon==="string"?body.coupon:null,
@@ -79,17 +80,19 @@ Deno.serve(async(req:Request)=>{
   if(createError||!created?.order_id)
    return respond(422,{error:createError?.message??"Unable to reserve checkout."},origin);
   const orderId=String(created.order_id);
-  const {data:order,error:orderError}=await admin.from("artisan_orders")
-   .select("id,customer_id,total_cents,subtotal_cents,discount_cents,shipping_cents,tax_cents,currency,status,payment_status,checkout_session_id")
-   .eq("id",orderId).single();
+  const {data:order,error:orderError}=sandbox
+   ? await admin.rpc("artisan_sandbox_order_details",{p_order:orderId})
+   : await admin.from("artisan_orders")
+      .select("id,customer_id,total_cents,subtotal_cents,discount_cents,shipping_cents,tax_cents,currency,status,payment_status,checkout_session_id")
+      .eq("id",orderId).single();
   if(orderError||!order||order.customer_id!==user.id||
      order.status!=="pending_payment"||order.payment_status!=="unpaid"||
      order.currency!=="usd"||order.total_cents<50000||
-     order.total_cents!==order.subtotal_cents-order.discount_cents+order.shipping_cents+order.tax_cents)
+     (!sandbox&&order.total_cents!==order.subtotal_cents-order.discount_cents+order.shipping_cents+order.tax_cents))
    return respond(409,{error:"Invalid reserved order."},origin);
   // No shipping or tax is silently invented. Configuration and policy
   // verification are release gates in the database.
-  if(order.discount_cents!==0||order.shipping_cents!==0||order.tax_cents!==0)
+  if(!sandbox&&(order.discount_cents!==0||order.shipping_cents!==0||order.tax_cents!==0))
    return respond(503,{error:"The secure shipping/tax quote is not available."},origin);
 
   if(order.checkout_session_id){
@@ -100,9 +103,11 @@ Deno.serve(async(req:Request)=>{
    return respond(409,{error:"Checkout session is no longer open. Please start a new order."},origin);
   }
 
-  const {data:items,error:itemsError}=await admin.from("artisan_order_items")
-   .select("sku,title_snapshot,quantity,unit_price_cents,line_total_cents")
-   .eq("order_id",orderId).order("sku");
+  const {data:items,error:itemsError}=sandbox
+   ? {data:order.items,error:null}
+   : await admin.from("artisan_order_items")
+      .select("sku,title_snapshot,quantity,unit_price_cents,line_total_cents")
+      .eq("order_id",orderId).order("sku");
   if(itemsError||!items?.length||items.reduce((n,it)=>n+it.line_total_cents,0)!==order.total_cents)
    return respond(409,{error:"Order amount could not be independently verified."},origin);
   const account=await stripeRequest("account","GET");
@@ -143,7 +148,8 @@ Deno.serve(async(req:Request)=>{
    if(!r.ok)throw new Error("Payment session request declined ("+r.status+").");
    session=await r.json();
   }catch{
-   await scoped.rpc("artisan_cancel_pending_order",{p_order:orderId});
+   if(sandbox)await admin.rpc("artisan_sandbox_cancel_unattached",{p_order:orderId});
+   else await scoped.rpc("artisan_cancel_pending_order",{p_order:orderId});
    return respond(503,{error:"Secure payment session unavailable. Your stock reservation was not confirmed."},origin);
   }
   if(session.livemode!==(STRIPE_MODE==="live")||!session.id||
@@ -151,7 +157,7 @@ Deno.serve(async(req:Request)=>{
      session.amount_total!==order.total_cents||session.currency!=="usd"){
    return respond(502,{error:"Payment session verification failed; do not retry this transaction."},origin);
   }
-  const {error:attachError}=await admin.rpc("artisan_attach_checkout_session",{
+  const {error:attachError}=await admin.rpc(sandbox?"artisan_sandbox_attach_session":"artisan_attach_checkout_session",{
     p_order:orderId,p_session_id:session.id,
     p_expires_at:new Date(session.expires_at*1000).toISOString(),
   });
