@@ -17,7 +17,7 @@ import { SiteHeader } from "@/components/store/SiteHeader";
 import { SiteFooter } from "@/components/store/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { loadAuthoritativeCatalog } from "@/lib/artisan-live-catalog";
-import { ArtisanAuthProvider } from "@/lib/artisan-auth";
+import { ArtisanAuthProvider, artisanSupabase } from "@/lib/artisan-auth";
 
 function NotFoundComponent() {
   return (
@@ -124,6 +124,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [catalogRevision,setCatalogRevision]=useState(0);
   const [catalogState, setCatalogState] = useState<"loading" | "ready" | "error">(
     import.meta.env.MODE === "test" ? "ready" : "loading",
   );
@@ -138,6 +139,31 @@ function RootComponent() {
       });
     return () => { mounted = false; };
   }, [catalogState]);
+  useEffect(()=>{
+    if(catalogState!=="ready" || !artisanSupabase || import.meta.env.MODE==="test")return;
+    let active=true;
+    const refresh=()=>{
+      if(!active || document.visibilityState==="hidden")return;
+      void loadAuthoritativeCatalog(true).catch(error=>{
+        console.error("Live catalog synchronization failed",error);
+        if(active)setCatalogState("error");
+      });
+    };
+    const onChange=()=>setCatalogRevision(v=>v+1);
+    window.addEventListener("artisan-catalog-updated",onChange);
+    window.addEventListener("focus",refresh);
+    const channel=artisanSupabase.channel("artisan-products-availability")
+      .on("postgres_changes",{event:"*",schema:"public",table:"artisan_products"},refresh)
+      .subscribe();
+    const timer=window.setInterval(refresh,90_000);
+    return()=>{
+      active=false;
+      window.removeEventListener("artisan-catalog-updated",onChange);
+      window.removeEventListener("focus",refresh);
+      window.clearInterval(timer);
+      void artisanSupabase.removeChannel(channel);
+    };
+  },[catalogState]);
   // Never render embedded historical product prices when the authoritative
   // database has not been verified. Keep the original storefront once loaded.
   if (catalogState !== "ready") {
@@ -157,7 +183,7 @@ function RootComponent() {
       <CartProvider>
         <CartReady>
         <SiteHeader />
-        <main><Outlet /></main>
+        <main><Outlet key={catalogRevision}/></main>
         <SiteFooter />
         <Toaster />
         </CartReady>
