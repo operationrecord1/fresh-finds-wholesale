@@ -9,6 +9,12 @@ on:
       - src/routes/account.tsx
       - src/routes/reset-password.tsx
       - src/routes/__root.tsx
+      - src/routes/checkout.tsx
+      - src/routes/cart.tsx
+      - src/lib/cart.tsx
+      - src/lib/artisan-checkout-intent.ts
+      - src/test/checkout-flow.test.tsx
+      - src/lib/artisan-live-catalog.ts
       - package.json
       - bun.lock
       - .github/workflows/supabase-auth-validation.yml
