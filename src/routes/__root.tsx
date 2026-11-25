@@ -161,7 +161,7 @@ function RootComponent() {
       window.removeEventListener("artisan-catalog-updated",onChange);
       window.removeEventListener("focus",refresh);
       window.clearInterval(timer);
-      void artisanSupabase.removeChannel(channel);
+      void artisanSupabase?.removeChannel(channel);
     };
   },[catalogState]);
   // Never render embedded historical product prices when the authoritative
