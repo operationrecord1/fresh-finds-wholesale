@@ -3,10 +3,10 @@ import { verifyStripeSignature } from "./stripe-signature.ts";
 
 const SUPABASE_URL=Deno.env.get("SUPABASE_URL")??"";
 const SERVICE_ROLE=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")??"";
-const STRIPE_KEY=Deno.env.get("ARTISAN_STRIPE_SECRET_KEY")??"";
-const WEBHOOK_SECRET=Deno.env.get("ARTISAN_STRIPE_WEBHOOK_SECRET")??"";
-const STRIPE_MODE=Deno.env.get("ARTISAN_STRIPE_MODE")??"";
-const EXPECTED_ACCOUNT=Deno.env.get("ARTISAN_STRIPE_ACCOUNT_ID")??"";
+let STRIPE_KEY=Deno.env.get("ARTISAN_STRIPE_SECRET_KEY")??"";
+let WEBHOOK_SECRET=Deno.env.get("ARTISAN_STRIPE_WEBHOOK_SECRET")??"";
+const STRIPE_MODE=Deno.env.get("ARTISAN_STRIPE_MODE")??"test";
+const EXPECTED_ACCOUNT=Deno.env.get("ARTISAN_STRIPE_ACCOUNT_ID")??(STRIPE_MODE==="test"?"acct_1Uf3Yu3sdabWE5fZ":"acct_1UfSeU3jvjbD68qx");
 const expectedLive=STRIPE_MODE==="live";
 const sandbox=!expectedLive;
 
@@ -24,11 +24,25 @@ async function stripeGet(path:string):Promise<any>{
 
 Deno.serve(async(req:Request)=>{
  if(req.method!=="POST")return result(405,{error:"Method not allowed"});
- if(!SUPABASE_URL||!SERVICE_ROLE||!STRIPE_KEY||!WEBHOOK_SECRET||
-    !["test","live"].includes(STRIPE_MODE)||(STRIPE_MODE==="live"?EXPECTED_ACCOUNT!=="acct_1UfSeU3jvjbD68qx":!/^acct_[A-Za-z0-9]{10,}$/.test(EXPECTED_ACCOUNT))||
-    !(expectedLive?(STRIPE_KEY.startsWith("sk_live_")||STRIPE_KEY.startsWith("rk_live_")):
-      STRIPE_KEY.startsWith("sk_test_")))
-    return result(503,{error:"Webhook signing and payment verification not configured"});
+ if(!SUPABASE_URL||!SERVICE_ROLE||!["test","live"].includes(STRIPE_MODE)||
+   (expectedLive?EXPECTED_ACCOUNT!=="acct_1UfSeU3jvjbD68qx":
+     EXPECTED_ACCOUNT!=="acct_1Uf3Yu3sdabWE5fZ"))
+   return result(503,{error:"Webhook environment not configured"});
+ const admin=createClient(SUPABASE_URL,SERVICE_ROLE,{auth:{autoRefreshToken:false,persistSession:false}});
+ if(!STRIPE_KEY){
+   const {data,error}=await admin.rpc("artisan_stripe_runtime_secret",{
+    p_mode:STRIPE_MODE,p_kind:"api_key"});
+   if(!error&&typeof data==="string")STRIPE_KEY=data;
+ }
+ if(!WEBHOOK_SECRET){
+   const {data,error}=await admin.rpc("artisan_stripe_runtime_secret",{
+    p_mode:STRIPE_MODE,p_kind:"webhook_secret"});
+   if(!error&&typeof data==="string")WEBHOOK_SECRET=data;
+ }
+ if(!WEBHOOK_SECRET.startsWith("whsec_")||
+   !(expectedLive?(STRIPE_KEY.startsWith("sk_live_")||STRIPE_KEY.startsWith("rk_live_")):
+     STRIPE_KEY.startsWith("sk_test_")))
+   return result(503,{error:"Webhook signing or Stripe API key not available"});
  if(Number(req.headers.get("content-length")??0)>100000)return result(413,{error:"Payload too large"});
  let raw:string;
  try{raw=await req.text();if(raw.length>100000)return result(413,{error:"Payload too large"});}
@@ -43,7 +57,6 @@ Deno.serve(async(req:Request)=>{
  const relevant=new Set(["checkout.session.completed","checkout.session.async_payment_succeeded",
   "checkout.session.async_payment_failed","checkout.session.expired","charge.refunded"]);
  if(!relevant.has(event.type))return result(200,{received:true,ignored:true});
- const admin=createClient(SUPABASE_URL,SERVICE_ROLE,{auth:{autoRefreshToken:false,persistSession:false}});
  try{
   const account=await stripeGet("account");
   if(account.id!==EXPECTED_ACCOUNT)return result(403,{error:"Connected Stripe account mismatch"});
