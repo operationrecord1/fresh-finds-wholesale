@@ -25,7 +25,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const sessionValue = sessionStorage.getItem(KEY);
-      const stored: unknown = sessionValue && sessionValue !== "[]"
+      const stored: unknown = sessionValue !== null
         ? JSON.parse(sessionValue)
         : loadCheckoutCart() ?? [];
       if (!Array.isArray(stored)) return;
