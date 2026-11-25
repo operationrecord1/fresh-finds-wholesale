@@ -14,7 +14,7 @@ on:
       - .github/workflows/supabase-auth-validation.yml
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: artisan-supabase-auth-validation
   cancel-in-progress: true
@@ -29,7 +29,16 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Run existing and new unit tests
         run: bun run test
+      - name: Build isolated Cloudflare SPA and regenerate TanStack route types
+        run: bun run build:cloudflare
       - name: Check TypeScript
         run: bunx tsc --noEmit
-      - name: Build isolated Cloudflare SPA
-        run: bun run build:cloudflare
+      - name: Commit generated route types on development branch
+        run: |
+          if ! git diff --quiet -- src/routeTree.gen.ts; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/routeTree.gen.ts
+            git commit -m "Regenerate typed customer account routes on development branch"
+            git push origin HEAD:development/supabase-backend-20261125
+          fi
