@@ -14,6 +14,7 @@ on:
       - src/lib/cart.tsx
       - src/lib/artisan-checkout-intent.ts
       - src/test/checkout-flow.test.tsx
+      - src/test/artisan-customer-header.test.tsx
       - src/lib/artisan-live-catalog.ts
       - package.json
       - bun.lock
