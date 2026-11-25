@@ -47,7 +47,7 @@ async function stripeGet(path:string):Promise<any>{
 Deno.serve(async(req:Request)=>{
  if(req.method!=="POST")return result(405,{error:"Method not allowed"});
  if(!SUPABASE_URL||!SERVICE_ROLE||!STRIPE_KEY||!WEBHOOK_SECRET||
-    !["test","live"].includes(STRIPE_MODE)||EXPECTED_ACCOUNT!=="acct_1UfSeU3jvjbD68qx"||
+    !["test","live"].includes(STRIPE_MODE)||(STRIPE_MODE==="live"?EXPECTED_ACCOUNT!=="acct_1UfSeU3jvjbD68qx":!/^acct_[A-Za-z0-9]{10,}$/.test(EXPECTED_ACCOUNT))||
     !(expectedLive?(STRIPE_KEY.startsWith("sk_live_")||STRIPE_KEY.startsWith("rk_live_")):
       STRIPE_KEY.startsWith("sk_test_")))
     return result(503,{error:"Webhook signing and payment verification not configured"});
