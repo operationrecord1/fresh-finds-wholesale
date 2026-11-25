@@ -1,0 +1,39 @@
+name: Artisan Mart Authentication-Only Release Gate
+on:
+  push:
+    branches: [release/artisan-auth-20261125]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-auth-only-release-gate
+  cancel-in-progress: true
+jobs:
+  auth-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install exact existing dependencies
+        run: bun install --frozen-lockfile
+      - name: All existing and new tests
+        run: bun run test
+      - name: Production-equivalent static build and typed route regeneration
+        run: bun run build:cloudflare
+      - name: TypeScript validation
+        run: bunx tsc --noEmit
+      - name: Reject client-bundled sensitive credentials
+        run: |
+          if grep -R -E 'rk_live_51|sk_test_51|whsec_[A-Za-z0-9]{20}' dist/client; then
+            echo 'Secret-like value detected in browser output.'
+            exit 1
+          fi
+      - name: Save browser build for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-auth-static-build
+          path: dist/client/
+          if-no-files-found: warn
+          retention-days: 3
