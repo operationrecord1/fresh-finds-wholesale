@@ -1,12 +1,15 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState, type FormEvent } from "react";
 import { artisanSupabase } from "@/lib/artisan-auth";
+import { consumeCheckoutReturn } from "@/lib/artisan-checkout-intent";
 import { Eye, EyeOff, LockKeyhole, ArrowRight, UserRound } from "lucide-react";
 import "./AccountForm.css";
 export function AccountForm({ register = false }: { register?: boolean }) {
  const [visible,setVisible]=useState(false);
  const [message,setMessage]=useState("");
  const [busy,setBusy]=useState(false);
+ const [verificationEmail,setVerificationEmail]=useState("");
+ const [resendBusy,setResendBusy]=useState(false);
  const formRef=useRef<HTMLFormElement>(null);
  const navigate=useNavigate();
 
@@ -37,18 +40,36 @@ export function AccountForm({ register = false }: { register?: boolean }) {
      }
     });
     if(error)throw error;
-    setMessage(data.session
-     ? "Your account is ready. You can now continue to My Account."
-     : "If this address can receive registration emails, check your inbox to verify your account.");
-    if(data.session)await navigate({to:"/account"});
+    setVerificationEmail(email);
+    setMessage(data.session && data.user?.email_confirmed_at
+     ? "Your verified account is ready."
+     : "Check your inbox to verify your email before signing in. If the email does not arrive, use Resend confirmation.");
+    if(data.session && data.user?.email_confirmed_at){
+      await navigate({to:consumeCheckoutReturn()?"/checkout":"/account"});
+    }
    }else{
     const {error}=await artisanSupabase.auth.signInWithPassword({email,password});
     if(error){setMessage("Invalid email or password, or your email has not been confirmed.");return;}
-    await navigate({to:"/account"});
+    await navigate({to:consumeCheckoutReturn()?"/checkout":"/account"});
    }
   }catch(error){
    setMessage(error instanceof Error ? error.message : "Account request failed. Please try again.");
   }finally{setBusy(false);}
+ };
+ const resendConfirmation=async()=>{
+  const email=verificationEmail || (formRef.current?.elements.namedItem("email") as HTMLInputElement|null)?.value.trim().toLowerCase();
+  if(!email || !artisanSupabase){setMessage("Enter your email address first.");return;}
+  if(resendBusy)return;
+  setResendBusy(true);
+  try {
+    const {error}=await artisanSupabase.auth.resend({
+      type:"signup",email,options:{emailRedirectTo:window.location.origin+"/login"},
+    });
+    if(error)throw error;
+    setMessage("If your address needs verification, another confirmation email has been requested.");
+    setVerificationEmail(email);
+  }catch(err){setMessage(err instanceof Error?err.message:"Could not resend confirmation.");}
+  finally{setResendBusy(false);}
  };
  const resetPassword=async()=>{
   const email=(formRef.current?.elements.namedItem("email") as HTMLInputElement|null)?.value.trim();
@@ -76,6 +97,8 @@ export function AccountForm({ register = false }: { register?: boolean }) {
     {register?<><label>Confirm password <span>*</span><input name="confirmation" type={visible?"text":"password"} autoComplete="new-password" required/></label><label className="account-checkbox"><input name="newsletter" type="checkbox"/>Sign up for our newsletter</label></>:<button type="button" className="account-forgot" onClick={resetPassword}>Forgot your password?</button>}
     <button type="submit" disabled={busy} className="account-submit">{busy?"Please wait...":register?"Create account":"Sign in"}<ArrowRight size={18} aria-hidden="true"/></button>
     {message&&<p role="status" className="account-message">{message}</p>}
+    {(register && verificationEmail) && <button type="button" className="account-forgot"
+       disabled={resendBusy} onClick={resendConfirmation}>{resendBusy?"Sending...":"Resend confirmation email"}</button>}
    </form>
   </section></div>
  </main>;
