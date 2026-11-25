@@ -27,7 +27,9 @@ jobs:
         with:
           node-version: '22'
       - name: Validate local Management API script syntax
-        run: node --check scripts/artisan-auth-management-config.cjs
+        run: |
+          node --check scripts/artisan-auth-management-config.cjs
+          node --check scripts/artisan-production-auth-smoke.cjs
       - name: Verify Go-template URLs are present
         run: |
           grep -F -q '{{ .ConfirmationURL }}' supabase/email-templates/confirm-signup.html
