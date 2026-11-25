@@ -1,13 +1,14 @@
 import type { CartLine } from "@/lib/cart";
+import { isValidDemoCoupon } from "@/lib/demo-coupon";
 
 const KEY = "artisan-mart-pending-checkout-cart";
 const CONTINUE = "artisan-mart-return-to-checkout";
 const MAX_AGE_MS = 48 * 60 * 60 * 1000;
 
-export function preserveCartForCheckout(lines: CartLine[]) {
+export function preserveCartForCheckout(lines: CartLine[], coupon = "") {
   if (typeof window === "undefined" || !lines.length) return;
   try {
-    localStorage.setItem(KEY, JSON.stringify({ savedAt: Date.now(), lines }));
+    localStorage.setItem(KEY, JSON.stringify({ savedAt: Date.now(), lines, coupon: isValidDemoCoupon(coupon) ? coupon : "" }));
     sessionStorage.setItem(CONTINUE,"yes");
   } catch { /* Browsing still works if storage is unavailable. */ }
 }
@@ -25,6 +26,15 @@ export function loadCheckoutCart(): CartLine[] | null {
     }
     return Array.isArray(lines) ? lines as CartLine[] : null;
   } catch { return null; }
+}
+
+export function loadCheckoutCoupon(): string {
+ if (typeof window === "undefined") return "";
+ try {
+  const item=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(!item||typeof item.savedAt!=="number"||Date.now()-item.savedAt>MAX_AGE_MS)return "";
+  return typeof item.coupon==="string"&&isValidDemoCoupon(item.coupon)?item.coupon:"";
+ }catch{return "";}
 }
 
 export function checkoutReturnRequested(): boolean {
@@ -48,7 +58,7 @@ export function synchronizeCheckoutCart(lines: CartLine[]) {
       localStorage.removeItem(KEY);
       sessionStorage.removeItem(CONTINUE);
     } else {
-      localStorage.setItem(KEY,JSON.stringify({savedAt:Date.now(),lines}));
+      localStorage.setItem(KEY,JSON.stringify({savedAt:Date.now(),lines,coupon:loadCheckoutCoupon()}));
     }
   } catch { /* If persistent storage is disabled, the session cart remains active. */ }
 }
