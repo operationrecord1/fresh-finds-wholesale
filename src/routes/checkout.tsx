@@ -120,7 +120,7 @@ export function Checkout(){
   <section className="min-w-0 space-y-6">
    <div className="min-w-0 rounded bg-card p-5">
     <H n={2} t="Shipping Method"/>
-    <p className="text-sm text-muted-foreground">Shipping options and applicable taxes will be calculated securely before payment.</p>
+    <p className="text-sm text-muted-foreground">Free shipping on every order. Shipping is included in product prices.</p>
    </div>
    <div className="min-w-0 rounded bg-card p-5">
     <H n={3} t="Payment Method"/>
