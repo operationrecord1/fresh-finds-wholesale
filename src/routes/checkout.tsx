@@ -163,4 +163,3 @@ export function Checkout(){
   </div>
  </main>;
 }
-
