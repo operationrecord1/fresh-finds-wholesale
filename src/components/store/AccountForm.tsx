@@ -1,3 +1,4 @@
+import { isValidArtisanEmail } from "@/lib/artisan-email";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { validateArtisanPassword } from "@/lib/artisan-password";
@@ -17,7 +18,7 @@ export function AccountForm({ register = false }: { register?: boolean }) {
  const [emailValue,setEmailValue]=useState("");
  const [submitted,setSubmitted]=useState(false);
  const [agreed,setAgreed]=useState(false);
- const emailError=(emailValue.length>0||submitted) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue.trim())?"Enter a valid email address.":null;
+ const emailError=(emailValue.length>0||submitted) && !isValidArtisanEmail(emailValue)?"Enter a valid email address.":null;
  const phoneError=register&&(phone.length>0||submitted)?validatePhoneNumber(phone):null;
  const firstError=register&&(firstName.length>0||submitted)&&(!firstName.trim()||firstName.trim().length>120)?"Enter a valid first name.":null;
  const lastError=register&&(lastName.length>0||submitted)&&(!lastName.trim()||lastName.trim().length>120)?"Enter a valid last name.":null;
@@ -52,7 +53,7 @@ export function AccountForm({ register = false }: { register?: boolean }) {
   const email=String(form.get("email")??"").trim().toLowerCase();
   const password=String(form.get("password")??"");
   if(!artisanSupabase){setMessage("Account service is temporarily unavailable.");return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {setMessage("Enter a valid email address.");return;}
+  if(!isValidArtisanEmail(email)) {setMessage("Enter a valid email address.");return;}
   if(register && (!firstName.trim()||!lastName.trim()||!toE164Phone(phone))) {setMessage("Please correct the required fields.");return;}
   if(register&&!agreed){setMessage("Please accept the Terms of Sale and Privacy Policy.");return;}
   if(!register&&!password){setMessage("Enter your password.");return;}
