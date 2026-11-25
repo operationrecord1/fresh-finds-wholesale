@@ -42,7 +42,7 @@ it("shows original address fields and separate shipping information for verified
   expect(screen.getByText("Billing Address")).toBeInTheDocument();
   expect(screen.getByDisplayValue("qa@example.invalid")).toBeInTheDocument();
   expect(screen.getByText("Merchandise subtotal")).toBeInTheDocument();
-  expect(screen.getByText("$580.00")).toBeInTheDocument();
+  expect(screen.getAllByText("$580.00")).toHaveLength(2);
   fireEvent.click(screen.getByLabelText(/Ship to the same address/));
   expect(screen.getByText("Shipping Address")).toBeInTheDocument();
   expect(screen.getByText(/Shipping options and applicable taxes/)).toBeInTheDocument();
@@ -66,5 +66,5 @@ it("retains correct zero-discount demo coupon feedback",()=>{
   fireEvent.change(input,{target:{value:"ARTISAN"}});
   fireEvent.click(screen.getByRole("button",{name:"Apply"}));
   expect(screen.getByText(/No discount has been applied/)).toBeInTheDocument();
-  expect(screen.getByText("$580.00")).toBeInTheDocument();
+  expect(screen.getAllByText("$580.00")).toHaveLength(2);
 });
