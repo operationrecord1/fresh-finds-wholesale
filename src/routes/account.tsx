@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
 import { formatPhoneInput, cleanPhoneInput, toE164Phone, validatePhoneNumber } from "@/lib/artisan-phone";
+import { CustomerOrderHistory } from "@/components/store/CustomerOrderHistory";
 
 export const Route = createFileRoute("/account")({
  head:()=>({meta:[{title:"My Account | Artisan Mart"},{name:"description",content:"Review your Artisan Mart customer account."}]}),
@@ -87,6 +88,7 @@ function Account(){
    </form>}
   </section>
   {message&&<p className="mt-3" role="status">{message}</p>}
+  <CustomerOrderHistory/>
   <button className="mt-6 rounded border px-5 py-3" onClick={()=>signOut().then(()=>navigate({to:"/login"})).catch(()=>setMessage("Could not sign out."))}>Log out</button>
  </main>;
 }
