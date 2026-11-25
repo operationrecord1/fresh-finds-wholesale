@@ -15,6 +15,8 @@ function Account(){
  const [message,setMessage]=useState("");
  const [busy,setBusy]=useState(false);
  useEffect(()=>{
+  setProfile(null);
+  setMessage("");
   if(!user||!artisanSupabase)return;
   let alive=true;
   artisanSupabase.from("artisan_profiles")
