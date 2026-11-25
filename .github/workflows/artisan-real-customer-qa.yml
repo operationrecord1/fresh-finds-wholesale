@@ -1,0 +1,32 @@
+name: Artisan Actual Customer Verification QA
+on:
+  push:
+    branches: [test/artisan-auth-live-verified-qa-20261125]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright Chromium
+        run: |
+          mkdir -p /tmp/artisan-qa
+          npm install --prefix /tmp/artisan-qa --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Real signup and verified customer session
+        env:
+          NODE_PATH: /tmp/artisan-qa/node_modules
+        run: node scripts/artisan-auth-real-customer-qa.cjs
+      - name: Preserve sanitized QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-customer-auth-qa
+          path: auth-live-customer-qa/
+          retention-days: 3
