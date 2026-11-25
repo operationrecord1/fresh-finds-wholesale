@@ -16,12 +16,14 @@ export function AccountForm({ register = false }: { register?: boolean }) {
  const [lastName,setLastName]=useState("");
  const [emailValue,setEmailValue]=useState("");
  const [submitted,setSubmitted]=useState(false);
+ const [agreed,setAgreed]=useState(false);
  const emailError=(emailValue.length>0||submitted) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue.trim())?"Enter a valid email address.":null;
  const phoneError=register&&(phone.length>0||submitted)?validatePhoneNumber(phone):null;
  const firstError=register&&(firstName.length>0||submitted)&&(!firstName.trim()||firstName.trim().length>120)?"Enter a valid first name.":null;
  const lastError=register&&(lastName.length>0||submitted)&&(!lastName.trim()||lastName.trim().length>120)?"Enter a valid last name.":null;
  const confirmationError=register&&(confirmation.length>0||submitted)&&confirmation!==password?"Passwords do not match.":null;
  const loginPasswordError=!register&&submitted&&!password?"Enter your password.":null;
+ const agreementError=register&&submitted&&!agreed?"You must agree to the Terms of Sale and Privacy Policy.":null;
  const [message,setMessage]=useState("");
  const [busy,setBusy]=useState(false);
  const [verificationEmail,setVerificationEmail]=useState("");
@@ -52,6 +54,7 @@ export function AccountForm({ register = false }: { register?: boolean }) {
   if(!artisanSupabase){setMessage("Account service is temporarily unavailable.");return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {setMessage("Enter a valid email address.");return;}
   if(register && (!firstName.trim()||!lastName.trim()||!toE164Phone(phone))) {setMessage("Please correct the required fields.");return;}
+  if(register&&!agreed){setMessage("Please accept the Terms of Sale and Privacy Policy.");return;}
   if(!register&&!password){setMessage("Enter your password.");return;}
   if(register&&password!==confirmation){
    setMessage("Your passwords do not match. Please check both fields.");return;
@@ -69,6 +72,7 @@ export function AccountForm({ register = false }: { register?: boolean }) {
        last_name:lastName.trim(),
        phone:toE164Phone(phone),
        newsletter_opt_in:form.get("newsletter")==="on",
+       terms_accepted_at:new Date().toISOString(),
       }
      }
     });
@@ -124,7 +128,7 @@ export function AccountForm({ register = false }: { register?: boolean }) {
     {register&&<><fieldset><legend>Personal information</legend><div className="account-name-row"><label>First name <span>*</span><input name="firstName" autoComplete="given-name" required maxLength={120} value={firstName} aria-invalid={!!firstError} onChange={e=>setFirstName(e.target.value)}/>{firstError&&<span className="account-field-error" role="alert">{firstError}</span>}</label><label>Last name <span>*</span><input name="lastName" autoComplete="family-name" required maxLength={120} value={lastName} aria-invalid={!!lastError} onChange={e=>setLastName(e.target.value)}/>{lastError&&<span className="account-field-error" role="alert">{lastError}</span>}</label></div><label>Phone <span>*</span><input name="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+1 (212) 555-0123" required value={phone} aria-invalid={!!phoneError} onChange={e=>setPhone(formatPhoneInput(cleanPhoneInput(e.target.value)))}/>{phoneError&&<span className="account-field-error" role="alert">{phoneError}</span>}</label><label>Sales representative<select name="representative"><option>Web Customer</option></select></label></fieldset><h3 className="account-form-heading">Login information</h3></>}
     <label>Email address <span>*</span><input name="email" type="email" autoComplete="email" required maxLength={254} value={emailValue} aria-invalid={!!emailError} onChange={e=>setEmailValue(e.target.value)}/>{emailError&&<span className="account-field-error" role="alert">{emailError}</span>}</label>
     <label>Password <span>*</span><div className="account-password"><input name="password" type={visible?"text":"password"} autoComplete={register?"new-password":"current-password"} required value={password} onChange={e=>setPassword(e.target.value)} aria-invalid={!!loginPasswordError} aria-describedby={register?"artisan-password-requirements":undefined}/><button type="button" aria-label={visible?"Hide password":"Show password"} aria-pressed={visible} onClick={()=>setVisible(!visible)}>{visible?<EyeOff size={19}/>:<Eye size={19}/>}</button></div>{loginPasswordError&&<span className="account-field-error" role="alert">{loginPasswordError}</span>}</label>
-    {register?<><label>Confirm password <span>*</span><input name="confirmation" type={visible?"text":"password"} autoComplete="new-password" required value={confirmation} onChange={e=>setConfirmation(e.target.value)} aria-invalid={!!confirmationError}/>{confirmationError&&<span className="account-field-error" role="alert">{confirmationError}</span>}</label><label className="account-checkbox"><input name="newsletter" type="checkbox"/>Sign up for our newsletter</label></>:<Link className="account-forgot" to="/forgot-password">Forgot your password?</Link>}
+    {register?<><label>Confirm password <span>*</span><input name="confirmation" type={visible?"text":"password"} autoComplete="new-password" required value={confirmation} onChange={e=>setConfirmation(e.target.value)} aria-invalid={!!confirmationError}/>{confirmationError&&<span className="account-field-error" role="alert">{confirmationError}</span>}</label><label className="account-checkbox"><input name="newsletter" type="checkbox"/>Sign up for our newsletter</label><div className="account-agreement"><label className="account-checkbox"><input name="agreement" type="checkbox" required checked={agreed} aria-invalid={!!agreementError} onChange={e=>{setAgreed(e.target.checked);setMessage("");}}/><span>I agree to the <Link to="/terms-of-sale">Terms of Sale</Link> and <Link to="/privacy">Privacy Policy</Link> <span aria-hidden="true">*</span></span></label>{agreementError&&<span className="account-field-error" role="alert">{agreementError}</span>}</div></>:<Link className="account-forgot" to="/forgot-password">Forgot your password?</Link>}
     {register&&<PasswordChecklist password={password}/>}
     <button type="submit" disabled={busy} className="account-submit">{busy?"Please wait...":register?"Create account":"Sign in"}<ArrowRight size={18} aria-hidden="true"/></button>
     {message&&<p role="status" className="account-message">{message}</p>}
