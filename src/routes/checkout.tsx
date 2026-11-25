@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { LockKeyhole } from "lucide-react";
 import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
-import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
+import { useArtisanAuth } from "@/lib/artisan-auth";
 import { preserveCartForCheckout } from "@/lib/artisan-checkout-intent";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
 import { useDemoCouponFeedback } from "@/hooks/useDemoCouponFeedback";
@@ -37,15 +37,11 @@ export function Checkout(){
  const navigate=useNavigate();
  const [same,setSame]=useState(true);
  const [coupon,setCoupon]=useState("");
- const [submitting,setSubmitting]=useState(false);
- const [checkoutError,setCheckoutError]=useState("");
  const [returnedFromStripe,setReturnedFromStripe]=useState(false);
  useEffect(()=>{
   if(typeof window==="undefined")return;
   setReturnedFromStripe(new URLSearchParams(window.location.search).get("payment_cancelled")==="1");
  },[]);
- const idempotencyKey=useRef<string|null>(null);
- const enabled=import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
  const {message:couponMessage,applyCoupon}=useDemoCouponFeedback();
  const verified=!!user?.email_confirmed_at;
  useEffect(()=>{
@@ -54,54 +50,6 @@ export function Checkout(){
   void navigate({to:"/login"});
  },[ready,verified,navigate,lines]);
 
- const submitPayment=async(event:FormEvent<HTMLFormElement>)=>{
-  event.preventDefault();
-  if(!enabled||submitting||!user?.email_confirmed_at||!artisanSupabase)return;
-  if(!meetsMinimum(subtotal)){setCheckoutError("Your cart is below the $500 minimum.");return;}
-  if(coupon&&!["ARTISAN"].includes(coupon)){applyCoupon(coupon);return;}
-  setSubmitting(true);setCheckoutError("");
-  try{
-   const {data:sessionData,error:sessionError}=await artisanSupabase.auth.getSession();
-   if(sessionError||!sessionData.session?.access_token)throw new Error("Please sign in again to continue checkout.");
-   const form=new FormData(event.currentTarget);
-   const read=(key:string)=>String(form.get(key)??"").trim();
-   const billing={
-    first_name:read("first_name"),last_name:read("last_name"),
-    company:read("company"),email:user.email??read("email"),
-    phone:read("phone"),line1:read("line1"),city:read("city"),
-    state:read("state"),postal_code:read("postal_code"),country:"US",
-   };
-   const shipping=same?billing:{
-    ...billing,
-    first_name:read("shipping_first_name"),last_name:read("shipping_last_name"),
-    phone:read("shipping_phone"),
-    line1:read("shipping_line1"),city:read("shipping_city"),
-    state:read("shipping_state"),postal_code:read("shipping_postal_code"),
-   };
-   if(!idempotencyKey.current)idempotencyKey.current=crypto.randomUUID().replaceAll("-","");
-   const api=import.meta.env["VITE_ARTISAN_SUPABASE_URL"] as string|undefined;
-   const publishable=import.meta.env["VITE_ARTISAN_SUPABASE_PUBLISHABLE_KEY"] as string|undefined;
-   if(!api||!publishable)throw new Error("Checkout service is not configured.");
-   const response=await fetch(new URL("/functions/v1/artisan-create-checkout",api),{
-    method:"POST",headers:{"Content-Type":"application/json","apikey":publishable,
-     "Authorization":"Bearer "+sessionData.session.access_token},
-    body:JSON.stringify({idempotencyKey:idempotencyKey.current,
-      items:lines.map(l=>({sku:l.sku,quantity:l.pieces,mode:l.mode??"piece"})),
-      billing,shipping,coupon:coupon||null}),
-    signal:AbortSignal.timeout(25000),
-   });
-   const value=await response.json() as {checkout_url?:string;error?:string};
-   if(!response.ok||!value.checkout_url)throw new Error(value.error??"Checkout could not be started.");
-   const destination=new URL(value.checkout_url);
-   if(destination.protocol!=="https:"||
-      !(destination.hostname==="checkout.stripe.com"||destination.hostname.endsWith(".checkout.stripe.com")))
-      throw new Error("Checkout returned an unexpected payment address.");
-   window.location.assign(destination.toString());
-  }catch(error){
-   setCheckoutError(error instanceof Error?error.message:"Secure checkout failed.");
-   setSubmitting(false);
-  }
- };
  if(!ready)return <div className="p-10 text-center" role="status">Checking your account...</div>;
  if(!verified)return <div className="p-10 text-center" role="status">
   Please sign in with a verified email to continue checkout. <Link to="/login" className="text-primary underline">Sign in</Link>
@@ -109,7 +57,7 @@ export function Checkout(){
  if(!meetsMinimum(subtotal))return <div className="p-10 text-center">
   Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link>
  </div>;
- return <form onSubmit={submitPayment} className="mx-auto grid max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-3">
+ return <main className="mx-auto grid max-w-[1400px] gap-6 px-4 py-6 lg:grid-cols-3">
   <section className="min-w-0 rounded bg-card p-5">
    <H n={1} t="Billing Address"/>
    <div className="grid grid-cols-2 gap-3"><F name="first_name" label="First Name"/><F name="last_name" label="Last Name"/></div>
@@ -170,18 +118,17 @@ export function Checkout(){
     <DemoCouponFeedback message={couponMessage}/>
    </div>
    <textarea placeholder="Comments" className="mt-0 block w-full rounded border p-2" rows={3}/>
-   <button type="submit" disabled={!enabled||submitting} aria-disabled={!enabled||submitting}
+   <button type="button" disabled aria-disabled="true"
     className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 font-bold text-accent-foreground disabled:opacity-60">
-    {!enabled?"Payments temporarily unavailable":submitting?"Preparing secure checkout...":"Continue to secure Stripe payment"}
+    Payments temporarily unavailable
    </button>
    {returnedFromStripe&&<p role="status" className="mt-3 text-sm text-amber-800">
      You returned from Stripe Checkout without a verified payment. Your payment status may still be pending.
      Please check the order status before trying to pay again.
    </p>}
-   {checkoutError&&<p role="alert" className="mt-3 text-sm text-destructive">{checkoutError}</p>}
-   {!enabled&&<p className="mt-3 text-center text-xs text-muted-foreground">
+   <p className="mt-3 text-center text-xs text-muted-foreground">
     No order is placed, payment accepted or stock reserved until checkout is enabled.
-   </p>}
+   </p>
   </section>
- </form>;
+ </main>;
 }
