@@ -2,80 +2,19 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-libra
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { Checkout } from "@/routes/checkout";
 
-const state=vi.hoisted(()=>({
-  user:null as null | {email:string;email_confirmed_at?:string},
-  ready:true,subtotal:580, lines:[{sku:"DA883",pieces:40}], navigate:vi.fn(),
-}));
-vi.mock("@tanstack/react-router",()=>({
-  createFileRoute:()=> (config:unknown)=>config,
-  Link:({children,to,onClick}:any)=><a href={to} onClick={onClick}>{children}</a>,
-  useNavigate:()=>state.navigate,
-}));
-vi.mock("@/lib/artisan-auth",()=>({useArtisanAuth:()=>({user:state.user,ready:state.ready})}));
+const state=vi.hoisted(()=>({user:null as null|{id:string;email:string;email_confirmed_at?:string},ready:true,subtotal:580,lines:[{sku:"DA883",pieces:40}],navigate:vi.fn(),profile:null as null|Record<string,string>}));
+vi.mock("@tanstack/react-router",()=>({createFileRoute:()=> (config:unknown)=>config,Link:({children,to}:any)=><a href={to}>{children}</a>,useNavigate:()=>state.navigate}));
+vi.mock("@/lib/artisan-auth",()=>({useArtisanAuth:()=>({user:state.user,ready:state.ready}),artisanSupabase:{from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:state.profile})})})}),functions:{invoke:vi.fn()}}}));
 vi.mock("@/lib/cart",()=>({useCart:()=>({lines:state.lines,subtotal:state.subtotal})}));
+vi.mock("@stripe/react-stripe-js/checkout",()=>({CheckoutElementsProvider:({children}:any)=><div>{children}</div>,PaymentElement:()=> <div data-testid="stripe-payment-element">Stripe secure card fields</div>,useCheckoutElements:()=>({type:"success",checkout:{confirm:vi.fn().mockResolvedValue({type:"success"}),total:{total:{amount:"580.00"}}}})}));
+vi.mock("@stripe/stripe-js",()=>({loadStripe:()=>Promise.resolve({})}));
 afterEach(()=>{cleanup();localStorage.clear();sessionStorage.clear();vi.clearAllMocks();vi.unstubAllEnvs();});
-beforeEach(()=>{
-  vi.stubEnv("VITE_ARTISAN_LIVE_CHECKOUT_ENABLED","false");
-  vi.stubEnv("VITE_ARTISAN_SANDBOX_CHECKOUT_ENABLED","false");
-  state.user=null;state.ready=true;state.subtotal=580;state.lines=[{sku:"DA883",pieces:40}];
-});
-it("blocks unauthenticated checkout and redirects to login without losing cart",async()=>{
-  render(<Checkout/>);
-  expect(screen.queryByText("Billing Address")).not.toBeInTheDocument();
-  await waitFor(()=>expect(state.navigate).toHaveBeenCalledWith({to:"/login"}));
-  expect(localStorage.getItem("artisan-mart-pending-checkout-cart")).toContain("DA883");
-});
-it("blocks customers who have not verified their email",async()=>{
-  state.user={email:"qa@example.invalid"};
-  render(<Checkout/>);
-  await waitFor(()=>expect(state.navigate).toHaveBeenCalledWith({to:"/login"}));
-  expect(screen.queryByText("Payment Method")).not.toBeInTheDocument();
-});
-it("maintains $500 minimum after authentication",()=>{
-  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
-  state.subtotal=58;
-  render(<Checkout/>);
-  expect(screen.getByText(/below the \$500 minimum/)).toBeInTheDocument();
-  expect(screen.queryByText("Billing Address")).not.toBeInTheDocument();
-});
-it("shows original address fields and separate shipping information for verified customers",()=>{
-  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
-  render(<Checkout/>);
-  expect(screen.getByText("Billing Address")).toBeInTheDocument();
-  expect(screen.getByDisplayValue("qa@example.invalid")).toBeInTheDocument();
-  expect(screen.getByText("Merchandise subtotal")).toBeInTheDocument();
-  expect(screen.getAllByText("$580.00")).toHaveLength(2);
-  fireEvent.click(screen.getByLabelText(/Ship to the same address/));
-  expect(screen.getByText("Shipping Address")).toBeInTheDocument();
-  expect(screen.getByText(/Free shipping on every order/)).toBeInTheDocument();
-});
-it("displays approved zero shipping, zero eligible-reseller tax and zero fees",()=>{
-  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
-  render(<Checkout/>);
-  expect(screen.getByText(/Free shipping on every order/)).toBeInTheDocument();
-  expect(screen.getByText(/Sales tax \(eligible resellers\)/)).toBeInTheDocument();
-  expect(screen.getByText(/Additional checkout fees/)).toBeInTheDocument();
-  expect(screen.getByText(/Total before applicable discounts/)).toBeInTheDocument();
-  expect(screen.getAllByText("$580.00")).toHaveLength(2);
-});
-it("prevents all demonstration card input, order creation and fake purchase success",()=>{
-  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
-  render(<Checkout/>);
-  const button=screen.getByRole("button",{name:"Payments temporarily unavailable"});
-  expect(button).toBeDisabled();
-  expect(screen.queryByLabelText("Card number")).not.toBeInTheDocument();
-  expect(screen.queryByText("Thank You for Your Purchase!")).not.toBeInTheDocument();
-  expect(screen.getByText(/No order is placed/)).toBeInTheDocument();
-});
-it("retains correct zero-discount demo coupon feedback",()=>{
-  state.user={email:"qa@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};
-  render(<Checkout/>);
-  const input=screen.getByRole("textbox",{name:"Coupon code"});
-  fireEvent.change(input,{target:{value:"invalid"}});
-  fireEvent.click(screen.getByRole("button",{name:"Apply"}));
-  expect(screen.getByText("Enter a valid coupon code.")).toBeInTheDocument();
-  fireEvent.change(input,{target:{value:"ARTISAN"}});
-  fireEvent.click(screen.getByRole("button",{name:"Apply"}));
-  expect(screen.getByText(/No discount has been applied/)).toBeInTheDocument();
-  expect(screen.getAllByText("$580.00")).toHaveLength(2);
-});
+beforeEach(()=>{vi.stubEnv("VITE_ARTISAN_LIVE_CHECKOUT_ENABLED","true");vi.stubEnv("VITE_ARTISAN_STRIPE_PUBLISHABLE_KEY","pk_live_test_key");vi.stubEnv("VITE_ARTISAN_SANDBOX_CHECKOUT_ENABLED","false");state.user=null;state.ready=true;state.subtotal=580;state.lines=[{sku:"DA883",pieces:40}];state.profile=null;});
+it("blocks guests and preserves their cart before redirecting to login",async()=>{render(<Checkout/>);expect(screen.queryByText("Billing information")).not.toBeInTheDocument();await waitFor(()=>expect(state.navigate).toHaveBeenCalledWith({to:"/login"}));expect(localStorage.getItem("artisan-mart-pending-checkout-cart")).toContain("DA883");});
+it("requires a verified account",async()=>{state.user={id:"customer-1",email:"customer@example.invalid"};render(<Checkout/>);await waitFor(()=>expect(state.navigate).toHaveBeenCalledWith({to:"/login"}));expect(screen.queryByText("Card payment")).not.toBeInTheDocument();});
+it("keeps wholesale minimum validation",()=>{state.user={id:"customer-1",email:"customer@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};state.subtotal=58;render(<Checkout/>);expect(screen.getByText(/below the \$500 minimum/)).toBeInTheDocument();});
+it("renders streamlined checkout and omits representative and shipping-method sections",async()=>{state.user={id:"customer-1",email:"customer@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};state.profile={first_name:"Test",last_name:"Buyer",phone:"+12025550100"};render(<Checkout/>);expect(await screen.findByDisplayValue("Test")).toBeInTheDocument();expect(screen.getByDisplayValue("customer@example.invalid")).toBeInTheDocument();expect(screen.getByText("Order summary")).toBeInTheDocument();expect(screen.queryByText(/Sales Representative/)).not.toBeInTheDocument();expect(screen.queryByText("Shipping Method")).not.toBeInTheDocument();expect(screen.getByLabelText(/Delivery address is the same/)).toBeChecked();expect(screen.getByText("Total due")).toBeInTheDocument();});
+it("validates essential billing fields before creating a payment session",async()=>{state.user={id:"customer-1",email:"customer@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};render(<Checkout/>);const form=screen.getByRole("button",{name:/Continue to payment/}).closest("form")!;await act(async()=>fireEvent.submit(form));expect(screen.queryByTestId("stripe-payment-element")).not.toBeInTheDocument();expect(screen.queryByText(/Secure payment ready/)).not.toBeInTheDocument();});
+it("requires a Stripe publishable key before payment can proceed",()=>{state.user={id:"customer-1",email:"customer@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};vi.stubEnv("VITE_ARTISAN_STRIPE_PUBLISHABLE_KEY","");render(<Checkout/>);expect(screen.getByRole("button",{name:"Secure card checkout unavailable"})).toBeDisabled();});
+it("does not display legacy subtotal/fee explanations or demo payment copy",()=>{state.user={id:"customer-1",email:"customer@example.invalid",email_confirmed_at:"2026-11-25T00:00:00Z"};render(<Checkout/>);expect(screen.queryByText("Merchandise subtotal")).not.toBeInTheDocument();expect(screen.queryByText(/Additional checkout fees/)).not.toBeInTheDocument();expect(screen.queryByText(/DemoCouponFeedback/)).not.toBeInTheDocument();});
+

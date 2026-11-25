@@ -111,9 +111,9 @@ Deno.serve(async(req:Request)=>{
 
   if(order.checkout_session_id){
    const previous=await stripeRequest("checkout/sessions/"+encodeURIComponent(order.checkout_session_id),"GET",key);
-   if(previous.status==="open"&&previous.url&&previous.client_reference_id===orderId &&
+   if(previous.status==="open"&&previous.client_secret&&previous.ui_mode==="custom"&&previous.client_reference_id===orderId &&
       previous.livemode===(mode==="live"))
-    return respond(200,{checkout_url:previous.url,order_number:created.order_number,reused:true},origin);
+    return respond(200,{client_secret:previous.client_secret,session_id:previous.id,order_number:created.order_number,amount_total:previous.amount_total,currency:previous.currency,reused:true},origin);
    return respond(409,{error:"Checkout session is no longer open. Please start a new order."},origin);
   }
 
@@ -129,15 +129,15 @@ Deno.serve(async(req:Request)=>{
    return respond(503,{error:"Payment account unavailable."},origin);
   const params=new URLSearchParams();
   params.set("mode","payment");
-  params.set("allowed_payment_method_types[0]","card");
+  params.set("ui_mode","custom");
+  params.set("payment_method_types[0]","card");
   params.set("customer_email",String(user.email));
   // Stripe payment receipts go only to the verified Auth email.
   params.set("payment_intent_data[receipt_email]",String(user.email));
   params.set("billing_address_collection","required");
   params.set("shipping_address_collection[allowed_countries][0]","US");
   const returnOrigin=mode==="test"?origin:PRODUCTION;
-  params.set("success_url",returnOrigin+"/order-confirmation?session_id={CHECKOUT_SESSION_ID}");
-  params.set("cancel_url",returnOrigin+"/checkout?payment_cancelled=1");
+  params.set("return_url",returnOrigin+"/order-confirmation?session_id={CHECKOUT_SESSION_ID}");
   params.set("client_reference_id",orderId);
   params.set("metadata[order_id]",orderId);
   params.set("metadata[customer_id]",user.id);
@@ -168,8 +168,8 @@ Deno.serve(async(req:Request)=>{
    else await admin.rpc("artisan_cancel_pending_order_service",{p_order:orderId,p_customer_id:user.id});
    return respond(503,{error:"Secure payment session unavailable. Your stock reservation was not confirmed."},origin);
   }
-  if(session.livemode!==(mode==="live")||!session.id||
-     !session.url||session.client_reference_id!==orderId||
+  if(session.livemode!==(mode==="live")||!session.id||!session.client_secret||session.ui_mode!=="custom"||
+     session.client_reference_id!==orderId||
      session.amount_total!==order.total_cents||session.currency!=="usd"){
    return respond(502,{error:"Payment session verification failed; do not retry this transaction."},origin);
   }
@@ -182,8 +182,9 @@ Deno.serve(async(req:Request)=>{
    catch{/* Keep pending reservation: never release if Stripe expiry wasn't confirmed. */}
    return respond(503,{error:"Could not finalize payment session; please contact support before retrying."},origin);
   }
-  return respond(200,{checkout_url:session.url,order_number:created.order_number},origin);
+  return respond(200,{client_secret:session.client_secret,session_id:session.id,order_number:created.order_number,amount_total:session.amount_total,currency:session.currency},origin);
  }catch{
   return respond(503,{error:"Checkout is temporarily unavailable. Please try again later."},origin);
  }
 });
+
