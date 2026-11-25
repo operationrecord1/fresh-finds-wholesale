@@ -71,6 +71,12 @@ async function run(name,callback){try{const detail=await callback();checks.push(
    assert.equal(await page.locator('input[name="password"]').count(),0);
    return "Recovery form unavailable without valid session";
  });
+ await run("Order confirmation requires verified customer and never trusts URL",async()=>{
+   await go("/order-confirmation?session_id=cs_test_fake_session_123456789");
+   await page.getByText(/Sign in to view your order/i).waitFor({timeout:10000});
+   assert.equal(await page.getByText(/Payment confirmed/i).count(),0);
+   return "Unauthenticated Stripe success URL cannot display paid confirmation";
+ });
  await run("No client exceptions",async()=>{assert.deepEqual(errors,[]);return "none";});
  fs.writeFileSync(OUT+"/results.json",JSON.stringify({origin:BASE,at:new Date().toISOString(),checks},null,2));
  await browser.close();process.exitCode=checks.some(x=>x.status==="FAIL")?1:0;
