@@ -53,7 +53,7 @@ export async function loadAuthoritativeCatalog() {
 
  inflight = (async () => {
   const [productRows, categories, collectionRows, settingRows, coupons] = await Promise.all([
-   read("artisan_products","sku,title,price,original_price,stock,category,subcategory,description,upc,badges,collections,images,specs,purchase_rules,source_record","sku.asc"),
+   read("artisan_catalog_available","sku,title,price,original_price,stock,category,subcategory,description,upc,badges,collections,images,specs,purchase_rules,source_record","sku.asc"),
    read("artisan_categories","name","name.asc"),
    read("artisan_collections","slug,title,banner,default_sort","slug.asc"),
    read("artisan_shop_settings","key,value","key.asc"),
