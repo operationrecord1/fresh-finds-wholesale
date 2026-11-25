@@ -1,0 +1,28 @@
+name: Artisan Auth Phone Dependency Lock
+on:
+  push:
+    branches: [fix/auth-validation-20261125]
+    paths: [package.json, .github/workflows/artisan-auth-lock.yml]
+permissions:
+  contents: write
+jobs:
+  pin:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/auth-validation-20261125
+      - uses: oven-sh/setup-bun@v2
+      - name: Resolve and lock international phone parser
+        run: bun install
+      - name: Commit dependency lock only
+        run: |
+          if ! git diff --quiet -- bun.lock; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add bun.lock
+            git commit -m "Pin international phone validation package"
+            git fetch origin fix/auth-validation-20261125
+            git rebase origin/fix/auth-validation-20261125
+            git push origin HEAD:fix/auth-validation-20261125
+          fi
