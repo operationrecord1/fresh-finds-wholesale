@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.119.2";
+import { verifyStripeSignature } from "./stripe-signature.ts";
 
 const SUPABASE_URL=Deno.env.get("SUPABASE_URL")??"";
 const SERVICE_ROLE=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")??"";
@@ -10,30 +11,6 @@ const expectedLive=STRIPE_MODE==="live";
 
 function result(code:number,body:Record<string,unknown>){
  return new Response(JSON.stringify(body),{status:code,headers:{"Content-Type":"application/json","Cache-Control":"no-store"}});
-}
-function fromHex(value:string):Uint8Array|null {
- if(!/^[a-f0-9]{64}$/i.test(value))return null;
- return new Uint8Array(value.match(/.{2}/g)!.map(x=>parseInt(x,16)));
-}
-async function validSignature(raw:string,header:string):Promise<boolean>{
- if(!WEBHOOK_SECRET.startsWith("whsec_"))return false;
- const parts=header.split(",").map(x=>x.trim());
- const t=parts.find(x=>x.startsWith("t="))?.slice(2)??"";
- const signatures=parts.filter(x=>x.startsWith("v1=")).map(x=>x.slice(3));
- const stamp=Number(t),now=Math.floor(Date.now()/1000);
- if(!Number.isSafeInteger(stamp)||Math.abs(now-stamp)>300||signatures.length===0)return false;
- const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(WEBHOOK_SECRET),
-  {name:"HMAC",hash:"SHA-256"},false,["sign"]);
- const actual=new Uint8Array(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(t+"."+raw)));
- let accepted=0;
- for(const hex of signatures){
-  const claim=fromHex(hex);
-  if(!claim)continue;
-  let difference=0;
-  for(let i=0;i<actual.length;i++)difference|=actual[i]^claim[i];
-  accepted|=Number(difference===0);
- }
- return accepted===1;
 }
 async function stripeGet(path:string):Promise<any>{
  const r=await fetch("https://api.stripe.com/v1/"+path,{
@@ -55,7 +32,7 @@ Deno.serve(async(req:Request)=>{
  let raw:string;
  try{raw=await req.text();if(raw.length>100000)return result(413,{error:"Payload too large"});}
  catch{return result(400,{error:"Invalid request"});}
- if(!(await validSignature(raw,req.headers.get("stripe-signature")??"")))
+ if(!(await verifyStripeSignature(raw,req.headers.get("stripe-signature")??"",WEBHOOK_SECRET)))
    return result(400,{error:"Invalid Stripe signature"});
  let event:any;
  try{event=JSON.parse(raw);}catch{return result(400,{error:"Invalid event"});}
