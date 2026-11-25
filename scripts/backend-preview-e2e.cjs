@@ -65,7 +65,7 @@ const start=async()=>{
   await page.getByText("No discount has been applied.",{exact:false}).waitFor();
   await page.getByRole("link",{name:"Proceed to Checkout"}).click();
   await page.waitForURL(/\/login(?:\?.*)?$/,{timeout:12000});
-  assert((await page.locator("input[name=email]").count())===1);
+  await page.locator("input[name=email]").waitFor({state:"visible",timeout:12000});
   const saved=await page.evaluate(()=>localStorage.getItem("artisan-mart-pending-checkout-cart"));
   assert(saved?.includes("DA883"),"guest cart snapshot missing");
   return {subtotal:580,loginRedirect:true,snapshot:true};
