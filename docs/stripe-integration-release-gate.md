@@ -65,3 +65,30 @@ Date: 2026-11-25 (UTC), implementation branch `development/supabase-backend-2026
 - Hosting migration production baseline commit `8795a2231462f56ab367b61b160cd341039a54f5`.
 - Former Netlify deployment remains preserved for rollback.
 - SQL migrations are additive; never drop or overwrite product catalog, real order history, auth users or financial logs without reconciliation.
+
+## Urgent production release follow-up — November 25, 2026
+
+The owner has explicitly authorized a live release **only after essential acceptance verification**. The current database release constraint remains OFF, so there is no real checkout available yet.
+
+Work added:
+- Dedicated `artisan-stripe-webhook-live` Edge Function version 1 isolates the **live** Stripe mode from the previously verified **sandbox** `artisan-stripe-webhook`. It cannot process events without the approved live API key and signing secret.
+- Deno/GitHub Actions run `45556189329` passed the Checkout Edge TypeScript check, HMAC-signature tests, and both sandbox/live webhook typechecks.
+- A real HTTP request to the live webhook function returned HTTP **503** due to unconfigured server-side credentials (expected secure fail-closed result). A correctly signed synthetic sandbox event still returned HTTP **200** after creating the live handler.
+- Frontend checkout cancellation return message now explicitly avoids claiming a payment failure without a verified provider result; full frontend CI run `45556020684` passed.
+- Supabase Vault `artisan_stripe_live_key` and `artisan_stripe_live_webhook_secret` are **both absent**. Connected live Stripe Dashboard reports zero live webhook endpoints. A prior attempt to store the restricted key through the connector was blocked by the tool safety checks; **do not circumvent the block**.
+- Stripe live charges and payouts remain enabled, but Stripe requires a pending identity-document live capture action.
+- Stripe Tax Settings remains `pending`, missing the verified head-office address, with no live tax registrations.
+- The published Terms of Sale mentions multiple carrier/LTL options, local freight rates, and collection of sales tax without a resale number. No validated universal shipping/tax calculation can be inferred from those terms.
+- Supabase Auth production Site URL/redirect allowlist and external SMTP are still not configurable via the available account connector. Prior test confirmation email redirected to `http://localhost:3000`, so real external customer verification is NOT operational.
+- Sandbox card authorization/paid-order lifecycle still unverified; a real `checkout.session.expired` Stripe webhook and sandbox stock release were verified, and QA data cleaned up.
+- Final database read confirmed 125 products, 354 image associations, 0 live orders, 0 sandbox orders, 0 reserved units, checkout flag FALSE.
+
+Mandatory owner-only tasks:
+1. Supabase Dashboard → Artisan Mart project → Authentication → URL Configuration: set Site URL `https://artisanmart.site` and explicitly allow `https://artisanmart.site/login`, `https://artisanmart.site/reset-password`. Keep email confirmation required.
+2. Supabase Dashboard → Authentication → Emails → SMTP Settings: install authenticated transactional SMTP with sender on verified `artisanmart.site` domain; then test signup/recovery to an ordinary external mailbox. In Email Templates apply reviewed `supabase/email-templates/` templates with `{{ .ConfirmationURL }}`.
+3. Stripe Dashboard → Settings → Tax: confirm actual head-office address, relevant products and valid sales-tax registrations. Do not invent registrations or infer no tax.
+4. Confirm physical fulfillment origin, carrier shipping-charge calculation, whether tax-exempt wholesale buyers may provide verified resale certificates, and eligible US states. Do not silently assume free shipping.
+5. Stripe Dashboard → notification banner → View Account Status: complete `document_live_capture` verification for the required person.
+6. Supabase project → Database → Vault: create encrypted secrets with exact names `artisan_stripe_live_key` and `artisan_stripe_live_webhook_secret`, values supplied only into the dashboard securely. Stripe Dashboard → Developers → Webhooks → Live mode must target `https://gbsyaembvdtadkuldpbe.supabase.co/functions/v1/artisan-stripe-webhook-live` and subscribe to the configured supported events; after creation use its own signing secret for Vault. Never paste either secret in GitHub or this report.
+
+After these prerequisites, the exact full release commit must pass successful and declined sandbox Stripe-hosted card payments, email login/reset, live webhook signature/amount/currency/ID tests, inventory reconciliation, and Cloudflare production verification. Only then mark release flags true and enable checkout, with the existing Netlify and GitHub backups intact.
