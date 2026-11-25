@@ -35,15 +35,27 @@ function Account(){
  const save=async(e:FormEvent<HTMLFormElement>)=>{
   e.preventDefault();
   if(!artisanSupabase||!profile||busy)return;
+  const firstName=profile.first_name.trim();
+  const lastName=profile.last_name.trim();
+  if(!firstName||!lastName||firstName.length>120||lastName.length>120){
+   setMessage("Enter a valid first and last name.");return;
+  }
   const standardized=profile.phone.trim()?toE164Phone(profile.phone):"";
   if(standardized===null){setMessage("Enter a valid international phone number.");return;}
   setBusy(true);setMessage("");
-  const {error}=await artisanSupabase.from("artisan_profiles")
-   .update({first_name:profile.first_name,last_name:profile.last_name,phone:standardized,
-    newsletter_opt_in:profile.newsletter_opt_in})
-   .eq("user_id",user.id);
-  setMessage(error?"Could not save account details.":"Your account details were saved.");
-  setBusy(false);
+  try{
+   const {error}=await artisanSupabase.from("artisan_profiles")
+    .update({first_name:firstName,last_name:lastName,phone:standardized,
+     newsletter_opt_in:profile.newsletter_opt_in})
+    .eq("user_id",user.id);
+   if(error){setMessage("Could not save account details.");return;}
+   setProfile(previous=>previous?{...previous,first_name:firstName,last_name:lastName}:previous);
+   setMessage("Your account details were saved.");
+  }catch{
+   setMessage("Could not save account details. Please try again.");
+  }finally{
+   setBusy(false);
+  }
  };
  return <main className="mx-auto max-w-[920px] px-4 py-8">
   <h1 className="text-3xl font-bold text-title">My Account</h1>
@@ -52,9 +64,9 @@ function Account(){
    <h2 className="mb-4 text-xl font-bold">Contact information</h2>
    {!profile?<p role="status">Loading your profile...</p>:
    <form className="grid gap-4" onSubmit={save}>
-    <label>First name <input className="mt-1 block w-full rounded border p-2" value={profile.first_name} maxLength={120}
+    <label>First name <input className="mt-1 block w-full rounded border p-2" value={profile.first_name} maxLength={120} required
      onChange={e=>setProfile({...profile,first_name:e.target.value})}/></label>
-    <label>Last name <input className="mt-1 block w-full rounded border p-2" value={profile.last_name} maxLength={120}
+    <label>Last name <input className="mt-1 block w-full rounded border p-2" value={profile.last_name} maxLength={120} required
      onChange={e=>setProfile({...profile,last_name:e.target.value})}/></label>
     <label>Phone <input type="tel" inputMode="tel" autoComplete="tel" className="mt-1 block w-full rounded border p-2" value={profile.phone} maxLength={40}
      aria-invalid={!!profile.phone&&!!validatePhoneNumber(profile.phone)} onChange={e=>setProfile({...profile,phone:formatPhoneInput(cleanPhoneInput(e.target.value))})}/>
