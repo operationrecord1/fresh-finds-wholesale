@@ -1,0 +1,40 @@
+name: Artisan Backend Preview End-to-End QA
+on:
+  push:
+    branches: [development/supabase-backend-20261125]
+    paths:
+      - scripts/backend-preview-e2e.cjs
+      - .github/workflows/backend-preview-e2e.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-backend-preview-e2e
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright in isolated directory
+        run: |
+          mkdir -p /tmp/artisan-e2e
+          npm install --prefix /tmp/artisan-e2e --no-save --ignore-scripts playwright@1.56.1 pngjs@7.0.0
+          /tmp/artisan-e2e/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify guest shopping and secured backend preview
+        env:
+          NODE_PATH: /tmp/artisan-e2e/node_modules
+          ARTISAN_PREVIEW_URL: https://3ec947e1.artisanmart-staging.pages.dev
+        run: node scripts/backend-preview-e2e.cjs
+      - name: Upload sanitized QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-backend-preview-e2e
+          path: artisan-backend-qa-results/
+          retention-days: 7
+          if-no-files-found: warn
