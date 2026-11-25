@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { PASSWORD_REQUIREMENTS, validateArtisanPassword } from "@/lib/artisan-password";
-import { artisanSupabase } from "@/lib/artisan-auth";
+import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
 import { consumeCheckoutReturn } from "@/lib/artisan-checkout-intent";
 import { Eye, EyeOff, LockKeyhole, ArrowRight, UserRound } from "lucide-react";
 import "./AccountForm.css";
@@ -16,6 +16,16 @@ export function AccountForm({ register = false }: { register?: boolean }) {
  useEffect(()=>{if(!resendCooldown)return;const timer=window.setTimeout(()=>setResendCooldown(s=>Math.max(0,s-1)),1000);return()=>window.clearTimeout(timer);},[resendCooldown]);
  const formRef=useRef<HTMLFormElement>(null);
  const navigate=useNavigate();
+ const {user,ready}=useArtisanAuth();
+ useEffect(()=>{
+   if(!register && ready && user?.email_confirmed_at) {
+     void navigate({to:consumeCheckoutReturn()?"/checkout":"/account"});
+   }
+ },[register,ready,user?.id,navigate]);
+ useEffect(()=>{
+   const params=new URLSearchParams(window.location.search);
+   if(params.has("error"))setMessage("The email verification or sign-in link is invalid or expired. Please request a new link.");
+ },[]);
 
  const submit=async(event:FormEvent<HTMLFormElement>)=>{
   event.preventDefault();
@@ -45,6 +55,7 @@ export function AccountForm({ register = false }: { register?: boolean }) {
     });
     if(error)throw error;
     if(!data.user)throw new Error("We could not create your account. Please try again.");
+    if(data.user.identities?.length===0){setMessage("If you already have an account, please sign in or reset your password.");return;}
     setVerificationEmail(email);
     setRegistered(true);
     setResendCooldown(60);
@@ -65,7 +76,9 @@ export function AccountForm({ register = false }: { register?: boolean }) {
     await navigate({to:consumeCheckoutReturn()?"/checkout":"/account"});
    }
   }catch(error){
-   setMessage(error instanceof Error ? error.message : "Account request failed. Please try again.");
+   setMessage(error instanceof Error && /rate limit|too many requests/i.test(error.message)
+     ? "Too many requests. Please try again later."
+     : "We couldn\u0027t complete that account request. Please check the information and try again.");
   }finally{setBusy(false);}
  };
  const resendConfirmation=async()=>{
