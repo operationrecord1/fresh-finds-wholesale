@@ -5,11 +5,36 @@ import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
 import { MiniCart } from "./MiniCart";
-import { useArtisanAuth } from "@/lib/artisan-auth";
+import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
 import { toast } from "sonner";
 
 export function SiteHeader() {
   const { user, signOut } = useArtisanAuth();
+  const [accountOpen,setAccountOpen] = useState(false);
+  const [accountName,setAccountName] = useState("");
+  const accountArea = useRef<HTMLDivElement>(null);
+  const customerName = accountName || String(user?.user_metadata?.['first_name'] || user?.email?.split("@")[0] || "My Account");
+  useEffect(() => {
+    if(!user || !artisanSupabase){setAccountName("");setAccountOpen(false);return;}
+    let alive=true;
+    artisanSupabase.from("artisan_profiles").select("first_name,last_name")
+      .eq("user_id",user.id).maybeSingle()
+      .then(({data})=>{
+        if(alive && data){
+          const name=[data.first_name,data.last_name].filter(Boolean).join(" ").trim();
+          if(name)setAccountName(name);
+        }
+      });
+    return()=>{alive=false;};
+  },[user?.id]);
+  useEffect(()=>{
+    if(!accountOpen)return;
+    const outside=(e:PointerEvent)=>{if(!accountArea.current?.contains(e.target as Node))setAccountOpen(false);};
+    const escape=(e:KeyboardEvent)=>{if(e.key==="Escape")setAccountOpen(false);};
+    document.addEventListener("pointerdown",outside);
+    document.addEventListener("keydown",escape);
+    return()=>{document.removeEventListener("pointerdown",outside);document.removeEventListener("keydown",escape);};
+  },[accountOpen]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileToggle = useRef<HTMLButtonElement>(null);
   const mobilePanel = useRef<HTMLElement>(null);
@@ -150,7 +175,19 @@ export function SiteHeader() {
 
           </div>
           <div className="store-account-links leading-tight">
-            {user ? <><Link to="/account" className="store-login-link">My Account</Link><button type="button" className="store-login-link" onClick={() => { signOut().catch(() => toast.error("Could not sign out. Please try again.")); }}>Log out</button></> : <Link to="/login" className="store-login-link"><span className="store-login-desktop">Login Or <br />Register</span><span className="store-login-mobile">Login</span></Link>}
+            {user ? <div className="relative" ref={accountArea}>
+              <button type="button" aria-expanded={accountOpen} aria-controls="artisan-customer-menu" aria-haspopup="menu"
+                className="store-login-link flex items-center gap-1" onClick={()=>setAccountOpen(o=>!o)}>
+                <span className="max-w-[150px] truncate">{customerName}</span><ChevronDown size={15} aria-hidden="true"/>
+              </button>
+              {accountOpen && <div id="artisan-customer-menu" role="menu"
+                className="absolute right-0 top-full z-50 mt-2 min-w-[170px] rounded-lg border border-border bg-card p-2 shadow-lg">
+                <Link role="menuitem" to="/account" onClick={()=>setAccountOpen(false)}
+                  className="block rounded px-3 py-2 text-sm text-primary hover:bg-muted">My Account</Link>
+                <button type="button" role="menuitem" className="block w-full rounded px-3 py-2 text-left text-sm text-primary hover:bg-muted"
+                  onClick={()=>{setAccountOpen(false);signOut().catch(()=>toast.error("Could not sign out. Please try again."));}}>Logout</button>
+              </div>}
+            </div> : <Link to="/login" className="store-login-link"><span className="store-login-desktop">Login Or <br />Register</span><span className="store-login-mobile">Login</span></Link>}
             <MiniCart />
             <Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
           </div>
