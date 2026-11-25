@@ -16,7 +16,7 @@ for (const [tag, attributes, body] of [...html.matchAll(/<script\b([^>]*)>([\s\S
 }
 await writeFile(`${dir}/index.html`, html);
 await writeFile(`${dir}/_headers`, `/*
-  Content-Security-Policy: script-src 'self'; object-src 'none'; base-uri 'self'
+  Content-Security-Policy: script-src 'self' https://js.stripe.com https://*.js.stripe.com; connect-src 'self' https://api.stripe.com; frame-src https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com; object-src 'none'; base-uri 'self'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
@@ -27,3 +27,4 @@ await writeFile(`${dir}/_headers`, `/*
   Cache-Control: public, max-age=86400
 `);
 console.log("Cloudflare Pages static SPA artifact ready in dist/client");
+
