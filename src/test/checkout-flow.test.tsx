@@ -13,8 +13,10 @@ vi.mock("@tanstack/react-router",()=>({
 }));
 vi.mock("@/lib/artisan-auth",()=>({useArtisanAuth:()=>({user:state.user,ready:state.ready})}));
 vi.mock("@/lib/cart",()=>({useCart:()=>({lines:state.lines,subtotal:state.subtotal})}));
-afterEach(()=>{cleanup();localStorage.clear();sessionStorage.clear();vi.clearAllMocks();});
+afterEach(()=>{cleanup();localStorage.clear();sessionStorage.clear();vi.clearAllMocks();vi.unstubAllEnvs();});
 beforeEach(()=>{
+  vi.stubEnv("VITE_ARTISAN_LIVE_CHECKOUT_ENABLED","false");
+  vi.stubEnv("VITE_ARTISAN_SANDBOX_CHECKOUT_ENABLED","false");
   state.user=null;state.ready=true;state.subtotal=580;state.lines=[{sku:"DA883",pieces:40}];
 });
 it("blocks unauthenticated checkout and redirects to login without losing cart",async()=>{
