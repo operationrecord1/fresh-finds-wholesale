@@ -1,7 +1,7 @@
 name: Artisan Order History and Confirmation Validation
 on:
   push:
-    branches: [feature/artisan-order-history-confirmation-20261125]
+    branches: [feature/artisan-order-history-confirmation-20261125, fix/artisan-zero-shipping-tax-20261125]
   workflow_dispatch:
 permissions:
   contents: read
