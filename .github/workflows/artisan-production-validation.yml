@@ -1,0 +1,36 @@
+name: Artisan Mart Production Phone and Precheckout Audit
+on:
+  push:
+    branches: [audit/auth-production-postfix-20261125]
+    paths:
+      - scripts/artisan-production-validation.cjs
+      - .github/workflows/artisan-production-validation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated browser
+        run: |
+          mkdir -p /tmp/artisan-prod-audit
+          npm install --prefix /tmp/artisan-prod-audit --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-prod-audit/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify actual production form and guest shopping interactions
+        env:
+          NODE_PATH: /tmp/artisan-prod-audit/node_modules
+        run: node scripts/artisan-production-validation.cjs
+      - name: Preserve screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-production-validation
+          path: artisan-public-auth-audit/
+          retention-days: 5
+          if-no-files-found: warn
