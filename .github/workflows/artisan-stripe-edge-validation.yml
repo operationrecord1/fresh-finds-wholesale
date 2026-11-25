@@ -1,0 +1,27 @@
+name: Artisan Stripe Edge Function Validation
+on:
+  push:
+    branches: [development/supabase-backend-20261125]
+    paths:
+      - supabase/functions/artisan-create-checkout/**
+      - supabase/functions/artisan-stripe-webhook/**
+      - .github/workflows/artisan-stripe-edge-validation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-stripe-edge-validation
+  cancel-in-progress: true
+jobs:
+  check-edge-functions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Typecheck authenticated Checkout session service
+        run: deno check --no-config supabase/functions/artisan-create-checkout/index.ts
+      - name: Typecheck signed Stripe webhook service
+        run: deno check --no-config supabase/functions/artisan-stripe-webhook/index.ts
