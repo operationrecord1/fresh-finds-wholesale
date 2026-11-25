@@ -1,0 +1,40 @@
+name: Hosting Regression (isolated browser audit)
+on:
+  push:
+    branches:
+      - audit/hosting-regression-20261125
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: artisan-hosting-regression
+  cancel-in-progress: true
+jobs:
+  browser-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout audit branch only
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright and PNG decoder
+        run: |
+          mkdir -p /tmp/artisan-audit
+          npm install --prefix /tmp/artisan-audit --no-save --ignore-scripts playwright@1.56.1 pngjs@7.0.0
+          /tmp/artisan-audit/node_modules/.bin/playwright install --with-deps chromium
+      - name: Run real browser regression against Cloudflare and archived Netlify
+        env:
+          NODE_PATH: /tmp/artisan-audit/node_modules
+          CI: 'true'
+        run: node scripts/hosting-regression.cjs
+      - name: Preserve reports and screenshots even when tests fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-hosting-browser-audit
+          path: hosting-regression-results/
+          if-no-files-found: warn
+          retention-days: 7
