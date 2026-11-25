@@ -25,7 +25,11 @@ type AuthState = {
  signOut: () => Promise<void>;
 };
 
-const Context = createContext<AuthState | null>(null);
+const guestState: AuthState = {
+ user: null, ready: true, recovery: false,
+ signOut: async () => { throw new Error("Customer authentication is not active."); },
+};
+const Context = createContext<AuthState>(guestState);
 
 export function ArtisanAuthProvider({children}:{children:ReactNode}) {
  const [user,setUser] = useState<User|null>(null);
@@ -60,7 +64,6 @@ export function ArtisanAuthProvider({children}:{children:ReactNode}) {
 }
 
 export function useArtisanAuth():AuthState {
- const value=useContext(Context);
- if(!value)throw new Error("ArtisanAuthProvider missing");
- return value;
+ // Safe default for isolated rendering/tests: a guest has no session or privileges.
+ return useContext(Context);
 }
