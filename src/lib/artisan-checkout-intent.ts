@@ -38,3 +38,17 @@ export function consumeCheckoutReturn(): boolean {
   try { sessionStorage.removeItem(CONTINUE); } catch {}
   return true;
 }
+
+/** Keep only an explicitly saved checkout cart in sync with later guest changes. */
+export function synchronizeCheckoutCart(lines: CartLine[]) {
+  if (typeof window === "undefined") return;
+  try {
+    if (localStorage.getItem(KEY) === null) return;
+    if (!lines.length) {
+      localStorage.removeItem(KEY);
+      sessionStorage.removeItem(CONTINUE);
+    } else {
+      localStorage.setItem(KEY,JSON.stringify({savedAt:Date.now(),lines}));
+    }
+  } catch { /* If persistent storage is disabled, the session cart remains active. */ }
+}
