@@ -19,7 +19,7 @@ export const Route = createFileRoute("/checkout")({
  component: Checkout,
 });
 const F = ({label,req=true,type="text",numericOnly=false,defaultValue}:{
- label:string;req?:boolean;type?:string;numericOnly?:boolean;defaultValue?:string;
+ label:string;req?:boolean;type?:string;numericOnly?:boolean;defaultValue?:string | undefined;
 }) => (
  <label className="block text-sm">{label}{req && <span className="text-destructive"> *</span>}
   <input required={req} type={type} defaultValue={defaultValue}
