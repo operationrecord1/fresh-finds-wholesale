@@ -168,11 +168,39 @@ await check('checkout validation, payment methods, and demo confirmation',async(
     const value=type==='email'?'qa-only@example.invalid':/Telephone/.test(label)?'7272255768':/Zip/.test(label)?'33702':'Demo';
     await input.fill(value);
   }
+  await page.getByRole('checkbox',{name:/Ship to the same address/}).uncheck();
+  await page.getByText('Shipping Address').waitFor();
+  for(const input of await form.locator('input[required]').all()){
+    if(await input.inputValue())continue;
+    const label=await input.evaluate(el=>el.closest('label')?.textContent||'');
+    await input.fill(/Zip/.test(label)?'33702':'Demo');
+  }
+  await page.getByRole('button',{name:/Place Your Order/}).click();
+  await page.getByText('Enter the name on your card.').waitFor();
   await page.getByRole('radio',{name:/Wire Transfer/}).check();
   await page.getByRole('button',{name:/Place Your Order/}).click();
   await page.getByText('Thank You for Your Purchase!').waitFor({timeout:10000});
   await page.getByText('Demo confirmation only.',{exact:false}).waitFor();
-  return 'form validation + wire demo confirmation, no real order/payment';
+  return 'required form, alternate shipping, invalid card error, wire demo confirmation; no real order/payment';
+});
+await check('navigation menus and all homepage internal links',async()=>{
+  await ready(page,LIVE+'/');
+  const links=await page.locator('a[href^="/"]').evaluateAll(nodes=>[...new Set(nodes.map(n=>new URL(n.href).pathname).filter(x=>x.startsWith('/')))]);
+  const paths=[...new Set([...links,'/about-us','/terms-of-sale','/privacy','/contact','/register','/login','/cart','/checkout','/express-order','/shop-by-price','/newsletter','/careers'])];
+  let failures=[];
+  for(const route of paths){
+    try{
+      const response=await page.goto(LIVE+route,{waitUntil:'domcontentloaded',timeout:16000});
+      assert(response && response.status()<400,'HTTP '+response?.status());
+      await page.locator('body').waitFor();
+      await page.waitForTimeout(250);
+      const body=await page.locator('body').innerText();
+      assert(!/Product not found\.|Could not load product\.|Page not found\./i.test(body),'broken page content');
+    }catch(e){failures.push({route,error:e.message});}
+  }
+  fs.writeFileSync(path.join(out,'navigation-results.json'),JSON.stringify({tested:paths.length,failures},null,2));
+  assert.equal(failures.length,0,JSON.stringify(failures.slice(0,12)));
+  return paths.length+' browser navigations successful';
 });
 await check('125 product pages render title/SKU/price/stock and 354 images load',async()=>{
   let failures=[];
@@ -189,8 +217,12 @@ await check('125 product pages render title/SKU/price/stock and 354 images load'
         assert(text.includes(item.sku),'SKU not present');
         assert(text.includes(item.title),'title not present');
         if(item.price!=null) assert(text.includes('$'+item.price.toFixed(2)),'price mismatch');
-        if(item.stock!=null) assert(text.includes(String(item.stock)),'stock mismatch');
+        if(item.stock!=null) assert(text.includes(item.stock.toLocaleString('en-US')),'stock mismatch');
         if(item.description)assert(text.includes(item.description.slice(0,35)),'description mismatch');
+        if(item.category)assert(text.includes(item.category),'category mismatch');
+        if(item.subcategory)assert(text.includes(item.subcategory),'subcategory mismatch');
+        if(item.upc)assert(text.includes(item.upc),'UPC mismatch');
+        for(const [key,value] of Object.entries(item.specs||{}))assert(text.includes(String(value)),'spec mismatch '+key);
       }catch(e){failures.push({sku:item.sku,error:e.message});}
     }
     await p.close();
