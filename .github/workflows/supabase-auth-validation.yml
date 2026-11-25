@@ -10,6 +10,7 @@ on:
       - src/routes/reset-password.tsx
       - src/routes/__root.tsx
       - src/routes/checkout.tsx
+      - src/routes/order-confirmation.tsx
       - src/routes/cart.tsx
       - src/lib/cart.tsx
       - src/lib/artisan-checkout-intent.ts
