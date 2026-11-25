@@ -131,6 +131,8 @@ Deno.serve(async(req:Request)=>{
   params.set("mode","payment");
   params.set("allowed_payment_method_types[0]","card");
   params.set("customer_email",String(user.email));
+  // Stripe payment receipts go only to the verified Auth email.
+  params.set("payment_intent_data[receipt_email]",String(user.email));
   params.set("billing_address_collection","required");
   params.set("shipping_address_collection[allowed_countries][0]","US");
   const returnOrigin=mode==="test"?origin:PRODUCTION;
