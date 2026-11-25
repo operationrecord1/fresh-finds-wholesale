@@ -28,7 +28,7 @@ jobs:
       - name: Verify guest shopping and secured backend preview
         env:
           NODE_PATH: /tmp/artisan-e2e/node_modules
-          ARTISAN_PREVIEW_URL: https://3ec947e1.artisanmart-staging.pages.dev
+          ARTISAN_PREVIEW_URL: https://ebea2d5c.artisanmart-staging.pages.dev
         run: node scripts/backend-preview-e2e.cjs
       - name: Upload sanitized QA evidence
         if: always()
