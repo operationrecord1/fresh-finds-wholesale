@@ -8,8 +8,8 @@ await access(`${dir}/_shell.html`);
 await copyFile(`${dir}/_shell.html`, `${dir}/index.html`);
 
 let html = await readFile(`${dir}/index.html`, "utf8");
-for (const [tag, attributes, body] of [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)]) {
-  if (/\\bsrc\\s*=/i.test(attributes) || !body.trim()) continue;
+for (const [tag, attributes, body] of [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]) {
+  if (/\bsrc\s*=/i.test(attributes) || !body.trim()) continue;
   const filename = `bootstrap-${createHash("sha256").update(body).digest("hex").slice(0, 16)}.js`;
   await writeFile(`${dir}/assets/${filename}`, body);
   html = html.replace(tag, `<script${attributes} src="/assets/${filename}"></script>`);
