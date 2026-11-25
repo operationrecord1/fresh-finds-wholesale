@@ -1,0 +1,18 @@
+name: Artisan Real Webhook Negative Security Verification
+on:
+  push:
+    branches: [fix/artisan-stripe-webhook-negative-test-20261125]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  signature-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reject invalid signature on actual live endpoint without a charge
+        run: node scripts/artisan-webhook-security-probe.cjs
