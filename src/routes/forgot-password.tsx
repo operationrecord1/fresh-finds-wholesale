@@ -1,3 +1,4 @@
+import { isValidArtisanEmail } from "@/lib/artisan-email";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { ArrowRight, LockKeyhole } from "lucide-react";
@@ -13,7 +14,7 @@ function ForgotPassword(){
   const [busy,setBusy]=useState(false);
   const [complete,setComplete]=useState(false);
   const [error,setError]=useState("");
-  const invalidEmail=email.length>0&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const invalidEmail=email.length>0&&!isValidArtisanEmail(email);
   const submit=async(e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
     if(busy)return;
