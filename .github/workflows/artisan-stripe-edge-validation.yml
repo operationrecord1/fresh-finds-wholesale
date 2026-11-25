@@ -23,5 +23,7 @@ jobs:
           deno-version: v2.x
       - name: Typecheck authenticated Checkout session service
         run: deno check --no-config supabase/functions/artisan-create-checkout/index.ts
+      - name: Test raw Stripe-Signature verification
+        run: deno test --no-config supabase/functions/artisan-stripe-webhook/stripe-signature.test.ts
       - name: Typecheck signed Stripe webhook service
         run: deno check --no-config supabase/functions/artisan-stripe-webhook/index.ts
