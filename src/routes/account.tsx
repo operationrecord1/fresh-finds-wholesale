@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
+import { formatPhoneInput, cleanPhoneInput, toE164Phone, validatePhoneNumber } from "@/lib/artisan-phone";
 
 export const Route = createFileRoute("/account")({
  head:()=>({meta:[{title:"My Account | Artisan Mart"},{name:"description",content:"Review your Artisan Mart customer account."}]}),
@@ -25,7 +26,7 @@ function Account(){
    .then(({data,error})=>{
     if(!alive)return;
     if(error)setMessage("Could not load your account details.");
-    else setProfile(data as Profile);
+    else setProfile({...data,phone:formatPhoneInput(data.phone||"")} as Profile);
    });
   return()=>{alive=false};
  },[user?.id]);
@@ -34,9 +35,11 @@ function Account(){
  const save=async(e:FormEvent<HTMLFormElement>)=>{
   e.preventDefault();
   if(!artisanSupabase||!profile||busy)return;
+  const standardized=profile.phone.trim()?toE164Phone(profile.phone):"";
+  if(standardized===null){setMessage("Enter a valid international phone number.");return;}
   setBusy(true);setMessage("");
   const {error}=await artisanSupabase.from("artisan_profiles")
-   .update({first_name:profile.first_name,last_name:profile.last_name,phone:profile.phone,
+   .update({first_name:profile.first_name,last_name:profile.last_name,phone:standardized,
     newsletter_opt_in:profile.newsletter_opt_in})
    .eq("user_id",user.id);
   setMessage(error?"Could not save account details.":"Your account details were saved.");
@@ -53,8 +56,9 @@ function Account(){
      onChange={e=>setProfile({...profile,first_name:e.target.value})}/></label>
     <label>Last name <input className="mt-1 block w-full rounded border p-2" value={profile.last_name} maxLength={120}
      onChange={e=>setProfile({...profile,last_name:e.target.value})}/></label>
-    <label>Phone <input className="mt-1 block w-full rounded border p-2" value={profile.phone} maxLength={40}
-     onChange={e=>setProfile({...profile,phone:e.target.value})}/></label>
+    <label>Phone <input type="tel" inputMode="tel" autoComplete="tel" className="mt-1 block w-full rounded border p-2" value={profile.phone} maxLength={40}
+     aria-invalid={!!profile.phone&&!!validatePhoneNumber(profile.phone)} onChange={e=>setProfile({...profile,phone:formatPhoneInput(cleanPhoneInput(e.target.value))})}/>
+     {!!profile.phone&&!!validatePhoneNumber(profile.phone)&&<span className="account-field-error" role="alert">Enter a valid phone number with a country code.</span>}</label>
     <label className="flex items-center gap-2"><input type="checkbox" checked={profile.newsletter_opt_in}
      onChange={e=>setProfile({...profile,newsletter_opt_in:e.target.checked})}/> Subscribe to newsletter</label>
     <button type="submit" disabled={busy} className="w-fit rounded-full bg-primary px-5 py-3 text-primary-foreground">{busy?"Saving...":"Save details"}</button>
