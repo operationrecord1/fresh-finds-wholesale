@@ -32,8 +32,8 @@ export async function loadAuthoritativeCatalog() {
  if (Date.now() - lastLoaded < 5000) return;
  if (inflight) return inflight;
 
- const api = import.meta.env.VITE_ARTISAN_SUPABASE_URL as string | undefined;
- const key = import.meta.env.VITE_ARTISAN_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+ const api = import.meta.env['VITE_ARTISAN_SUPABASE_URL'] as string | undefined;
+ const key = import.meta.env['VITE_ARTISAN_SUPABASE_PUBLISHABLE_KEY'] as string | undefined;
  if (!api || !key || !api.startsWith("https://")) {
   throw new Error("Current product catalog is unavailable: database configuration missing.");
  }
@@ -69,7 +69,7 @@ export async function loadAuthoritativeCatalog() {
    observedSkus.add(row.sku);
    return {
     ...row.source_record, sku: row.sku, title: row.title, price: row.price,
-    originalPrice: row.original_price ?? undefined,
+    ...(row.original_price === null ? {} : { originalPrice: row.original_price }),
     stock: row.stock, category: row.category, subcategory: row.subcategory,
     description: row.description, upc: row.upc, badges: row.badges,
     collections: row.collections, images: row.images, specs: row.specs,
