@@ -44,3 +44,8 @@ This procedure uses the **existing** Supabase project `gbsyaembvdtadkuldpbe`, Gi
 - The `artisan-auth-email-config.yml` workflow runs on explicit owner dispatch only for configuration changes, with `contents: read` GitHub permission, and fails closed if missing credentials/configuration.
 - If Management API GET/PATCH fails with 401 or 403, check the token's fine-grained scopes and authorized project before trying again. Never print the raw response, which may contain sensitive SMTP config.
 - Do not enable Stripe, change shipping/taxes, or modify store products in this authentication phase.
+
+## Brevo click-tracking security check
+- The previous delivered confirmation and recovery emails contain link wrappers on `*.sendibt2.com`, a Brevo tracked redirect, rather than a directly exposed Supabase Auth URL. This does not establish a failed link, but links containing single-use verification or password-reset tokens should not be tracked/prefetched by an intermediary.
+- In Brevo transactional email settings, disable **click tracking** (and where applicable link rewriting) for Supabase authentication emails. Check the applicable SMTP/transactional campaign setting rather than merely disabling marketing campaign tracking. Send a NEW controlled confirmation and recovery email; inspect their actual hyperlink destinations and verify they lead to the intended Supabase confirmation flow and production redirect. Do not reuse/print old one-time tokens.
+- Do not consider link delivery a full PASS until a newly delivered action link has been clicked, verified and completed with a fresh owned QA account.
