@@ -3,7 +3,7 @@ import { getProduct } from "@/data/catalog";
 import { lineTotal, maximumQuantity, validateQuantity, type BuyMode } from "./wholesale";
 import { CartConfirmation } from "@/components/store/CartConfirmation";
 import { toast } from "sonner";
-import { loadCheckoutCart } from "@/lib/artisan-checkout-intent";
+import { loadCheckoutCart, synchronizeCheckoutCart } from "@/lib/artisan-checkout-intent";
 
 export interface CartLine { sku: string; pieces: number; mode?: BuyMode }
 interface CartCtx {
@@ -62,7 +62,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const next = update(linesRef.current);
     linesRef.current = next;
     setLines(next);
-    try { sessionStorage.setItem(KEY, JSON.stringify(next)); } catch { /* Keep the in-memory cart usable if storage is unavailable. */ }
+    try { sessionStorage.setItem(KEY, JSON.stringify(next)); synchronizeCheckoutCart(next); } catch { /* Keep the in-memory cart usable if storage is unavailable. */ }
   };
   const validChange = (sku: string, pieces: number, mode: BuyMode, existing: number) => {
     const p = getProduct(sku);
