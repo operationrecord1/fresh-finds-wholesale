@@ -1,0 +1,31 @@
+name: Artisan Real Stripe Test-Mode Checkout Browser
+on:
+  push:
+    branches: [test/artisan-real-stripe-sandbox-checkout-20261125]
+permissions:
+  contents: read
+jobs:
+  sandbox:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          mkdir -p /tmp/artisan-sandbox-qa
+          npm install --prefix /tmp/artisan-sandbox-qa --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-sandbox-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Real verified customer to isolated Stripe test Checkout
+        env:
+          NODE_PATH: /tmp/artisan-sandbox-qa/node_modules
+        run: node scripts/artisan-stripe-sandbox-browser.cjs
+      - name: Preserve sanitized sandbox evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-real-stripe-test-browser
+          path: stripe-test-evidence/
+          retention-days: 4
