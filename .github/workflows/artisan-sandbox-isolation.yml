@@ -1,0 +1,29 @@
+name: Artisan Sandbox Checkout Isolation Validation
+on:
+  push:
+    branches: [test/artisan-sandbox-checkout-edge-source-20261125]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Assert Stripe sandbox is isolated from production
+        run: |
+          grep -Fq 'const mode="test"' supabase/functions/artisan-create-checkout-sandbox/index.ts
+          grep -Fq 'host.endsWith(".artisanmart-staging.pages.dev")' supabase/functions/artisan-create-checkout-sandbox/index.ts
+          grep -Fq 'artisan_sandbox_begin_checkout' supabase/functions/artisan-create-checkout-sandbox/index.ts
+          grep -Fq 'artisan_sandbox_attach_session' supabase/functions/artisan-create-checkout-sandbox/index.ts
+          grep -Fq 'verifyStripe' supabase/functions/artisan-stripe-webhook-live/index.ts || true
+          ! grep -Eq 'sk_live_[A-Za-z0-9]{16}|whsec_[A-Za-z0-9]{16}' supabase/functions/artisan-create-checkout-sandbox/index.ts
+      - name: Install pinned dependencies
+        run: bun install --frozen-lockfile
+      - name: Existing test suite
+        run: bun run test
+      - name: Cloudflare build and route generation
+        run: bun run build:cloudflare
+      - name: Strict TypeScript
+        run: bunx tsc --noEmit
