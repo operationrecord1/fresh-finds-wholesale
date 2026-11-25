@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LockKeyhole } from "lucide-react";
 import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
-import { useArtisanAuth } from "@/lib/artisan-auth";
+import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
+import { makeCheckoutRequest } from "@/lib/artisan-checkout-request";
 import { preserveCartForCheckout, loadCheckoutCoupon } from "@/lib/artisan-checkout-intent";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
 import { useDemoCouponFeedback } from "@/hooks/useDemoCouponFeedback";
@@ -38,6 +39,35 @@ export function Checkout(){
  const [same,setSame]=useState(true);
  const [coupon,setCoupon]=useState(() => loadCheckoutCoupon());
  const [returnedFromStripe,setReturnedFromStripe]=useState(false);
+ const [payBusy,setPayBusy]=useState(false);
+ const [payError,setPayError]=useState("");
+ const pendingAttempt=useRef<{signature:string;key:string}|null>(null);
+ const paymentEnabled=import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
+ const openPayment=async()=>{
+  if(!paymentEnabled||payBusy||!artisanSupabase||!user?.email_confirmed_at)return;
+  setPayError("");setPayBusy(true);
+  try {
+   const values=new FormData();
+   for(const input of document.querySelectorAll<HTMLInputElement>('main input[name]')){
+    if(input.type==="checkbox")continue;
+    if(input.required&&!input.value.trim())throw Error("Complete all required address fields.");
+    if(!input.checkValidity())throw Error("Correct invalid address details.");
+    values.set(input.name,input.value.trim());
+   }
+   const signature=JSON.stringify({lines,coupon,values:Object.fromEntries(values.entries()),same});
+   if(pendingAttempt.current?.signature!==signature)
+    pendingAttempt.current={signature,key:crypto.randomUUID()};
+   const payload=makeCheckoutRequest(values,lines,coupon,pendingAttempt.current.key,same);
+   const {data,error}=await artisanSupabase.functions.invoke("artisan-create-checkout",{body:payload});
+   if(error||typeof data?.checkout_url!=="string")throw Error("Secure checkout is unavailable.");
+   const url=new URL(data.checkout_url);
+   if(url.protocol!=="https:"||url.hostname!=="checkout.stripe.com")
+    throw Error("Unexpected payment provider URL.");
+   window.location.assign(url.toString());
+  }catch(e){setPayError(e instanceof Error?e.message:"Could not open checkout.");}
+  finally{setPayBusy(false);}
+ };
+
  useEffect(()=>{
   if(typeof window==="undefined")return;
   setReturnedFromStripe(new URLSearchParams(window.location.search).get("payment_cancelled")==="1");
@@ -118,10 +148,12 @@ export function Checkout(){
     <DemoCouponFeedback message={couponMessage}/>
    </div>
    <textarea placeholder="Comments" className="mt-0 block w-full rounded border p-2" rows={3}/>
-   <button type="button" disabled aria-disabled="true"
+   <button type="button" disabled={!paymentEnabled||payBusy} aria-disabled={!paymentEnabled||payBusy}
+    onClick={()=>void openPayment()}
     className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 font-bold text-accent-foreground disabled:opacity-60">
-    Payments temporarily unavailable
+    {!paymentEnabled?"Payments temporarily unavailable":payBusy?"Opening secure checkout...":"Proceed to Secure Payment"}
    </button>
+   {payError&&<p role="alert" className="mt-3 text-sm text-red-700">{payError}</p>}
    {returnedFromStripe&&<p role="status" className="mt-3 text-sm text-amber-800">
      You returned from Stripe Checkout without a verified payment. Your payment status may still be pending.
      Please check the order status before trying to pay again.

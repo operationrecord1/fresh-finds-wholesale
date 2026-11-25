@@ -1,0 +1,28 @@
+name: Artisan Order History and Confirmation Validation
+on:
+  push:
+    branches: [feature/artisan-order-history-confirmation-20261125]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install pinned dependencies
+        run: bun install --frozen-lockfile
+      - name: Full test suite
+        run: bun run test
+      - name: Cloudflare production build and route generation
+        run: bun run build:cloudflare
+      - name: TypeScript type safety
+        run: bunx tsc --noEmit
+      - name: Ensure no secret credentials in frontend
+        run: |
+          if grep -RE 'sk_live_[A-Za-z0-9]{16}|rk_live_[A-Za-z0-9]{16}|sk_test_[A-Za-z0-9]{16}|whsec_[A-Za-z0-9]{16}' dist/client; then
+            echo 'Secret-like value in public bundle'
+            exit 1
+          fi
