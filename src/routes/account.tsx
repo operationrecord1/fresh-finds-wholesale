@@ -24,9 +24,9 @@ function Account(){
   setProfileLoading(true);
   if(!user||!artisanSupabase){setProfileLoading(false);return;}
   let alive=true;
-  artisanSupabase.from("artisan_profiles")
+  Promise.resolve(artisanSupabase.from("artisan_profiles")
    .select("first_name,last_name,phone,newsletter_opt_in")
-   .eq("user_id",user.id).single()
+   .eq("user_id",user.id).single())
    .then(({data,error})=>{
     if(!alive)return;
     if(error||!data)setMessage("Could not load your account details.");
