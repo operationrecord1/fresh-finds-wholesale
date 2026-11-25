@@ -48,3 +48,16 @@
 - SOURCE IMPLEMENTED is not equal to VERIFIED IN PRODUCTION.
 - Previous CI PASS is not equal to new patch PASS.
 - No new paid order, live Stripe settlement, or comprehensive 40/40 Phase 1 proof in this audit.
+
+## Second session implementation milestone — 2026-11-25
+- Extended the same isolated fix PR, preserving existing production branch until tested.
+- Corrected malformed forgot-password email regex by sharing `isValidArtisanEmail` with login/registration; added validation regression tests.
+- Added explicitly required Terms of Sale + Privacy Policy consent checkbox to signup, checked before Supabase signup; saved terms acceptance timestamp in signup metadata. Existing optional newsletter checkbox remains optional. Note: auth metadata is not an immutable legal-audit log; do not describe it as one.
+- Profile page now handles failed profile reads with a retry (instead of showing Loading indefinitely), displays inline name errors and refreshes header name after successful profile updates.
+- New `scripts/artisan-production-auth-smoke.cjs` and workflow `artisan-production-auth-smoke.yml`: non-destructive browser checks on actual production after pushes to main, including registration validation, country-aware phone input, password errors, forgot email validation, unauthorized checkout redirect and mobile screenshots. These checks cannot prove real SMTP delivery or successful password reset.
+- Prior exact baseline CI `45626505322` PASS for account fix; newer code requires its own exact SHA CI proof.
+- Direct interactive browser connection unavailable in current Chat session (requires originating connected browser context). Production browser evidence must be collected via Actions and inspected after deployment.
+- Hosted Supabase Auth SMTP and confirmation/reset email templates cannot be edited with the currently exposed Supabase connector operations (no Auth config management write). As documented by Supabase, hosted Auth settings must be updated in the Auth Templates/SMTP dashboard or via Management API with authorized auth_config_write credentials. Do not attempt SQL modification of Auth SMTP configuration or fabricate successful activation.
+- Current AUTH security advisor recorded leaked-password protection disabled; investigate plan and Auth settings, without incurring costs.
+- Actual customer signup->Brevo delivery->email confirmation->password recovery->new login remains NOT VERIFIED. No fake completion flags.
+- Live Stripe payments and all private checkout release flags must remain disabled until their independent acceptance gates.
