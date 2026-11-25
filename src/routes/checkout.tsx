@@ -72,8 +72,11 @@ export function Checkout(){
     state:read("state"),postal_code:read("postal_code"),country:"US",
    };
    const shipping=same?billing:{
-    ...billing,line1:read("shipping_line1"),city:read("shipping_city"),
-    postal_code:read("shipping_postal_code"),
+    ...billing,
+    first_name:read("shipping_first_name"),last_name:read("shipping_last_name"),
+    phone:read("shipping_phone"),
+    line1:read("shipping_line1"),city:read("shipping_city"),
+    state:read("shipping_state"),postal_code:read("shipping_postal_code"),
    };
    if(!idempotencyKey.current)idempotencyKey.current=crypto.randomUUID().replaceAll("-","");
    const api=import.meta.env["VITE_ARTISAN_SUPABASE_URL"] as string|undefined;
@@ -121,7 +124,19 @@ export function Checkout(){
     <label className="flex items-center gap-2 text-sm">
      <input type="checkbox" checked={same} onChange={e=>setSame(e.target.checked)}/> Ship to the same address
     </label>
-    {!same&&<div className="space-y-3 border-t pt-3"><F name="shipping_line1" label="Shipping Address"/><F name="shipping_city" label="City"/><F name="shipping_postal_code" label="Zip" numericOnly/></div>}
+    {!same&&<div className="space-y-3 border-t pt-3">
+      <div className="grid grid-cols-2 gap-3">
+        <F name="shipping_first_name" label="Shipping First Name"/>
+        <F name="shipping_last_name" label="Shipping Last Name"/>
+      </div>
+      <F name="shipping_phone" label="Shipping Phone" type="tel" numericOnly/>
+      <F name="shipping_line1" label="Shipping Address"/>
+      <F name="shipping_city" label="Shipping City"/>
+      <div className="grid grid-cols-2 gap-3">
+        <F name="shipping_state" label="Shipping State"/>
+        <F name="shipping_postal_code" label="Shipping Zip" numericOnly/>
+      </div>
+    </div>}
    </div>
   </section>
   <section className="min-w-0 space-y-6">
