@@ -59,7 +59,7 @@ const check = async (name, fn) => {
    };
   },{gridSelector});
   assert.equal(data.columns,columns,"Expected "+columns+" columns, got "+data.columns+" at "+width+"px");
-  assert.equal(data.buttonShown,width<1020,"BUY NOW visibility mismatch at "+width);
+  assert.equal(data.buttonShown,width<=1025,"BUY NOW visibility mismatch at "+width);
   assert.equal(data.buttonLabel,"BUY NOW","BUY NOW label");
   assert(data.badgeCount<=2,"Tag count > 2");
   assert(data.badgesSingleLine,"Badge wraps or overflows");
@@ -69,11 +69,11 @@ const check = async (name, fn) => {
   assert(data.titleReadable,"Title compressed");
   assert(data.idOneLine&&data.quantityOneLine&&data.priceOneLine,"Product information wraps");
   assert(!data.pageOverflow,"Horizontal document overflow");
-  if(width<1020)assert(data.buttonWidth>=100,"BUY NOW too narrow");
+  if(width<=1025)assert(data.buttonWidth>=100,"BUY NOW too narrow");
   return width+"px / "+path+" / "+data.columns+" cols / card "+Math.round(data.firstCardWidth)+"px";
  }
  for(const width of [1600,1020,1019,780,779,624,390]){
-  const columns=width<780?1:width<=1024?2:3; // Preserve existing homepage 1024px 2-column arrangement.
+  const columns=width<=780?1:width<=1250?2:width<=2000?3:4; // Featured section product count standard.
   await check("Homepage collection grid at "+width+"px",()=>inspect(width,"/",'.store-home-products',columns));
  }
  for(const width of [1200,1020,1019,780,779,390]){
