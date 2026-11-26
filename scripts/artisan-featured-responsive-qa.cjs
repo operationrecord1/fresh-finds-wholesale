@@ -55,10 +55,11 @@ const run=async(name,fn)=>{try{const detail=await fn();checks.push({name,status:
      });
      return {info,pageOverflow:document.documentElement.scrollWidth>innerWidth+2};
    },{width,names:SECTIONS});
-   const per=width<=780?1:width<=1250?2:width<=2000?3:4;
+   const per=width<=779?1:width<=1024?2:3;
    const sectionColumns=width<=380?1:2;
    assert(s.info.every(x=>x.count===per),"Product count expected "+per+" got "+s.info.map(x=>x.count).join(","));
    assert(s.info.every(x=>x.allCards<=4),"More than four underlying featured cards");
+   assert(s.info.every(x=>x.count<=3),"Featured section exceeds 3 cards");
    assert(Math.abs(s.info[0].y-s.info[1].y)<3 === (sectionColumns===2),"First two section rows incorrect");
    if(sectionColumns===1)assert(s.info[0].y<s.info[1].y&&s.info[1].y<s.info[2].y&&s.info[2].y<s.info[3].y,"Expected vertical section order");
    else assert(s.info[2].y>s.info[0].y+15&&Math.abs(s.info[2].y-s.info[3].y)<3,"Second pair of sections not aligned");
