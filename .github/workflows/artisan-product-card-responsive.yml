@@ -1,7 +1,7 @@
 name: Artisan Product Card Responsive Release QA
 on:
   push:
-    branches: [feature/artisan-global-product-card-responsive-20261126, main]
+    branches: [feature/artisan-global-product-card-responsive-20261126, main, feature/artisan-card-polish-20261126]
     paths:
       - src/components/store/ProductCard.tsx
       - src/components/store/ProductCommerce.css
