@@ -828,3 +828,22 @@
   overflow: hidden;
   text-overflow: clip;
 }
+
+
+/* Homepage only: reduce existing View All typography by exactly 20%.
+   Preserve each current responsive font range, color and placement. */
+@media (min-width: 1025px) {
+  .store-home-panels > section > .store-featured-header .store-featured-view-all {
+    font-size: clamp(12.8px, .88vw, 15.2px);
+  }
+}
+@media (min-width: 781px) and (max-width: 1024px) {
+  .store-home-panels > section > .store-featured-header .store-featured-view-all {
+    font-size: clamp(11.2px, 1.2vw, 13.6px);
+  }
+}
+@media (max-width: 780px) {
+  .store-home-panels > section > .store-featured-header .store-featured-view-all {
+    font-size: clamp(10.4px, 2.04vw, 12.8px);
+  }
+}

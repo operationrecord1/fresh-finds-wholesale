@@ -1,0 +1,59 @@
+name: Artisan Responsive Filtering Release
+on:
+  push:
+    branches: [feature/artisan-filter-overlay-quick-navigation-20261126, main]
+    paths:
+      - src/components/store/ProductListing.tsx
+      - src/components/store/ProductFilters.css
+      - src/styles.css
+      - scripts/artisan-filters-responsive-qa.cjs
+      - .github/workflows/artisan-filters-responsive.yml
+permissions:
+  contents: read
+jobs:
+  validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install pinned dependencies
+        run: bun install --frozen-lockfile
+      - name: Full storefront unit suite
+        run: bun run test
+      - name: Cloudflare production build
+        run: bun run build:cloudflare
+      - name: TypeScript validation
+        run: bunx tsc --noEmit
+      - name: Browser QA syntax
+        run: node --check scripts/artisan-filters-responsive-qa.cjs
+  production-browser:
+    if: github.ref == 'refs/heads/main'
+    needs: validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright Chromium
+        run: |
+          mkdir -p /tmp/artisan-filter-browser
+          npm install --prefix /tmp/artisan-filter-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-filter-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Allow Cloudflare production deployment to propagate
+        run: sleep 90
+      - name: Verify production filtering and quick navigation across viewports
+        env:
+          NODE_PATH: /tmp/artisan-filter-browser/node_modules
+          ARTISAN_FILTER_URL: https://artisanmart.site
+        run: node scripts/artisan-filters-responsive-qa.cjs
+      - name: Save screenshots and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-filters-responsive-evidence
+          path: filter-responsive-qa/
+          retention-days: 5
+          if-no-files-found: warn
