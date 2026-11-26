@@ -52,8 +52,8 @@ async function run(name,fn){
     if(mobile){
       const cap=width<=359?0:width<=560?2:3;
       assert(s.triggerVisible&&s.triggerWidth>=70,"Filter control not visible");
-      assert(s.barTop>=s.titleBottom+8,"Filter row overlaps page heading");
-      assert(s.gridTop>s.barBottom,"Product cards precede filter row");
+      assert(s.barTop-s.titleBottom>=-0.5&&s.barTop-s.titleBottom<=2.5,"Heading-to-filter gap exceeds 2px: "+(s.barTop-s.titleBottom));
+      assert(s.gridTop-s.barBottom>=-0.5&&s.gridTop-s.barBottom<=2.5,"Filter-to-products gap exceeds 2px: "+(s.gridTop-s.barBottom));
       assert(s.totalLinks<=cap,"Quick navigation exceeds maximum for width");
       if(width<=359)assert.equal(s.totalLinks,0,"Links must be absent below 360px");
       assert(!s.navScroll&&s.navFits,"Quick links clipped, scrolling or wrapping");
@@ -100,7 +100,11 @@ async function run(name,fn){
           assert((await status.innerText()).includes("of "+second+" products"),"New selection not applied");
         }
       }
-      await overlay.getByRole("button",{name:"Close filters"}).click();
+      const closeIcon=overlay.getByRole("button",{name:"Close filters"});
+      const closeStyle=await closeIcon.evaluate(el=>({border:getComputedStyle(el).borderTopWidth,background:getComputedStyle(el).backgroundColor,svg:el.querySelector("svg")?.getBoundingClientRect().width}));
+      assert.equal(closeStyle.border,"0px","Close X still has a decorative border");
+      assert(closeStyle.svg>=17&&closeStyle.svg<=19,"Close X icon is not the intended compact size");
+      await closeIcon.click();
       assert.equal(await overlay.count(),0,"Close did not dismiss");
       await trigger.click();
       const reopened=root.getByRole("dialog",{name:"Product filters"});
