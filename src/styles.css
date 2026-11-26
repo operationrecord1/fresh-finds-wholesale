@@ -802,3 +802,16 @@
   .store-home-panels .store-product-card .store-product-price { font-size: 19px; }
   .store-home-panels .store-product-card .store-product-badge { font-size: 12px; }
 }
+
+
+/* Exact new count boundaries: restore cards hidden by older 780/1250 CSS. */
+@media (min-width: 780px) and (max-width: 1024px) {
+  .store-home-panels .store-home-products > .store-product-card:nth-child(2) {
+    display: flex;
+  }
+}
+@media (min-width: 1025px) and (max-width: 1250px) {
+  .store-home-panels .store-home-products > .store-product-card:nth-child(3) {
+    display: flex;
+  }
+}
