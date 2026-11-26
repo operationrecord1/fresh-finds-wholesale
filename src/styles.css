@@ -847,3 +847,12 @@
     font-size: clamp(10.4px, 2.04vw, 12.8px);
   }
 }
+
+/* Homepage banner visibility only; keep the existing carousel and heading design. */
+@media (max-width: 780px) {
+  .store-container > .store-home-title + .merch-hero { display: none; }
+}
+@media (max-width: 500px) {
+  .store-container > .store-home-title { display: none; }
+  .store-container > .store-home-title + .merch-hero + .store-home-panels { margin-top: 0; }
+}
