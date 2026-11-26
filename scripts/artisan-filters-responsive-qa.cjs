@@ -57,15 +57,15 @@ async function check(name,fn){
      assert.equal(await overlay.getByRole("button",{name:"Filter by Price"}).getAttribute("aria-expanded"),"true");
      assert.equal(await overlay.getByRole("button",{name:"Filter by Special Options"}).getAttribute("aria-expanded"),"false");
      const opts=overlay.getByRole("group",{name:"Filter by Price"}).getByRole("button");
-     const originalTotal=Number((await listing.getByRole("status").last().innerText()).match(/of\\s+(\\d+)\\s+products/)?.[1]);
+     const originalTotal=Number((await listing.getByRole("status").last().innerText()).match(/of\s+(\d+)\s+products/)?.[1]);
      assert(Number.isFinite(originalTotal),"Original product count missing");
      if(await opts.count()){
-       const firstCount=Number((await opts.first().innerText()).match(/(\\d+)\\s*$/)?.[1]);
+       const firstCount=Number((await opts.first().innerText()).match(/(\d+)\s*$/)?.[1]);
        await opts.first().click();
        assert.equal(await opts.first().getAttribute("aria-pressed"),"true","Selected option not highlighted");
        await listing.getByText(new RegExp("of "+firstCount+" products")).waitFor({timeout:9000});
        if(await opts.count()>1){
-         const secondCount=Number((await opts.nth(1).innerText()).match(/(\\d+)\\s*$/)?.[1]);
+         const secondCount=Number((await opts.nth(1).innerText()).match(/(\d+)\s*$/)?.[1]);
          await opts.nth(1).click();
          assert.equal(await opts.first().getAttribute("aria-pressed"),"false","Same-group choice not exclusive");
          await listing.getByText(new RegExp("of "+secondCount+" products")).waitFor({timeout:9000});
