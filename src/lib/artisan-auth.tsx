@@ -38,18 +38,24 @@ export function ArtisanAuthProvider({children}:{children:ReactNode}) {
  useEffect(()=>{
   if(!artisanSupabase){setReady(true);return;}
   let alive=true;
+  const readyFallback=window.setTimeout(()=>{if(alive)setReady(true);},8000);
+  const finishInitialization=()=>{
+   if(!alive)return;
+   window.clearTimeout(readyFallback);
+   setReady(true);
+  };
   const {data:{subscription}}=artisanSupabase.auth.onAuthStateChange((event,session)=>{
    if(!alive)return;
    setUser(session?.user??null);
    if(event==="PASSWORD_RECOVERY")setRecovery(true);
    if(event==="SIGNED_OUT")setRecovery(false);
-   setReady(true);
+   finishInitialization();
   });
   artisanSupabase.auth.getUser().then(({data,error})=>{
    if(!alive)return;
    if(!error)setUser(data.user??null);
-  }).finally(()=>{if(alive)setReady(true);});
-  return()=>{alive=false;subscription.unsubscribe();};
+  }).catch(()=>{}).finally(finishInitialization);
+  return()=>{alive=false;window.clearTimeout(readyFallback);subscription.unsubscribe();};
  },[]);
  const value=useMemo<AuthState>(()=>({
   user,ready,recovery,
@@ -67,3 +73,4 @@ export function useArtisanAuth():AuthState {
  // Safe default for isolated rendering/tests: a guest has no session or privileges.
  return useContext(Context);
 }
+
