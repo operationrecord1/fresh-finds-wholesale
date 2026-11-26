@@ -22,9 +22,34 @@ export const Route = createFileRoute("/checkout")({
 
 type Fields = {first_name:string;last_name:string;company:string;email:string;phone:string;line1:string;city:string;state:string;postal_code:string;shipping_first_name:string;shipping_last_name:string;shipping_phone:string;shipping_line1:string;shipping_city:string;shipping_state:string;shipping_postal_code:string};
 type Session = {client_secret:string;session_id:string;order_number:number;amount_total:number;currency:string};
-const inputClass = "mt-1.5 block min-h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-[15px] outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15";
+const inputClass = "mt-1.5 block min-h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-[15px] text-white outline-none transition placeholder:text-slate-500 focus:border-white focus:ring-2 focus:ring-white/10";
 const Field = ({label,name,value,onChange,type="text",required=true,autoComplete}:{label:string;name:string;value:string;onChange:(name:string,value:string)=>void;type?:string;required?:boolean;autoComplete?:string}) => <label className="block text-sm font-medium text-foreground">{label}{required&&<span className="text-destructive"> *</span>}<input className={inputClass} name={name} type={type} value={value} required={required} maxLength={name.includes("line1")?240:140} autoComplete={autoComplete} onChange={e=>onChange(name,e.target.value)} /></label>;
 const usd=(cents:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(cents/100);
+async function checkoutFailureMessage(error:unknown,data:unknown):Promise<string>{
+ const errorObject=error as {message?:string;context?:Response}|null;
+ const response=errorObject?.context;
+ const status=response instanceof Response?response.status:0;
+ let serverMessage=typeof (data as {error?:unknown}|null)?.error==="string"?(data as {error:string}).error:"";
+ if(response instanceof Response){
+  try{const body=await response.clone().json() as {error?:unknown};if(typeof body?.error==="string")serverMessage=body.error;}catch{/* Keep the safe fallback below. */}
+ }
+ const detail=`${serverMessage} ${errorObject?.message??""}`.toLowerCase();
+ if(detail.includes("reseller eligibility is not approved"))
+  return "Reseller review is required before tax-exempt wholesale checkout. This account is not approved yet. Contact email@artisanmart.site to complete the review. No order or payment was created.";
+ if(status===401||/verified customer login required|login required/.test(detail))
+  return "Your verified sign-in has expired. Sign in again, then return to checkout. No payment was started.";
+ if(status===403)
+  return "This account is not currently authorized to check out. Contact email@artisanmart.site for help. No payment was started.";
+ if(/shipping\/tax quote|secure checkout credentials|payment account unavailable/.test(detail))
+  return "Secure checkout is temporarily unavailable while payment or tax settings are checked. No payment was started. Please try again later.";
+ if(status===409||/invalid reserved order|order amount could not be independently verified|session is no longer open/.test(detail))
+  return "Your cart or reserved order has changed. Return to your cart and start checkout again. No card payment was started.";
+ if(status===400||status===422||/invalid checkout details|unable to reserve checkout/.test(detail))
+  return "Some checkout details or items need attention. Review your billing information and cart, then try again.";
+ if(/failed to fetch|network|fetcherror|relay/.test(detail))
+  return "We could not reach secure checkout. Check your connection and try again. No payment was started.";
+ return "Secure checkout could not start. Please try again or contact email@artisanmart.site. No payment was started.";
+}
 function StripePayment({sessionId,totalCents,billing,onError,onSuccess}:{sessionId:string;totalCents:number;billing:Fields;onError:(message:string)=>void;onSuccess:()=>void}){
  const result=useCheckoutElements();
  const [busy,setBusy]=useState(false);
@@ -48,8 +73,8 @@ function StripePayment({sessionId,totalCents,billing,onError,onSuccess}:{session
  return <div className="mt-6 border-t border-border pt-5">
   <div className="mb-3 flex items-center gap-2"><LockKeyhole size={17} className="text-primary"/><h3 className="font-semibold">Card payment</h3></div>
   <PaymentElement options={{layout:"tabs",paymentMethodOrder:["card"]}} />
-  <button type="button" onClick={()=>void confirm()} disabled={busy||!checkout} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-full bg-primary px-5 py-3 font-bold text-primary-foreground shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-55">
-   {busy?"Processing payment…":`Pay ${usd(totalCents)}`}
+  <button type="button" onClick={()=>void confirm()} disabled={busy||!checkout} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">
+   {busy?"Processing payment…":`Complete purchase · ${usd(totalCents)}`}
   </button>
  </div>;
 }
@@ -73,7 +98,7 @@ export function Checkout(){
  const stripePromise=useMemo(()=>typeof publishableKey==="string"&&publishableKey.startsWith(sandboxPreview?"pk_test_":"pk_live_")?loadStripe(publishableKey):null,[publishableKey,sandboxPreview]);
  const verified=!!user?.email_confirmed_at;
  const updateField=useCallback((name:string,value:string)=>{
-  setFields(previous=>({...previous,[name]:value}));setFormError("");setPayError("");
+  setFields(previous=>({...previous,[name]:value}));setFormError("");setPayError("");setSession(null);
  },[]);
 
  useEffect(()=>{
@@ -103,8 +128,9 @@ export function Checkout(){
    if(pendingAttempt.current?.signature!==signature)pendingAttempt.current={signature,key:crypto.randomUUID()};
    const payload=makeCheckoutRequest(form,lines,coupon,pendingAttempt.current.key,same);
    const {data,error}=await artisanSupabase.functions.invoke("artisan-create-checkout",{body:payload});
-   if(error||typeof data?.client_secret!=="string"||typeof data?.session_id!=="string"||!Number.isSafeInteger(data?.amount_total)||data?.currency!=="usd")
-    throw Error(data?.error||"Secure checkout could not start. Please review your details and try again.");
+   if(error)throw Error(await checkoutFailureMessage(error,data));
+   if(typeof data?.client_secret!=="string"||typeof data?.session_id!=="string"||!Number.isSafeInteger(data?.amount_total)||data?.currency!=="usd")
+    throw Error(await checkoutFailureMessage(null,data));
    setSession({client_secret:data.client_secret,session_id:data.session_id,order_number:data.order_number,amount_total:data.amount_total,currency:data.currency});
   }catch(e){setFormError(e instanceof Error?e.message:"Secure checkout could not start. Please try again.");}
   finally{setBusy(false);}
@@ -114,16 +140,19 @@ export function Checkout(){
  if(!verified)return <div className="mx-auto max-w-4xl p-10 text-center" role="status">Please sign in with a verified email to continue. <Link to="/login" className="text-primary underline">Sign in</Link></div>;
  if(!meetsMinimum(subtotal))return <div className="mx-auto max-w-4xl p-10 text-center">Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link></div>;
 
- return <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+ return <main className="min-h-screen bg-[#090a0c] text-slate-100">
+  <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
   {sandboxPreview&&<div role="status" className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">Sandbox checkout · Test cards only · No real charge</div>}
-  <div className="mb-6">
-   <Link to="/cart" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft size={16}/> Back to cart</Link>
-   <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Secure checkout</h1>
-   <p className="mt-1 text-sm text-muted-foreground">Complete your order with encrypted card payment.</p>
-  </div>
-  <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] xl:gap-10">
-   <form onSubmit={e=>void createPayment(e)} className="min-w-0 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-7">
-    <div className="mb-5 flex items-start justify-between gap-4"><div><h2 className="text-xl font-bold">Billing information</h2><p className="mt-1 text-sm text-muted-foreground">Your account details have been filled in where available.</p></div>{profileLoading&&<span role="status" className="text-xs text-muted-foreground">Loading profile…</span>}</div>
+  <header className="mb-7 border-b border-slate-800 pb-6">
+   <Link to="/cart" className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-white"><ArrowLeft size={16}/> Back to cart</Link>
+   <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div><div className="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"><LockKeyhole size={13}/> Secure checkout</div><h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Checkout</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Enter your billing details and pay securely by card.</p></div>
+    <div className="flex items-center gap-2 text-sm text-slate-400"><ShieldCheck size={18} className="text-emerald-400"/><span>Secure card payment by Stripe</span></div>
+   </div>
+  </header>
+  <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] xl:gap-8">
+   <form id="checkout-form" onSubmit={e=>void createPayment(e)} className="min-w-0 rounded-2xl border border-slate-800 bg-[#111316] p-5 shadow-2xl sm:p-8">
+    <div className="mb-6 flex items-start justify-between gap-4 border-b border-slate-800 pb-5"><div><h2 className="text-xl font-bold text-white">Billing information</h2><p className="mt-1 text-sm text-slate-400">Check your contact and billing details.</p></div>{profileLoading&&<span role="status" className="text-xs text-slate-400">Loading profile…</span>}</div>
     <div className="grid gap-4 sm:grid-cols-2">
      <Field label="First name" name="first_name" value={fields.first_name} onChange={updateField} autoComplete="given-name"/>
      <Field label="Last name" name="last_name" value={fields.last_name} onChange={updateField} autoComplete="family-name"/>
@@ -145,21 +174,25 @@ export function Checkout(){
       <Field label="ZIP code" name="shipping_postal_code" value={fields.shipping_postal_code} onChange={updateField} autoComplete="shipping postal-code"/>
      </div>}
     </div>
-    {formError&&<p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{formError}</p>}
-    {session&&stripePromise&&<div className="mt-6"><div className="mb-4 flex items-center gap-2 text-sm text-green-800"><ShieldCheck size={17}/><span>Secure payment ready · Order #{session.order_number}</span></div><CheckoutElementsProvider stripe={stripePromise} options={{clientSecret:session.client_secret}}><StripePayment sessionId={session.session_id} totalCents={session.amount_total} billing={fields} onError={setPayError} onSuccess={()=>void navigate({to:"/order-confirmation",search:{session_id:session.session_id} as never})}/></CheckoutElementsProvider>{payError&&<p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{payError}</p>}</div>}
-    {!session&&<button type="submit" disabled={!enabled||!stripePromise||busy} className="mt-6 min-h-12 w-full rounded-full bg-primary px-5 py-3 font-bold text-primary-foreground shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto sm:min-w-64">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal)}`:"Secure card checkout unavailable"}</button>}
-    <p className="mt-4 text-xs leading-5 text-muted-foreground">Your payment is confirmed after Stripe securely verifies it. Card details are entered directly into Stripe’s encrypted fields.</p>
+    {formError&&<p role="alert" className="mt-5 rounded-xl border border-amber-700 bg-amber-950/40 px-4 py-3 text-sm leading-6 text-amber-100">{formError}</p>}
+    {!session&&<button type="submit" className="sr-only" aria-hidden="true" tabIndex={-1} disabled={!enabled||!stripePromise||busy}>Prepare secure payment</button>}
+    <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-500"><LockKeyhole size={14} className="mt-0.5 shrink-0"/>Card details are encrypted and handled by Stripe. Your card is charged only after you complete the purchase.</p>
    </form>
-   <aside className="min-w-0 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6 lg:sticky lg:top-6">
-    <h2 className="text-xl font-bold">Order summary</h2>
-    <div className="mt-4 divide-y divide-border border-y border-border">
+   <aside className="min-w-0 lg:sticky lg:top-6">
+    <section className="min-w-0 rounded-2xl border border-slate-800 bg-[#111316] p-5 shadow-2xl sm:p-6" aria-labelledby="order-summary-title">
+    <div className="flex items-baseline justify-between gap-3"><h2 id="order-summary-title" className="text-xl font-bold text-white">Order summary</h2><span className="text-xs font-medium text-slate-400">{lines.reduce((count,line)=>count+line.pieces,0)} items</span></div>
+    <div className="mt-4 divide-y divide-slate-800 border-y border-slate-800">
      {lines.map(line=>{const product=getProduct(line.sku);return product?<div key={line.sku} className="flex items-start justify-between gap-4 py-3 text-sm"><span className="min-w-0"><span className="block font-medium">{product.title}</span><span className="mt-0.5 block text-muted-foreground">Qty {line.pieces}</span></span><span className="shrink-0 font-medium">{money(lineTotal(line.pieces,product.price??0))}</span></div>:null;})}
     </div>
-    <label className="mt-4 block text-sm font-medium">Coupon or discount code<input className={inputClass} name="coupon" value={coupon} onChange={e=>{setCoupon(e.target.value);setSession(null);}} placeholder="Enter code" autoComplete="off"/></label>
-    <div className="mt-5 flex items-end justify-between gap-3"><span className="font-semibold">Total due</span><span className="text-2xl font-bold">{session?usd(session.amount_total):money(subtotal)}</span></div>
-    {session&&<p className="mt-1 text-right text-xs text-muted-foreground">Verified order amount</p>}
-    <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><LockKeyhole size={14}/>Secure checkout powered by Stripe</div>
+    <label className="mt-4 block text-sm font-medium text-slate-300">Coupon or discount code<input className={inputClass} name="coupon" value={coupon} onChange={e=>{setCoupon(e.target.value);setSession(null);}} placeholder="Enter code" autoComplete="off"/></label>
+    <div className="mt-5 flex items-end justify-between gap-3 border-t border-slate-800 pt-4"><span className="font-semibold text-slate-300">Total</span><span className="text-2xl font-bold text-white">{session?usd(session.amount_total):money(subtotal)}</span></div>
+    {session&&stripePromise?<><div className="mb-3 mt-5 flex items-center gap-2 text-sm font-medium text-emerald-300"><ShieldCheck size={17}/><span>Secure payment ready · Order #{session.order_number}</span></div><CheckoutElementsProvider stripe={stripePromise} options={{clientSecret:session.client_secret}}><StripePayment sessionId={session.session_id} totalCents={session.amount_total} billing={fields} onError={setPayError} onSuccess={()=>void navigate({to:"/order-confirmation",search:{session_id:session.session_id} as never})}/></CheckoutElementsProvider>{payError&&<p role="alert" className="mt-3 rounded-lg bg-red-950/50 px-3 py-2 text-sm text-red-200">{payError}</p>}</>:<button type="submit" form="checkout-form" disabled={!enabled||!stripePromise||busy} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal)}`:"Card checkout unavailable"}</button>}
+    <div className="mt-4 flex items-center gap-2 text-xs text-slate-500"><LockKeyhole size={14}/>Card payment powered by Stripe</div>
+    <p className="mt-4 text-xs leading-5 text-slate-500">By completing this purchase, you agree to the <Link to="/terms-of-sale" className="underline underline-offset-2 hover:text-slate-300">Terms of Sale</Link> and <Link to="/privacy" className="underline underline-offset-2 hover:text-slate-300">Privacy Policy</Link>.</p>
+    </section>
    </aside>
+  </div>
   </div>
  </main>;
 }
+
