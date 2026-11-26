@@ -73,7 +73,7 @@ const check = async (name, fn) => {
   return width+"px / "+path+" / "+data.columns+" cols / card "+Math.round(data.firstCardWidth)+"px";
  }
  for(const width of [1600,1020,1019,780,779,624,390]){
-  const columns=width<780?1:width<1020?2:3;
+  const columns=width<780?1:width<=1024?2:3; // Preserve existing homepage 1024px 2-column arrangement.
   await check("Homepage collection grid at "+width+"px",()=>inspect(width,"/",'.store-home-products',columns));
  }
  for(const width of [1200,1020,1019,780,779,390]){
