@@ -38,8 +38,8 @@ function initialOrder(list: Product[], sort: string): Product[] {
 
 type FilterGroup = "price" | "special" | "subcategory";
 type Option = {value: string; label: string; count: number};
-function FilterAccordion({name,title,options,active,onSelect,expanded,onToggle,id}:{
-  name:FilterGroup;title:string;options:Option[];active:string|null;
+function FilterAccordion({title,options,active,onSelect,expanded,onToggle,id}:{
+  title:string;options:Option[];active:string|null;
   onSelect:(value:string|null)=>void;expanded:boolean;onToggle:()=>void;id:string;
 }){
   return <section className="store-filter-group" aria-label={title}>
@@ -111,18 +111,18 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
   const clearActive=!!(price||special||sub);
   const toggle=(name:FilterGroup)=>setExpanded(prev=>prev===name?null:name);
 
-  const filterPanel=<div className="store-filters-panel-inner">
+  const filterPanel=(mode:"mobile"|"desktop")=><div className="store-filters-panel-inner">
     <div className="store-filters-panel-top">
       <strong>Filter Products</strong>
       <button type="button" className="store-filter-clear" onClick={clear} disabled={!clearActive}>Clear All</button>
       <button type="button" className="store-filter-close" aria-label="Close filters" onClick={()=>setFiltersOpen(false)}><X size={20}/></button>
     </div>
-    <FilterAccordion name="price" title="Filter by Price" options={priceOptions} active={price}
-      onSelect={setPrice} expanded={expanded==="price"} onToggle={()=>toggle("price")} id={priceId}/>
-    <FilterAccordion name="special" title="Filter by Special Options" options={specialOptions} active={special}
-      onSelect={v=>setSpecial(v as Badge|null)} expanded={expanded==="special"} onToggle={()=>toggle("special")} id={specialId}/>
-    <FilterAccordion name="subcategory" title="Filter by Subcategory" options={subOptions} active={sub}
-      onSelect={setSub} expanded={expanded==="subcategory"} onToggle={()=>toggle("subcategory")} id={subId}/>
+    <FilterAccordion title="Filter by Price" options={priceOptions} active={price}
+      onSelect={setPrice} expanded={expanded==="price"} onToggle={()=>toggle("price")} id={priceId+"-"+mode}/>
+    <FilterAccordion title="Filter by Special Options" options={specialOptions} active={special}
+      onSelect={v=>setSpecial(v as Badge|null)} expanded={expanded==="special"} onToggle={()=>toggle("special")} id={specialId+"-"+mode}/>
+    <FilterAccordion title="Filter by Subcategory" options={subOptions} active={sub}
+      onSelect={setSub} expanded={expanded==="subcategory"} onToggle={()=>toggle("subcategory")} id={subId+"-"+mode}/>
   </div>;
 
   return <div className="store-container store-listing py-4">
@@ -141,12 +141,12 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
         <button type="button" className="store-filter-outside" aria-label="Close filters outside panel"
           onClick={()=>setFiltersOpen(false)}/>
         <div id={panelId} className="store-filter-popover" role="dialog" aria-modal="false" aria-label="Product filters">
-          {filterPanel}
+          {filterPanel("mobile")}
         </div>
       </>}
     </div>
     <aside className="store-filters-desktop" aria-label="Product filters">
-      {filterPanel}
+      {filterPanel("desktop")}
     </aside>
     <div className="min-w-0 flex-1">
       {banner}
