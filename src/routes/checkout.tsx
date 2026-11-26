@@ -73,7 +73,7 @@ export function Checkout(){
  const stripePromise=useMemo(()=>typeof publishableKey==="string"&&publishableKey.startsWith(sandboxPreview?"pk_test_":"pk_live_")?loadStripe(publishableKey):null,[publishableKey,sandboxPreview]);
  const verified=!!user?.email_confirmed_at;
  const updateField=useCallback((name:string,value:string)=>{
-  setFields(previous=>({...previous,[name]:value}));setFormError("");setPayError("");
+  setFields(previous=>({...previous,[name]:value}));setFormError("");setPayError("");setSession(null);
  },[]);
 
  useEffect(()=>{
@@ -146,12 +146,16 @@ export function Checkout(){
      </div>}
     </div>
     {formError&&<p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{formError}</p>}
-    {session&&stripePromise&&<div className="mt-6"><div className="mb-4 flex items-center gap-2 text-sm text-green-800"><ShieldCheck size={17}/><span>Secure payment ready · Order #{session.order_number}</span></div><CheckoutElementsProvider stripe={stripePromise} options={{clientSecret:session.client_secret}}><StripePayment sessionId={session.session_id} totalCents={session.amount_total} billing={fields} onError={setPayError} onSuccess={()=>void navigate({to:"/order-confirmation",search:{session_id:session.session_id} as never})}/></CheckoutElementsProvider>{payError&&<p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{payError}</p>}</div>}
     {!session&&<button type="submit" disabled={!enabled||!stripePromise||busy} className="mt-6 min-h-12 w-full rounded-full bg-primary px-5 py-3 font-bold text-primary-foreground shadow-sm transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto sm:min-w-64">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal)}`:"Secure card checkout unavailable"}</button>}
     <p className="mt-4 text-xs leading-5 text-muted-foreground">Your payment is confirmed after Stripe securely verifies it. Card details are entered directly into Stripe’s encrypted fields.</p>
    </form>
-   <aside className="min-w-0 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6 lg:sticky lg:top-6">
-    <h2 className="text-xl font-bold">Order summary</h2>
+   <aside className="grid min-w-0 gap-6 lg:sticky lg:top-6">
+    <section className="min-w-0 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6" aria-labelledby="payment-step-title">
+     <h2 id="payment-step-title" className="text-xl font-bold">2. Card payment</h2>
+     {session&&stripePromise?<><div className="mb-4 mt-3 flex items-center gap-2 text-sm text-green-800"><ShieldCheck size={17}/><span>Secure payment ready · Order #{session.order_number}</span></div><CheckoutElementsProvider stripe={stripePromise} options={{clientSecret:session.client_secret}}><StripePayment sessionId={session.session_id} totalCents={session.amount_total} billing={fields} onError={setPayError} onSuccess={()=>void navigate({to:"/order-confirmation",search:{session_id:session.session_id} as never})}/></CheckoutElementsProvider>{payError&&<p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{payError}</p>}</>:<p className="mt-2 text-sm text-muted-foreground">Card fields appear here after you complete the billing details.</p>}
+    </section>
+    <section className="min-w-0 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6" aria-labelledby="order-summary-title">
+    <h2 id="order-summary-title" className="text-xl font-bold">Order summary</h2>
     <div className="mt-4 divide-y divide-border border-y border-border">
      {lines.map(line=>{const product=getProduct(line.sku);return product?<div key={line.sku} className="flex items-start justify-between gap-4 py-3 text-sm"><span className="min-w-0"><span className="block font-medium">{product.title}</span><span className="mt-0.5 block text-muted-foreground">Qty {line.pieces}</span></span><span className="shrink-0 font-medium">{money(lineTotal(line.pieces,product.price??0))}</span></div>:null;})}
     </div>
@@ -159,7 +163,9 @@ export function Checkout(){
     <div className="mt-5 flex items-end justify-between gap-3"><span className="font-semibold">Total due</span><span className="text-2xl font-bold">{session?usd(session.amount_total):money(subtotal)}</span></div>
     {session&&<p className="mt-1 text-right text-xs text-muted-foreground">Verified order amount</p>}
     <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><LockKeyhole size={14}/>Secure checkout powered by Stripe</div>
+    </section>
    </aside>
   </div>
  </main>;
 }
+
