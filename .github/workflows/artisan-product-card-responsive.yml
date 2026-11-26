@@ -1,0 +1,58 @@
+name: Artisan Product Card Responsive Release QA
+on:
+  push:
+    branches: [feature/artisan-global-product-card-responsive-20261126, main]
+    paths:
+      - src/components/store/ProductCard.tsx
+      - src/components/store/ProductCommerce.css
+      - src/styles.css
+      - scripts/artisan-product-card-responsive-qa.cjs
+      - .github/workflows/artisan-product-card-responsive.yml
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install pinned dependencies
+        run: bun install --frozen-lockfile
+      - name: Run full unit regressions
+        run: bun run test
+      - name: Build production Cloudflare storefront
+        run: bun run build:cloudflare
+      - name: TypeScript validation
+        run: bunx tsc --noEmit
+      - name: Check browser script syntax
+        run: node --check scripts/artisan-product-card-responsive-qa.cjs
+  production-browser:
+    if: github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated browser
+        run: |
+          mkdir -p /tmp/artisan-card-browser
+          npm install --prefix /tmp/artisan-card-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-card-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Allow Cloudflare Pages production release to propagate
+        run: sleep 90
+      - name: Verify exact 1020/780 boundaries and all product cards on production
+        env:
+          NODE_PATH: /tmp/artisan-card-browser/node_modules
+          ARTISAN_CARD_TEST_URL: https://artisanmart.site
+        run: node scripts/artisan-product-card-responsive-qa.cjs
+      - name: Preserve screenshots and browser results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-card-production-responsive
+          path: product-card-responsive-qa/
+          retention-days: 5

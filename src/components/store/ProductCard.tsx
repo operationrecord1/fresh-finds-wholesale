@@ -13,8 +13,8 @@ const BADGE: Record<Badge, [string, string]> = {
 
 export function Badges({ badges }: { badges: Badge[] }) {
   return (
-    <div className="absolute right-2 top-2 z-10 flex flex-col items-end gap-2">
-      {badges.map((b) => <span key={b} className={`rounded-full px-3 py-0.5 font-arial text-xs font-bold text-primary-foreground ring-2 ring-card ${BADGE[b][1]}`}>{BADGE[b][0]}</span>)}
+    <div className="store-product-badges" aria-label="Product badges">
+      {badges.slice(0, 2).map((b) => <span key={b} className={`store-product-badge rounded-full font-arial font-bold text-primary-foreground ${BADGE[b][1]}`}>{BADGE[b][0]}</span>)}
     </div>
   );
 }
@@ -54,18 +54,20 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
     setPanelLeft(Math.max(12, Math.min(rect.left + (rect.width - width) / 2, window.innerWidth - width - 12)) - rect.left);
   };
   return (
-    <div ref={card} data-purchase-open={expanded} onPointerEnter={e => placePanel(e.currentTarget)} onFocusCapture={e => placePanel(e.currentTarget)} className="store-product-card group relative flex h-full flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
-      <Badges badges={p.badges} />
-      <button onClick={() => onQuickView?.(p)} className="store-product-photo block w-full" aria-label={`Quick view ${p.title}`}>
-        <ProductImage p={p} />
-      </button>
-      <Link onClick={e => { if (onQuickView && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); onQuickView(p); } }} to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} className="mt-3 line-clamp-2 min-h-[2.5em] font-semibold text-lg leading-tight text-title hover:underline">
+    <div ref={card} data-purchase-open={expanded} onPointerEnter={e => placePanel(e.currentTarget)} onFocusCapture={e => placePanel(e.currentTarget)} className="store-product-card group relative flex h-full min-w-0 flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
+      <div className="store-product-visual relative w-full">
+        <button type="button" onClick={() => onQuickView?.(p)} className="store-product-photo block w-full" aria-label={`Quick view ${p.title}`}>
+          <ProductImage p={p} />
+        </button>
+        <Badges badges={p.badges} />
+      </div>
+      <Link onClick={e => { if (onQuickView && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); onQuickView(p); } }} to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} className="store-product-title font-semibold text-title hover:underline">
         {p.title}{p.titleTruncated ? "…" : ""}
       </Link>
-      <div className="mt-3 font-arial text-xs font-bold">Item # {p.sku}</div>
-      <div className="font-arial text-sm">Qty Avail: {p.stock != null ? p.stock.toLocaleString() : "—"}</div>
-      <button type="button" onClick={() => onQuickView?.(p)} className="mt-3 font-arial text-lg font-bold text-price" aria-label={`Quick view price for ${p.title}`}>Price: {p.price != null ? money(p.price) : "—"}</button>
-      <button type="button" className="product-touch-action" aria-expanded={expanded} aria-controls={panelId} onClick={() => { if (card.current) placePanel(card.current); setExpanded(!expanded); }}><span className="product-order-label">{expanded ? "Close order options" : "Order options"}</span><span className="product-mobile-buy-label">{expanded ? "Close" : "Buy Now"}</span></button>
+      <div className="store-product-id font-arial font-bold">Item # {p.sku}</div>
+      <div className="store-product-quantity font-arial">Qty Avail: {p.stock != null ? p.stock.toLocaleString() : "—"}</div>
+      <button type="button" onClick={() => onQuickView?.(p)} className="store-product-price font-arial font-bold text-price" aria-label={`Quick view price for ${p.title}`}>Price: {p.price != null ? money(p.price) : "—"}</button>
+      <button type="button" className="product-touch-action" aria-expanded={expanded} aria-controls={panelId} onClick={() => { if (card.current) placePanel(card.current); setExpanded(!expanded); }}>BUY NOW</button>
       {/* Kole Imports: hovering a card reveals a purchase box anchored below it (desktop only). */}
       {(
         <div id={panelId} className="product-hover-panel" style={{left:panelLeft, right:"auto", transform:"none"}}>
