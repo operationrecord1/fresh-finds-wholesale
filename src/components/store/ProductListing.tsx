@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import { PRICE_BANDS, type Product, type Badge } from "@/data/catalog";
@@ -61,13 +61,65 @@ function FilterAccordion({title,options,active,onSelect,expanded,onToggle,id}:{
   </section>;
 }
 
+function DesktopGroup({title,options,active,onSelect}:{
+  title:string; options:Option[]; active:string|null; onSelect:(value:string|null)=>void;
+}){
+  return <section className="store-desktop-filter-group">
+    <h3 className="store-desktop-filter-heading">{title}</h3>
+    <div className="store-desktop-filter-options" role="group" aria-label={title}>
+      {options.length?options.map(opt=>
+        <button type="button" key={opt.value}
+          className={active===opt.value?"store-desktop-filter-choice is-selected":"store-desktop-filter-choice"}
+          aria-pressed={active===opt.value}
+          onClick={()=>onSelect(active===opt.value?null:opt.value)}>
+          <span className="store-desktop-filter-radio" aria-hidden="true"/>
+          <span className="store-desktop-filter-text">{opt.label} ({opt.count})</span>
+        </button>
+      ):<p className="store-filter-empty">No options in this listing</p>}
+    </div>
+  </section>;
+}
+
 export function ProductListing({ products, banner, defaultSort = "position", initialPrice }: {
   products:Product[];banner:ReactNode;defaultSort?:string;initialPrice?:string|undefined;
 }){
   const panelId=useId();
+  const toolbarRef=useRef<HTMLDivElement>(null);
+  const triggerRef=useRef<HTMLButtonElement>(null);
+  const navMeasureRef=useRef<HTMLDivElement>(null);
+  const [navVisible,setNavVisible]=useState(0);
   const priceId=useId(),specialId=useId(),subId=useId();
   const path=useLocation({select:loc=>loc.pathname});
   const activeCollection=path.match(/^\/collection\/([^/]+)\/?$/)?.[1]??"";
+  const quickLinks=useMemo(()=>QUICK_LINKS.filter(item=>item.slug!==activeCollection),[activeCollection]);
+  useEffect(()=>{
+    const toolbar=toolbarRef.current,trigger=triggerRef.current,measure=navMeasureRef.current;
+    if(!toolbar||!trigger||!measure)return;
+    const recalc=()=>{
+      const width=window.innerWidth;
+      const max=width<360?0:width<=560?2:3;
+      if(width>=1025||max===0){setNavVisible(0);return;}
+      const toolbarStyle=getComputedStyle(toolbar);
+      const gap=parseFloat(toolbarStyle.columnGap)||0;
+      const available=Math.max(0,toolbar.clientWidth-trigger.getBoundingClientRect().width-gap);
+      const measureItems=[...measure.querySelectorAll<HTMLElement>("[data-nav-measure]")];
+      const navGap=7;
+      let used=0,count=0;
+      for(const item of measureItems.slice(0,max)){
+        const w=item.getBoundingClientRect().width;
+        if(used+w+(count?navGap:0)>available-2)break;
+        used+=w+(count?navGap:0);count++;
+      }
+      setNavVisible(count);
+    };
+    const observer=new ResizeObserver(recalc);
+    observer.observe(toolbar);observer.observe(trigger);observer.observe(measure);
+    window.addEventListener("resize",recalc);
+    recalc();
+    document.fonts?.ready.then(recalc).catch(()=>{});
+    return()=>{observer.disconnect();window.removeEventListener("resize",recalc);};
+  },[quickLinks]);
+
   const [filtersOpen,setFiltersOpen]=useState(false);
   const [expanded,setExpanded]=useState<FilterGroup|null>(null);
   const [price,setPrice]=useState<string|null>(initialPrice??null);
@@ -126,30 +178,41 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
   </div>;
 
   return <div className="store-container store-listing py-4">
-    <div className="store-filter-mobile-toolbar">
-      <button type="button" className="store-filter-trigger" aria-label="Open filters"
-        aria-expanded={filtersOpen} aria-controls={panelId}
-        onClick={()=>{setExpanded(null);setFiltersOpen(prev=>!prev);}}>
-        <SlidersHorizontal size={20} aria-hidden="true"/>
-      </button>
-      <nav className="store-quick-navigation" aria-label="Quick product navigation">
-        {QUICK_LINKS.filter(item=>item.slug!==activeCollection).map(item=>
-          <Link key={item.slug} to="/collection/$slug" params={{slug:item.slug}}
-            className="store-quick-navigation-link">{item.label}</Link>)}
-      </nav>
-      {filtersOpen&&<>
-        <button type="button" className="store-filter-outside" aria-label="Close filters outside panel"
-          onClick={()=>setFiltersOpen(false)}/>
-        <div id={panelId} className="store-filter-popover" role="dialog" aria-modal="false" aria-label="Product filters">
-          {filterPanel("mobile")}
-        </div>
-      </>}
-    </div>
     <aside className="store-filters-desktop" aria-label="Product filters">
-      {filterPanel("desktop")}
+      <div className="store-desktop-filter-card">
+        <div className="store-desktop-filter-top">
+          <strong>Filter Products</strong>
+          <button type="button" className="store-filter-clear" onClick={clear} disabled={!clearActive}>Clear All</button>
+        </div>
+        <DesktopGroup title="Filter by Price" options={priceOptions} active={price} onSelect={setPrice}/>
+        <DesktopGroup title="Filter by Special Options" options={specialOptions} active={special} onSelect={v=>setSpecial(v as Badge|null)}/>
+        <DesktopGroup title="Filter by Subcategory" options={subOptions} active={sub} onSelect={setSub}/>
+      </div>
     </aside>
-    <div className="min-w-0 flex-1">
+    <div className="store-listing-content min-w-0 flex-1">
       {banner}
+      <div ref={toolbarRef} className="store-filter-mobile-toolbar">
+        <button ref={triggerRef} type="button" className="store-filter-trigger" aria-label="Open filters"
+          aria-expanded={filtersOpen} aria-controls={panelId}
+          onClick={()=>{setExpanded(null);setFiltersOpen(prev=>!prev);}}>
+          <SlidersHorizontal size={18} aria-hidden="true"/><span>Filter</span>
+        </button>
+        <nav className="store-quick-navigation" aria-label="Quick product navigation">
+          {quickLinks.slice(0,navVisible).map(item=>
+            <Link key={item.slug} to="/collection/$slug" params={{slug:item.slug}}
+              className="store-quick-navigation-link">{item.label}</Link>)}
+        </nav>
+        <div className="store-nav-measure" ref={navMeasureRef} aria-hidden="true">
+          {quickLinks.map(item=><span data-nav-measure key={item.slug} className="store-quick-navigation-link">{item.label}</span>)}
+        </div>
+        {filtersOpen&&<>
+          <button type="button" className="store-filter-outside" aria-label="Close filters outside panel"
+            onClick={()=>setFiltersOpen(false)}/>
+          <div id={panelId} className="store-filter-popover" role="dialog" aria-modal="false" aria-label="Product filters">
+            {filterPanel("mobile")}
+          </div>
+        </>}
+      </div>
       <div className="store-catalog-grid mt-4 grid" aria-busy={pending}>
         {filtered.slice(0,shown).map(p=><ProductCard key={p.sku} p={p} onQuickView={setQv}/>)}
       </div>

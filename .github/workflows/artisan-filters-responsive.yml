@@ -1,7 +1,7 @@
 name: Artisan Responsive Filtering Release
 on:
   push:
-    branches: [feature/artisan-filter-overlay-quick-navigation-20261126, main]
+    branches: [feature/artisan-filter-overlay-quick-navigation-20261126, fix/artisan-filter-nav-measured-20261126, main]
     paths:
       - src/components/store/ProductListing.tsx
       - src/components/store/ProductFilters.css
