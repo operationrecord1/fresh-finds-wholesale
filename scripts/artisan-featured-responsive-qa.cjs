@@ -71,7 +71,7 @@ const run=async(name,fn)=>{try{const detail=await fn();checks.push({name,status:
     }else assert(sec.iconVisible,"Desktop header icon should be visible");
     assert(sec.underline,"View All underline missing");
     for(const card of sec.details){
-      assert.equal(card.titleLines,"2","Title line-clamp isn't 2");
+      assert(["none","unset",""].includes(card.titleLines),"Browser line-clamp would add visible ellipsis: "+card.titleLines);
       assert(Math.abs(card.titleHeight-card.expectedTitleHeight)<3,"Title has not reserved exactly 2 lines");
       assert(!card.titleText.includes("…")&&!card.titleText.includes("..."),"Title has ellipsis indicator");
       assert(card.tags<=2&&card.tagSingle,"Badges exceed count or wrap");
