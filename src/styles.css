@@ -815,3 +815,16 @@
     display: flex;
   }
 }
+
+
+/* Genuine two-line visual crop without browser-generated ellipsis markers.
+   Clamp generates a visible ellipsis in Chromium even when source text has none. */
+.store-product-card .store-product-title,
+.store-home-products .store-product-card > a.store-product-title {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+}
