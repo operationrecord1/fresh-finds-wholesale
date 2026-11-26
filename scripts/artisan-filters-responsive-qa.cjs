@@ -57,10 +57,19 @@ async function check(name,fn){
      assert.equal(await overlay.getByRole("button",{name:"Filter by Price"}).getAttribute("aria-expanded"),"true");
      assert.equal(await overlay.getByRole("button",{name:"Filter by Special Options"}).getAttribute("aria-expanded"),"false");
      const opts=overlay.getByRole("group",{name:"Filter by Price"}).getByRole("button");
+     const originalTotal=Number((await listing.getByRole("status").last().innerText()).match(/of\\s+(\\d+)\\s+products/)?.[1]);
+     assert(Number.isFinite(originalTotal),"Original product count missing");
      if(await opts.count()){
+       const firstCount=Number((await opts.first().innerText()).match(/(\\d+)\\s*$/)?.[1]);
        await opts.first().click();
        assert.equal(await opts.first().getAttribute("aria-pressed"),"true","Selected option not highlighted");
-       if(await opts.count()>1){await opts.nth(1).click();assert.equal(await opts.first().getAttribute("aria-pressed"),"false","Same-group choice not exclusive");}
+       await listing.getByText(new RegExp("of "+firstCount+" products")).waitFor({timeout:9000});
+       if(await opts.count()>1){
+         const secondCount=Number((await opts.nth(1).innerText()).match(/(\\d+)\\s*$/)?.[1]);
+         await opts.nth(1).click();
+         assert.equal(await opts.first().getAttribute("aria-pressed"),"false","Same-group choice not exclusive");
+         await listing.getByText(new RegExp("of "+secondCount+" products")).waitFor({timeout:9000});
+       }
      }
      await overlay.getByRole("button",{name:"Close filters"}).click();
      assert.equal(await overlay.count(),0,"Close button did not dismiss panel");
@@ -70,6 +79,7 @@ async function check(name,fn){
      if(await opts.count())assert.equal(await opts.nth(await opts.count()>1?1:0).getAttribute("aria-pressed"),"true","Filter selection reset on reopen");
      await reopened.getByRole("button",{name:"Clear All"}).click();
      if(await opts.count())assert.equal(await opts.first().getAttribute("aria-pressed"),"false","Clear All retained selection");
+     await listing.getByText(new RegExp("of "+originalTotal+" products")).waitFor({timeout:9000});
      await page.locator(".store-filter-outside").click({position:{x:width-2,y:830},force:true});
      assert.equal(await listing.getByRole("dialog",{name:"Product filters"}).count(),0,"Outside click did not close");
      if([240,380,381,650,780,1024].includes(width))await page.screenshot({path:OUT+"/filters-"+width+".png",animations:"disabled"});
