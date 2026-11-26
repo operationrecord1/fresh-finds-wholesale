@@ -62,11 +62,11 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
         <Badges badges={p.badges} />
       </div>
       <Link onClick={e => { if (onQuickView && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); onQuickView(p); } }} to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} className="store-product-title font-semibold text-title hover:underline">
-        {p.title}{p.titleTruncated ? "…" : ""}
+        {p.title}
       </Link>
       <div className="store-product-id font-arial font-bold">Item # {p.sku}</div>
       <div className="store-product-quantity font-arial">Qty Avail: {p.stock != null ? p.stock.toLocaleString() : "—"}</div>
-      <button type="button" onClick={() => onQuickView?.(p)} className="store-product-price font-arial font-bold text-price" aria-label={`Quick view price for ${p.title}`}>Price: {p.price != null ? money(p.price) : "—"}</button>
+      <button type="button" onClick={() => onQuickView?.(p)} className="store-product-price font-arial font-bold text-price" aria-label={`Quick view price for ${p.title}`}>Price: {p.price != null ? money(p.price) : "—"}{p.price != null && p.originalPrice != null && p.originalPrice > p.price ? <del className="store-product-original-price">{money(p.originalPrice)}</del> : null}</button>
       <button type="button" className="product-touch-action" aria-expanded={expanded} aria-controls={panelId} onClick={() => { if (card.current) placePanel(card.current); setExpanded(!expanded); }}>BUY NOW</button>
       {/* Kole Imports: hovering a card reveals a purchase box anchored below it (desktop only). */}
       {(
