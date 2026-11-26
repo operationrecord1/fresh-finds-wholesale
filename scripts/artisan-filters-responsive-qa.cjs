@@ -66,9 +66,9 @@ async function run(name,fn){
       const after=await root.locator(".store-catalog-grid").boundingBox();
       assert(Math.abs(before.y-after.y)<1,"Overlay shifted underlying products");
       const panel=await overlay.boundingBox();
-      assert(panel&&panel.width>0&&panel.right<=width+1&&panel.left>=-1,"Overlay clipped");
+      assert(panel&&panel.width>0&&panel.x+panel.width<=width+1&&panel.x>=-1,"Overlay clipped: "+JSON.stringify(panel));
       if(width<780){
-        assert(panel.left<=1&&panel.right>=width-1,"Under-780 panel must span viewport");
+        assert(panel.x<=1&&panel.x+panel.width>=width-1,"Under-780 panel must span viewport: "+JSON.stringify(panel));
       }else{
         assert(panel.width<=361&&panel.width<width,"780–1024 overlay should preserve compact width");
       }
