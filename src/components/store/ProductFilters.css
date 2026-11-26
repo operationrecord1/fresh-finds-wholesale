@@ -416,3 +416,34 @@
     align-self:start;
   }
 }
+
+
+/* Approved micro-adjustments only: compact the heading/filter/products gaps.
+   Desktop (1025px+) spacing, button geometry and all filter behavior remain unchanged. */
+@media (max-width: 1024px) {
+  .store-listing-content > .store-filter-mobile-toolbar {
+    margin-top: 2px;
+    margin-bottom: 0;
+  }
+  .store-listing-content > .store-catalog-grid {
+    margin-top: 2px;
+  }
+  /* Quiet, borderless close control; keep existing icon action and alignment. */
+  .store-filter-popover .store-filter-close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-title);
+  }
+  .store-filter-popover .store-filter-close:hover {
+    background: var(--color-muted);
+  }
+  .store-filter-popover .store-filter-close svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+  }
+}
