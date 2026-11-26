@@ -381,3 +381,253 @@
   .store-product-card .product-touch-action,
   .store-home-products .store-product-card .product-touch-action { display: none; }
 }
+
+
+/* Featured collection previews: exact product counts per section (not rows).
+   All card details retain the common ProductCard component. */
+.store-home-panels {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.store-home-panels > section { min-width: 0; }
+.store-home-panels .store-home-products {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+.store-home-panels .store-home-products > .store-product-card {
+  min-width: 0;
+}
+.store-home-panels .store-home-products > .store-product-card:nth-child(n+4) {
+  display: none;
+}
+
+/* Permanent, uniform two-line title budget across all shared cards. */
+.store-product-card .store-product-title,
+.store-home-products .store-product-card > a.store-product-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  min-height: calc(1.35em * 2);
+  max-height: calc(1.35em * 2);
+  height: calc(1.35em * 2);
+  overflow: hidden;
+  text-overflow: clip;
+  overflow-wrap: break-word;
+}
+.store-product-card .store-product-original-price {
+  display: inline;
+  margin-left: 5px;
+  font-size: 0.76em;
+  font-weight: 400;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+.store-product-card .store-product-price,
+.store-home-products .store-product-card > button.store-product-price {
+  white-space: nowrap;
+}
+.store-product-card .store-product-id,
+.store-product-card .store-product-quantity {
+  white-space: nowrap;
+}
+
+/* The section header above 780px retains its original colored container. */
+@media (min-width: 781px) {
+  .store-home-panels > section > .store-featured-header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    min-height: 58px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: clamp(6px, 1.1vw, 20px);
+  }
+  .store-home-panels > section > .store-featured-header h2 {
+    min-width: 0;
+    font-size: clamp(14px, 1.25vw, 22px);
+    white-space: nowrap;
+  }
+  .store-home-panels > section > .store-featured-header .store-featured-view-all {
+    flex: none;
+    font-size: clamp(12px, 1vw, 18px);
+    white-space: nowrap;
+    text-decoration: underline;
+  }
+}
+@media (min-width: 781px) and (max-width: 1250px) {
+  .store-home-panels .store-home-products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .store-home-panels .store-home-products > .store-product-card:nth-child(n+3) {
+    display: none;
+  }
+}
+@media (min-width: 1251px) and (max-width: 2000px) {
+  .store-home-panels .store-home-products {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .store-home-panels .store-home-products > .store-product-card:nth-child(n+4) {
+    display: none;
+  }
+}
+@media (min-width: 2001px) {
+  .store-home-panels .store-home-products {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .store-home-panels .store-home-products > .store-product-card:nth-child(n) {
+    display: flex;
+  }
+}
+
+/* At and below 780px, section names and underlined View All are standalone
+   text rather than a colored header bar. Icon and bar are not shown. */
+@media (max-width: 780px) {
+  .store-home-panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .store-home-panels > section {
+    background: transparent;
+    border-radius: 0;
+    min-width: 0;
+  }
+  .store-home-panels > section > .store-featured-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
+    min-height: 65px;
+    padding: 7px 2px 10px;
+    gap: 3px;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    text-align: center;
+    line-height: 1.25;
+  }
+  .store-home-panels > section > .store-featured-header svg {
+    display: none;
+  }
+  .store-home-panels > section > .store-featured-header h2 {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    font-size: clamp(13px, 2.6vw, 18px);
+    font-weight: 700;
+    line-height: 1.25;
+    text-transform: none;
+  }
+  .store-home-panels > section > .store-featured-header .store-featured-view-all {
+    display: inline-block;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 400;
+    color: inherit;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+  .store-home-panels [data-collection="new-arrivals"] > .store-featured-header {
+    color: var(--color-sec-new);
+  }
+  .store-home-panels [data-collection="best-sellers"] > .store-featured-header {
+    color: var(--color-sec-best);
+  }
+  .store-home-panels [data-collection="reduced-price"] > .store-featured-header {
+    color: var(--color-sec-reduced);
+  }
+  .store-home-panels [data-collection="closeouts"] > .store-featured-header {
+    color: var(--color-sec-closeout);
+  }
+  .store-home-panels .store-home-products {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0;
+    gap: 0;
+  }
+  .store-home-panels .store-home-products > .store-product-card:nth-child(n+2) {
+    display: none;
+  }
+  .store-home-panels .store-home-products > .store-product-card:first-child {
+    display: flex;
+  }
+  .store-home-panels .store-product-card {
+    width: 100%;
+    min-width: 0;
+    padding: 8px;
+  }
+  .store-home-panels .store-product-card .store-product-title {
+    font-size: clamp(12px, 2.8vw, 16px);
+    line-height: 1.35;
+  }
+  .store-home-panels .store-product-card .store-product-id,
+  .store-home-panels .store-product-card .store-product-quantity {
+    font-size: clamp(10px, 2.35vw, 13px);
+  }
+  .store-home-panels .store-product-card .store-product-price {
+    font-size: clamp(11px, 2.5vw, 16px);
+  }
+  .store-home-panels .store-product-card .store-product-original-price {
+    font-size: .72em;
+    margin-left: 3px;
+  }
+  .store-home-panels .store-product-card .store-product-badge {
+    font-size: clamp(8px, 2vw, 11px);
+    padding: 3px 6px;
+  }
+}
+@media (max-width: 380px) {
+  .store-home-panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .store-home-panels .store-home-products > .store-product-card:nth-child(n+2) {
+    display: none;
+  }
+  .store-home-panels .store-product-card .store-product-title {
+    font-size: 16px;
+  }
+  .store-home-panels .store-product-card .store-product-id,
+  .store-home-panels .store-product-card .store-product-quantity { font-size: 14px; }
+  .store-home-panels .store-product-card .store-product-price { font-size: 18px; }
+}
+@media (min-width: 381px) and (max-width: 780px) {
+  .store-home-panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* BUY NOW is independent of section product counts and headers. */
+@media (max-width: 1025px) {
+  .store-product-card .product-touch-action,
+  .store-home-products .store-product-card .product-touch-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: min(150px, 100%);
+    min-height: 44px;
+    flex-shrink: 0;
+    margin-top: auto;
+    padding: 9px 12px;
+    border-radius: 999px;
+    background: #008bb8;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .store-product-card .store-product-price {
+    margin-bottom: 12px;
+  }
+}
+@media (min-width: 1026px) {
+  .store-product-card .product-touch-action,
+  .store-home-products .store-product-card .product-touch-action {
+    display: none;
+  }
+}
