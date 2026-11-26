@@ -1,7 +1,7 @@
 name: Artisan Featured Sections Responsive Acceptance
 on:
   push:
-    branches: [feature/artisan-featured-section-breakpoints-20261126, main]
+    branches: [feature/artisan-featured-section-breakpoints-20261126, main, feature/artisan-card-polish-20261126]
     paths:
       - src/routes/index.tsx
       - src/components/store/ProductCard.tsx
