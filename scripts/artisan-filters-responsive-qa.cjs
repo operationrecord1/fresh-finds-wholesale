@@ -67,7 +67,7 @@ async function check(name,fn){
      await trigger.click();
      const reopened=listing.getByRole("dialog",{name:"Product filters"});
      await reopened.getByRole("button",{name:"Filter by Price"}).click();
-     if(await opts.count())assert.equal(await opts.last().getAttribute("aria-pressed"),await opts.count()>1?"true":"true","Filter selection reset on reopen");
+     if(await opts.count())assert.equal(await opts.nth(await opts.count()>1?1:0).getAttribute("aria-pressed"),"true","Filter selection reset on reopen");
      await reopened.getByRole("button",{name:"Clear All"}).click();
      if(await opts.count())assert.equal(await opts.first().getAttribute("aria-pressed"),"false","Clear All retained selection");
      await page.locator(".store-filter-outside").click({position:{x:width-2,y:830},force:true});
