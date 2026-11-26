@@ -1,0 +1,60 @@
+name: Artisan Featured Sections Responsive Acceptance
+on:
+  push:
+    branches: [feature/artisan-featured-section-breakpoints-20261126, main]
+    paths:
+      - src/routes/index.tsx
+      - src/components/store/ProductCard.tsx
+      - src/components/store/ProductCommerce.css
+      - src/styles.css
+      - scripts/artisan-featured-responsive-qa.cjs
+      - .github/workflows/artisan-featured-responsive.yml
+permissions:
+  contents: read
+jobs:
+  validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Run existing tests
+        run: bun run test
+      - name: Build production Cloudflare assets
+        run: bun run build:cloudflare
+      - name: TypeScript validation
+        run: bunx tsc --noEmit
+      - name: Browser script syntax
+        run: node --check scripts/artisan-featured-responsive-qa.cjs
+  production-browser:
+    if: github.ref == 'refs/heads/main'
+    needs: validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright Chromium
+        run: |
+          mkdir -p /tmp/artisan-featured-browser
+          npm install --prefix /tmp/artisan-featured-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-featured-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Allow production deployment to propagate
+        run: sleep 90
+      - name: Verify every requested width on live production
+        env:
+          NODE_PATH: /tmp/artisan-featured-browser/node_modules
+          ARTISAN_CARD_TEST_URL: https://artisanmart.site
+        run: node scripts/artisan-featured-responsive-qa.cjs
+      - name: Upload screenshots and browser results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisan-featured-responsive-qa
+          path: featured-responsive-qa/
+          retention-days: 5
+          if-no-files-found: warn
