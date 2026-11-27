@@ -31,7 +31,8 @@
   .store-product-card:focus-within .universal-cart .product-hover-panel { display: block; }
 }
 @media (hover: hover) and (pointer: fine) and (min-width: 1026px) {
-  .universal-cart .product-touch-action { display: none; }
+  .store-product-card .universal-cart .product-touch-action,
+  .store-listing .store-product-card .universal-cart .product-touch-action { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .universal-cart .purchase-submit { transition: none; }
