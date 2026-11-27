@@ -875,3 +875,12 @@ body:has(.store-home-panels), body:has(.store-browse-surface) { background-color
   }
   .store-container > .store-home-panels { margin-top: 0; }
 }
+
+/* Shared form focus: a quiet black edge directly against the field border. */
+html body :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=submit]):not([type=button]),textarea,select):is(:focus,:focus-visible){outline:0!important;outline-offset:0!important;border-color:rgba(0,0,0,.5)!important;box-shadow:0 0 0 1px rgba(0,0,0,.16)!important}
+
+@media(min-width:2001px){
+ .store-container:has(.store-home-panels){width:min(calc(100% - 64px),2000px)}
+ .store-home-panels .store-home-products{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .store-home-panels .store-home-products>.store-product-card:nth-child(n){display:flex}
+}
