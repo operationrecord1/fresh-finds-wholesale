@@ -10,6 +10,16 @@
   padding-top: 12px;
   max-width: calc(100vw - 24px);
 }
+@media (hover: hover) and (pointer: fine) and (min-width: 1026px) {
+  .universal-cart[data-viewport-panel=true] .product-hover-panel {
+    position: fixed;
+    top: auto;
+    bottom: 12px;
+    left: var(--purchase-screen-left, 12px);
+    padding-top: 0;
+  }
+  .universal-cart[data-viewport-panel=true] .product-hover-surface::before { display: none; }
+}
 .universal-cart .product-hover-surface { background: #f6f8f9; }
 .universal-cart .product-hover-surface::before { background: #f6f8f9; }
 .store-listing .universal-cart .product-hover-surface,
