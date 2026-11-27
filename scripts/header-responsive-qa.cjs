@@ -26,15 +26,21 @@ async function main(){
  const results=[];
  for(const width of widths){
   await page.setViewportSize({width,height:900});
-  await page.goto(base+'/',{waitUntil:'domcontentloaded'});
+  await page.goto(base+'/',{waitUntil:'load'});
   await page.locator('.store-header').waitFor();
+  await page.evaluate(() => document.fonts.ready);
   const d=await page.evaluate(()=>{
    const shown=s=>{const e=document.querySelector(s);return !!e&&getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().width>0};
    const rect=s=>document.querySelector(s)?.getBoundingClientRect().toJSON();
    const nav=document.querySelector('.store-nav');
    return {overflow:document.documentElement.scrollWidth>innerWidth,dots:shown('.store-mobile-menu-toggle'),minimum:shown('.store-minimum'),newsletter:shown('.store-account-links a[href="/newsletter"]'),careers:shown('.store-utility-links a[href="/careers"]'),contact:shown('.store-utility-links a[href="/contact"]'),knowledge:shown('[data-header-secondary]'),call:shown('.store-call-button'),imports:shown('.store-nav-imports'),closeouts:shown('.store-nav-closeouts'),search:rect('.store-search'),cart:rect('.store-cart-button'),menu:rect('.store-mobile-menu-toggle'),brand:rect('.store-brand-contact'),account:rect('.store-login-link'),utility:rect('.store-utility-links'),accounts:rect('.store-account-links'),navOverflow:nav?.scrollWidth>nav?.clientWidth+1};
   });
-  assert(!d.overflow,`Page overflow at ${width}px`);
+  if(d.overflow){
+   const offenders=await page.evaluate(()=>[...document.querySelectorAll('body *')]
+    .filter(e=>e.getBoundingClientRect().right>innerWidth+0.5)
+    .slice(0,8).map(e=>({tag:e.tagName,className:typeof e.className==='string'?e.className:'',right:e.getBoundingClientRect().right})));
+   throw new Error(`Page overflow at ${width}px: ${JSON.stringify(offenders)}`);
+  }
   assert(d.search?.width>=100,`Search clipped at ${width}px`);
   if(width>=1250)assert(d.search.width>=350,`Search should use available desktop width at ${width}px`);
   if(width>=1920)assert(d.search.width>=650,`Search should expand on wide screens at ${width}px`);
