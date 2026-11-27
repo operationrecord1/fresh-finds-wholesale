@@ -476,3 +476,25 @@
 
 /* Match the account and cart labels to the Careers link. */
 .store-header .store-login-link>span,.store-header .store-cart-button>span:last-child{color:oklch(0.32 0 0)}
+
+/* One visual icon height across account, cart and newsletter controls. */
+.store-header{--customer-icon-height:30px}
+.store-header .store-account-links>a:last-child>svg,.store-header .store-login-link>svg:first-child{width:var(--customer-icon-height);height:var(--customer-icon-height)}
+.store-header .store-cart-icon{top:0;width:44px;height:var(--customer-icon-height);flex-basis:44px}
+.store-header .store-cart-artwork{top:0;width:38px;height:26px;transform:scale(1.153846);transform-origin:top left}
+.store-header .store-cart-icon b{top:0;left:15px;width:24px;font-size:13px;line-height:14px}
+.store-header .store-cart-button:hover{color:#000;background:transparent;outline:0;box-shadow:none;filter:none;text-decoration:none}
+.store-mobile-account{display:none}
+.store-mobile-menu-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.store-mobile-menu-heading button{display:grid;place-items:center;width:44px;height:44px;flex:none}
+@media(max-width:759px){
+ .store-header .store-mobile-menu{position:fixed;top:0;left:0;right:auto;bottom:0;width:min(360px,calc(100vw - 16px));max-height:100dvh;overflow-y:auto;z-index:100;background:white;margin:0;border-radius:0;padding:12px;box-sizing:border-box}
+ .store-mobile-menu-heading{position:sticky;top:-12px;background:white;z-index:1}
+}
+@media(max-width:499px){
+ .store-header .store-account-links>.store-login-link,.store-header .store-account-links>div,.store-header .store-account-links>span{display:none}
+ .store-header .store-header-layout{grid-template-columns:30px minmax(0,1fr) 70px}
+ .store-header .store-cart-button{grid-column:3}
+ .store-mobile-account{display:block}
+ .store-mobile-account .store-login-link{justify-content:flex-start}
+}
