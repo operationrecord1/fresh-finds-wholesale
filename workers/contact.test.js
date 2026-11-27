@@ -28,3 +28,9 @@ test("invalid origin and missing order are rejected", async () => {
   assert.equal((await handler.fetch(request(valid, "https://example.com"), env(async () => {}))).status, 403);
   assert.equal((await handler.fetch(request({ ...valid, topic: "existing" }), env(async () => {}))).status, 400);
 });
+
+test("new order does not require an order field", async () => {
+  const { order, ...withoutOrder } = valid;
+  const response = await handler.fetch(request(withoutOrder), env(async () => ({ messageId: "test" })));
+  assert.equal(response.status, 200);
+});
