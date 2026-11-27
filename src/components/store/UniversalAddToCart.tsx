@@ -48,7 +48,11 @@ export function UniversalAddToCart({ product }: { product: Product }) {
   return <div ref={root} className="universal-cart" data-purchase-open={open} onPointerEnter={place} onFocusCapture={place} onPointerLeave={() => {
     if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) setOpen(false);
   }}>
-    <button type="button" className="product-touch-action" aria-expanded={open} aria-controls={id} onClick={() => { place(); setOpen(value => !value); }}>BUY NOW</button>
+    <button type="button" className="product-touch-action" aria-expanded={open} aria-controls={id} onClick={() => {
+      place();
+      if (!open) requestAnimationFrame(() => root.current?.querySelector(".product-hover-panel")?.scrollIntoView({ block: "nearest" }));
+      setOpen(value => !value);
+    }}>BUY NOW</button>
     <div id={id} className="product-hover-panel">
       <div className="product-hover-surface"><PurchasePanel p={product} compact onDone={() => setOpen(false)} /></div>
     </div>
