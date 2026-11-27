@@ -36,6 +36,9 @@ async function main(){
   });
   assert(!d.overflow,`Page overflow at ${width}px`);
   assert(d.search?.width>=100,`Search clipped at ${width}px`);
+  if(width>=1250)assert(d.search.width>=350,`Search should use available desktop width at ${width}px`);
+  if(width>=1920)assert(d.search.width>=650,`Search should expand on wide screens at ${width}px`);
+  assert.equal(await page.locator('.store-search input').evaluate(e=>getComputedStyle(e).borderTopLeftRadius),'6px',`Search corner shape at ${width}px`);
   assert.equal(await page.locator('.store-cart-button').getAttribute('href'),'/cart',`Cart navigation at ${width}px`);
   assert.equal(await page.locator('#cart-preview').count(),0,`Cart preview should be absent at ${width}px`);
   assert.equal(d.dots,width<760,`Menu visibility at ${width}px`);

@@ -42,7 +42,7 @@ it("restores existing guest Login/Register after sign-out",()=>{
  const {rerender}=render(<SiteHeader/>);
  state.user=null;
  rerender(<SiteHeader/>);
- expect(screen.getByText(/Login Or/)).toBeInTheDocument();
+  expect(screen.getByText(/Login \/ Register/)).toBeInTheDocument();
  expect(screen.queryByRole("menuitem",{name:"Logout"})).not.toBeInTheDocument();
 });
 

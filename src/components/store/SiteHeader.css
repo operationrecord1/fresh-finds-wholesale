@@ -368,9 +368,29 @@
 .store-cart-button{display:flex;align-items:center;justify-content:center;white-space:nowrap;text-decoration:none;transform:none!important}
 .store-login-link{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
 .store-login-link>svg:first-child{width:19px;height:19px;flex:none}
-.store-header .store-search{max-width:440px}
+.store-header .store-search{width:100%;max-width:none;min-width:0}
+.store-header .store-search input{border-radius:6px}
+.store-header .store-search input:focus-visible{border-radius:6px}
+.store-header .store-search button{border-radius:0 6px 6px 0}
+.store-cart-icon b{top:-9px;right:-10px;min-width:20px;min-height:18px;padding:0 2px;border-radius:0;background:transparent;color:#e47718;font-size:15px;font-weight:800;line-height:18px}
+@media(min-width:760px){
+ .store-utility-links,.store-account-links{font-size:clamp(13px,1vw,15px);gap:clamp(8px,.8vw,14px)}
+ .store-login-link{font-size:inherit}
+ .store-login-link>svg:first-child{width:21px;height:21px}
+ .store-search input{font-size:15px}
+}
+@media(min-width:1361px){
+ .store-header-layout{grid-template-columns:120px 180px minmax(180px,1fr) auto;gap:4px 12px;padding-left:clamp(18px,1.5vw,36px);padding-right:clamp(18px,1.5vw,36px)}
+ .store-minimum{position:static;grid-column:1;grid-row:1;align-self:center;width:120px;max-height:none;margin:0;padding:7px 4px;font-size:12px;line-height:17px}
+ .store-brand-contact{grid-column:2;grid-row:1}
+ .store-search{grid-column:3;grid-row:1}
+ .store-utilities{grid-column:4;grid-row:1}
+ .store-search input{height:44px}
+}
 @media(min-width:1600px){
- .store-header-layout{padding-left:clamp(20px,1.2vw,36px);padding-right:clamp(20px,1.2vw,36px)}
+ .store-header-layout{grid-template-columns:120px 180px minmax(180px,1fr) 160px auto;padding-left:clamp(20px,1.2vw,36px);padding-right:clamp(20px,1.2vw,36px)}
+ .store-call-button{grid-column:4}
+ .store-utilities{grid-column:5}
 }
 @media(max-width:759px){
  .store-mobile-menu-toggle{border:0;border-radius:0;background:transparent;padding:0;box-shadow:none}
