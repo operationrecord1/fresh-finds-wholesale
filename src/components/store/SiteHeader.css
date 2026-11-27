@@ -473,9 +473,3 @@
 /* Match all customer header labels without changing other controls. */
 .store-header .store-utility-links>a,.store-header .store-utility-links>button,.store-header .store-login-link,.store-header .store-cart-button>span:last-child{font-family:inherit;font-size:14px;font-weight:600;font-style:normal;line-height:20px}
 .store-header .store-utility-links>a,.store-header .store-utility-links>button{display:inline-flex;align-items:center;position:relative;top:-1px}
-
-/* Unified header ink and unboxed pointer feedback. */
-.store-header .store-login-link,.store-header .store-cart-button{color:oklch(0.32 0 0)}
-.store-header .store-login-link>svg:first-child{stroke-width:2.5}
-.store-header .store-cart-icon{top:-10px}
-.store-header .store-login-link:hover,.store-header .store-cart-button:hover{color:oklch(0.32 0 0);outline:0;box-shadow:none;background:transparent;text-decoration:none}
