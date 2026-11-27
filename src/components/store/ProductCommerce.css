@@ -84,6 +84,6 @@
 }
 
 /* Touch controls remain reachable in narrow and landscape viewports. */
-.product-modal-close { width:44px; height:44px; top:2px; left:6px; }
+.product-modal-close { width:44px; height:44px; top:2px; right:6px; left:auto; }
 .purchase-option label { min-width:0; overflow-wrap:anywhere; }
 @media(max-width:360px) { .purchase-option { flex-wrap:wrap; } .purchase-stepper { margin-left:auto; } }

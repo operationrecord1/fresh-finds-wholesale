@@ -20,17 +20,17 @@ export function UniversalAddToCart({ product }: { product: Product }) {
     const width = Math.min(304, window.innerWidth - 24);
     const left = Math.max(12, Math.min(rect.left + (rect.width - width) / 2, window.innerWidth - width - 12)) - rect.left;
     element.style.setProperty("--purchase-left", `${left}px`);
-    element.style.setProperty("--purchase-screen-left", `${rect.left + left}px`);
-    element.dataset["viewportPanel"] = String(
-      window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 1026px)").matches &&
-      window.innerHeight - rect.bottom < 320 && rect.bottom > 320,
-    );
   };
   useEffect(() => {
     const card = root.current?.closest<HTMLElement>(".store-product-card");
     card?.addEventListener("pointerenter", place);
     card?.addEventListener("focusin", place);
     return () => { card?.removeEventListener("pointerenter", place); card?.removeEventListener("focusin", place); };
+  }, []);
+  useEffect(() => {
+    const closeForQuickView = () => setOpen(false);
+    document.addEventListener("store:quick-view-open", closeForQuickView);
+    return () => document.removeEventListener("store:quick-view-open", closeForQuickView);
   }, []);
   useEffect(() => {
     if (!open) return;
@@ -45,7 +45,9 @@ export function UniversalAddToCart({ product }: { product: Product }) {
       window.removeEventListener("resize", place);
     };
   }, [open]);
-  return <div ref={root} className="universal-cart" data-purchase-open={open} onPointerEnter={place} onFocusCapture={place}>
+  return <div ref={root} className="universal-cart" data-purchase-open={open} onPointerEnter={place} onFocusCapture={place} onPointerLeave={() => {
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) setOpen(false);
+  }}>
     <button type="button" className="product-touch-action" aria-expanded={open} aria-controls={id} onClick={() => { place(); setOpen(value => !value); }}>BUY NOW</button>
     <div id={id} className="product-hover-panel">
       <div className="product-hover-surface"><PurchasePanel p={product} compact onDone={() => setOpen(false)} /></div>

@@ -17,10 +17,13 @@ function ProductDialog({ p, onClose, initialPieces }: { p: Product; onClose: () 
   close.current = onClose;
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
+    let restoreFocus = previous?.matches(":focus-visible") ?? false;
+    document.dispatchEvent(new Event("store:quick-view-open"));
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     dialog.current?.focus();
     const keys = (event: KeyboardEvent) => {
+      restoreFocus = true;
       if (event.key === "Escape") { event.preventDefault(); close.current(); }
       if (event.key !== "Tab") return;
       const nodes = [...(dialog.current?.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),summary,[tabindex="0"]') ?? [])].filter(el => el.getClientRects().length);
@@ -29,8 +32,10 @@ function ProductDialog({ p, onClose, initialPieces }: { p: Product; onClose: () 
       if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog.current)) { event.preventDefault(); last?.focus(); }
       else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog.current)) { event.preventDefault(); first.focus(); }
     };
+    const pointer = () => { restoreFocus = false; };
     document.addEventListener("keydown", keys);
-    return () => { document.body.style.overflow = overflow; document.removeEventListener("keydown", keys); previous?.focus(); };
+    document.addEventListener("pointerdown", pointer);
+    return () => { document.body.style.overflow = overflow; document.removeEventListener("keydown", keys); document.removeEventListener("pointerdown", pointer); if (restoreFocus) previous?.focus(); };
   }, []);
   const specs: [string, string][] = [...Object.entries(p.specs), ["UPC Code", p.upc ?? "Not verified"], ["Category", p.category ?? "Not verified"], ["Subcategory", p.subcategory ?? "Not verified"]];
   return <div className="product-modal-backdrop" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
@@ -50,7 +55,6 @@ function ProductDialog({ p, onClose, initialPieces }: { p: Product; onClose: () 
         <p>{p.description ?? "Product description is not yet available from the supplier source."}</p>
         <h3>Specifications</h3>
         <dl className="product-specifications">{specs.map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{value}</dd></div>)}</dl>
-        {p.californiaWarning && <details className="product-warning"><summary>California Warning</summary><p>{p.californiaWarningText ?? "The supplier warning text has not yet been supplied."}</p></details>}
         <Link to="/product/$sku" params={{sku:p.sku.toLowerCase()}} onClick={onClose} className="product-detail-link">View full product page</Link>
       </div>
     </div>
