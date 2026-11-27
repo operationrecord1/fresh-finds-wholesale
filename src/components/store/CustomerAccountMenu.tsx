@@ -5,15 +5,17 @@ import { toast } from "sonner";
 import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
 
 /** Standalone account menu; all product navigation remains unchanged. */
-export function CustomerAccountMenu(){
+export function CustomerAccountMenu({fullName=false}:{fullName?:boolean}={}){
   const {user,ready,signOut}=useArtisanAuth();
   const navigate=useNavigate();
   const [signingOut,setSigningOut]=useState(false);
   const [open,setOpen]=useState(false);
   const [profileName,setProfileName]=useState("");
+  const [profileFirstName,setProfileFirstName]=useState("");
   const area=useRef<HTMLDivElement>(null);
   useEffect(()=>{
     setProfileName("");
+    setProfileFirstName("");
     setOpen(false);
     if(!user||!artisanSupabase)return;
     let active=true;
@@ -22,6 +24,7 @@ export function CustomerAccountMenu(){
        .eq("user_id",user.id).maybeSingle()).then(({data,error})=>{
          if(!active||error||!data)return;
          setProfileName([data.first_name,data.last_name].filter(Boolean).join(" ").trim());
+         setProfileFirstName(data.first_name?.trim()||"");
        }).catch(()=>{ /* Retain the known auth identity if profile read fails. */ });
     };
     fetchName();
@@ -38,11 +41,12 @@ export function CustomerAccountMenu(){
   },[open]);
   if(!ready)return <span role="status" aria-label="Checking account" className="store-login-link"><UserRound aria-hidden="true"/>Account</span>;
   if(!user)return <Link to="/login" aria-label="Login or register" className="store-login-link"><UserRound aria-hidden="true"/><span className="store-login-desktop">Login / Register</span><span className="store-login-mobile">Login</span></Link>;
-  const name=profileName||[user.user_metadata?.["first_name"],user.user_metadata?.["last_name"]].filter(Boolean).join(" ").trim()||user.email?.split("@")[0]||"My Account";
+  const name=profileName||[user.user_metadata?.["first_name"],user.user_metadata?.["last_name"]].filter(Boolean).join(" ").trim()||"My Account";
+  const displayName=fullName?name:(profileFirstName||String(user.user_metadata?.["first_name"]||"My Account"));
   return <div className="relative" ref={area}>
     <button type="button" aria-haspopup="menu" aria-expanded={open} aria-controls="artisan-customer-menu"
       className="store-login-link flex items-center gap-1" onClick={()=>setOpen(v=>!v)}>
-      <UserRound aria-hidden="true"/><span className="max-w-[150px] truncate">{name}</span><ChevronDown size={15} aria-hidden="true"/>
+      <UserRound aria-hidden="true"/><span className={fullName?"whitespace-normal break-words":"max-w-[150px] truncate"} title={displayName}>{displayName}</span><ChevronDown size={15} aria-hidden="true"/>
     </button>
     {open&&<div id="artisan-customer-menu" role="menu"
       className="absolute right-0 top-full z-50 mt-2 min-w-[170px] rounded-lg border border-border bg-card p-2 shadow-lg">
