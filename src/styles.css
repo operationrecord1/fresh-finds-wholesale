@@ -853,6 +853,8 @@
 /* Preserve the approved homepage carousel visibility. */
 @media (max-width: 780px) {
   .store-container > .store-home-title + .merch-hero { display: none; }
+  /* Match the actual inter-section whitespace, not the padded h1 box. */
+  .store-container > .store-home-title { padding-bottom: 0; }
 }
 @media (max-width: 500px) {
   .store-container > .store-home-title {
