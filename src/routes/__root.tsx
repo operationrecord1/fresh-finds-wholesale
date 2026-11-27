@@ -9,7 +9,8 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
+import "@/components/store/AccountForm.css";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -132,10 +133,10 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <CartProvider>
         <CartReady>
-        {standaloneAuth ? <div className="auth-shell">
+        {standaloneAuth ? <Suspense fallback={null}><div className="auth-shell">
           <Link to="/" className="auth-home" aria-label="Artisan Mart home"><img src={`${import.meta.env.BASE_URL}artisan-mart-approved.svg`} alt="Artisan Mart" /></Link>
           <Outlet />
-        </div> : <><SiteHeader /><main><Outlet /></main><SiteFooter /></>}
+        </div></Suspense> : <><SiteHeader /><main><Outlet /></main><SiteFooter /></>}
         <Toaster />
         </CartReady>
       </CartProvider>

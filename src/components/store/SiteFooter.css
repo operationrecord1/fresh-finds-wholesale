@@ -11,6 +11,10 @@
 .artisan-footer h2{font-size:18px;line-height:1.35;font-weight:700;margin:0 0 16px}
 .footer-about-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr;gap:2px}
 .footer-about-list a{display:inline-flex;align-items:center;min-height:42px;padding-block:8px;font-size:14px;font-weight:600;line-height:1.35}
+@media(min-width:901px){
+ .footer-about h2{text-align:center}
+ .footer-about-list{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,auto);grid-auto-flow:column;column-gap:16px}
+}
 .footer-newsletter h2{display:flex;align-items:flex-start;gap:9px;max-width:330px}
 .footer-newsletter h2 svg{flex-shrink:0;color:#0093d3;margin-top:1px}
 .artisan-footer .footer-subscribe{display:inline-flex;justify-content:center;align-items:center;min-height:44px;padding:10px 24px;background:#197db8;color:#fff;border-radius:24px;font-weight:700;text-align:center}

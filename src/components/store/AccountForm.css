@@ -44,3 +44,4 @@
 .auth-shell .account-message{overflow-wrap:anywhere}
 .auth-shell .account-page :is(input,select,button,a):focus-visible{outline:2px solid rgba(0,0,0,.22);outline-offset:2px;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
 .auth-home:focus-visible{outline:2px solid rgba(0,0,0,.35);outline-offset:5px}
+.auth-shell .account-verification>a.account-switch{display:flex;width:fit-content;border:0;margin:12px 0 0;padding:0;min-height:32px;font-weight:400}
