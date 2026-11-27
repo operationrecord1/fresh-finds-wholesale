@@ -63,7 +63,8 @@ it("keeps cart navigation direct and the count stable across pointer interaction
   expect(screen.queryByRole("region",{name:"Shopping cart preview"})).not.toBeInTheDocument();
   expect(screen.getByTestId("cart")).toHaveTextContent('"pieces":10');
   for(let i=0;i<10;i++)fireEvent.click(screen.getByText("Add mirror case"));
-  expect(screen.getByRole("link",{name:"110 Cart"})).toHaveAttribute("href","/cart");
+  expect(screen.getByRole("link",{name:"99+ Cart"})).toHaveAttribute("href","/cart");
+  expect(screen.getByTestId("cart")).toHaveTextContent('"pieces":110');
 });
 it("ignores malformed persisted data without crashing the cart", () => {
   sessionStorage.setItem(KEY,JSON.stringify([null,{sku:"DA883",pieces:-2},{sku:"DA881",pieces:"5"},{sku:"FAKE",pieces:1},{sku:"DA883",pieces:10,mode:"case"}]));
