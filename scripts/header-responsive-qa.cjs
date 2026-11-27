@@ -39,7 +39,8 @@ async function main(){
    const offenders=await page.evaluate(()=>[...document.querySelectorAll('body *')]
     .filter(e=>e.getBoundingClientRect().right>innerWidth+0.5)
     .slice(0,8).map(e=>({tag:e.tagName,className:typeof e.className==='string'?e.className:'',right:e.getBoundingClientRect().right})));
-   throw new Error(`Page overflow at ${width}px: ${JSON.stringify(offenders)}`);
+   const dimensions=await page.evaluate(()=>({innerWidth,htmlScroll:document.documentElement.scrollWidth,htmlClient:document.documentElement.clientWidth,bodyScroll:document.body.scrollWidth,bodyClient:document.body.clientWidth}));
+   throw new Error(`Page overflow at ${width}px: ${JSON.stringify({dimensions,offenders})}`);
   }
   assert(d.search?.width>=100,`Search clipped at ${width}px`);
   if(width>=1250)assert(d.search.width>=350,`Search should use available desktop width at ${width}px`);
