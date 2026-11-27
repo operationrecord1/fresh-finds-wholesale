@@ -35,6 +35,11 @@ jobs:
         env:
           NODE_PATH: /tmp/artisan-banner-browser/node_modules
           ARTISAN_BANNER_URL: http://127.0.0.1:8765
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: homepage-before-after-visual
+          path: homepage-visual-qa/
   production-browser:
     if: github.ref == 'refs/heads/main'
     needs: validation
@@ -52,3 +57,8 @@ jobs:
         env:
           NODE_PATH: /tmp/artisan-banner-browser/node_modules
           ARTISAN_BANNER_URL: https://artisanmart.site
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: homepage-production-visual
+          path: homepage-visual-qa/
