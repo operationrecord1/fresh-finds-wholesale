@@ -1,12 +1,6 @@
 .product-hover-panel {display:none;position:absolute;z-index:40;top:100%;left:50%;width:304px;max-width:calc(100vw - 24px);transform:translateX(-50%);padding-top:4px;text-align:left}
 .product-hover-surface {background:#e7e7e7;border:1px solid #d4d4d4;border-radius:8px;padding:12px;box-shadow:0 8px 20px #0002}
 .product-touch-action {margin-top:12px;padding:10px;border:1px solid #0093d3;border-radius:5px;color:#0076aa;font-weight:600}
-@media(hover:hover) and (min-width:1026px) {
- .store-product-card:hover .product-hover-panel,.store-product-card:focus-within .product-hover-panel {display:block}
- .product-touch-action {display:none}
- .store-product-card:first-child .product-hover-panel {left:0;transform:none}
- .store-product-card:last-child .product-hover-panel {left:auto;right:0;transform:none}
-}
 .purchase-panel {color:#333;container-type:inline-size}
 .purchase-options {display:flex;gap:12px;margin-bottom:12px}
 .purchase-option {flex:1;min-width:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 8px;border:2px solid #e7e7e7;border-radius:4px;background:#fff}
@@ -82,7 +76,6 @@
 .purchase-compact .purchase-total {padding:12px 8px;margin:0;font-size:15px;border-top:1px solid #d8d8d8}
 .purchase-compact .purchase-error {margin:8px}
 .store-product-card[data-purchase-open=true] {z-index:40}
-.store-product-card[data-purchase-open=true] .product-hover-panel {display:block}
 @media(hover:none),(max-width:1025px) {
  .product-touch-action {min-height:44px}
  .purchase-compact .purchase-stepper > div {grid-template-columns:46px 44px;grid-template-rows:44px 44px;height:88px}

@@ -152,20 +152,3 @@
   .store-listing .store-product-card .store-product-quantity { font-size: 12px; }
   .store-listing .store-product-card .store-product-photo { padding: 8px; }
 }
-/* Keep the existing purchase panel outside grid flow, with a continuous pointer
-   bridge from the card. Keyboard focus and explicit touch expansion also work. */
-@media (hover: hover) and (pointer: fine) {
-  .store-listing .store-product-card:hover .product-hover-panel,
-  .store-listing .store-product-card:focus-within .product-hover-panel { display: block; }
-  .store-listing .product-hover-panel { animation: listing-purchase-reveal .14s ease-out; }
-}
-@media (hover: hover) and (pointer: fine) and (min-width: 1026px) {
-  .store-listing .store-product-card .product-touch-action { display: none; }
-}
-@keyframes listing-purchase-reveal {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .store-listing .product-hover-panel { animation: none; }
-}

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
 import { HeroCarousel } from "@/components/store/HeroCarousel";
@@ -9,10 +9,25 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 afterEach(cleanup);
-it("sends the Pet Supplies banner to the existing category", () => {
+it("shows passive banner indicators without manual controls", () => {
   render(<HeroCarousel />);
-  fireEvent.click(screen.getByRole("button", { name: "Banner 2: PET SUPPLIES" }));
-  expect(screen.getByRole("link", { name: /SHOP NOW/ })).toHaveAttribute("href", "/category/pet-supplies");
-  fireEvent.click(screen.getByRole("button", { name: "Banner 3: HOME ESSENTIALS" }));
-  expect(screen.getByRole("link", { name: /SHOP NOW/ })).toHaveAttribute("href", "/collection/best-sellers");
+  expect(screen.queryByRole("button", { name: /banner/i })).not.toBeInTheDocument();
+  expect(screen.getByLabelText("Banner 1: Good connections. Better possibilities.")).toHaveAttribute("aria-current", "true");
+});
+
+it("rotates all three banners every ten seconds and loops", () => {
+  vi.useFakeTimers();
+  try {
+    render(<HeroCarousel />);
+    const current = () => document.querySelector('.merch-dots [aria-current="true"]')?.getAttribute("aria-label");
+    expect(current()).toContain("Banner 1:");
+    for (const next of [2, 3, 1]) {
+      act(() => vi.advanceTimersByTime(9999));
+      expect(current()).not.toContain(`Banner ${next}:`);
+      act(() => vi.advanceTimersByTime(1));
+      expect(current()).toContain(`Banner ${next}:`);
+    }
+  } finally {
+    vi.useRealTimers();
+  }
 });
