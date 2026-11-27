@@ -36,15 +36,19 @@ async function main(){
   });
   assert(!d.overflow,`Page overflow at ${width}px`);
   assert(d.search?.width>=100,`Search clipped at ${width}px`);
+  assert.equal(await page.locator('.store-cart-button').getAttribute('href'),'/cart',`Cart navigation at ${width}px`);
+  assert.equal(await page.locator('#cart-preview').count(),0,`Cart preview should be absent at ${width}px`);
   assert.equal(d.dots,width<760,`Menu visibility at ${width}px`);
   assert.equal(d.minimum,width>=500,`Minimum badge visibility at ${width}px`);
   assert.equal(d.newsletter,width>=1000,`Newsletter visibility at ${width}px`);
   assert.equal(d.call,width>=1600,`Phone visibility at ${width}px`);
   if(width<760){
-   assert(d.menu.left<d.brand.left&&d.brand.left<d.cart.left&&d.cart.left<d.account.left,`Compact control order at ${width}px`);
+   assert(d.menu.left<d.brand.left&&d.brand.left<d.account.left&&d.account.left<d.cart.left,`Compact control order at ${width}px`);
    assert(d.cart.bottom<=d.search.top+1,`Search should be below controls at ${width}px`);
   }else{
    assert(d.careers&&d.contact&&d.knowledge,`Desktop utility links missing at ${width}px`);
+   assert(d.account.left<d.cart.left,`Cart should follow account at ${width}px`);
+   if(width>=1600)assert(width-d.cart.right<=60,`Cart should align to the right edge at ${width}px`);
    assert(Math.abs(d.search.top-d.accounts.top)<6&&Math.abs(d.search.top-d.cart.top)<6,`Desktop single line at ${width}px`);
    assert(!d.navOverflow,`Navigation overflow at ${width}px`);
    assert.equal(d.closeouts,width>=1600,`Closeouts priority at ${width}px`);

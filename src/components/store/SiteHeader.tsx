@@ -123,8 +123,8 @@ export function SiteHeader() {
           </div>
           <div className="store-account-links leading-tight">
             <CustomerAccountMenu />
-                        <MiniCart />
             <Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
+            <MiniCart />
           </div>
         </div>
       </div>
