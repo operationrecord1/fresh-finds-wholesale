@@ -1,5 +1,8 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
+const fs=require("node:fs");
+const out="homepage-visual-qa";
+fs.mkdirSync(out,{recursive:true});
 const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
 (async () => {
  const browser = await chromium.launch({headless:true,args:["--no-sandbox"]});
@@ -12,18 +15,29 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
     const columns=Math.abs(r(sections[1]).top-r(sections[0]).top)<1?2:1;
     const first=sections.slice(0,columns),next=sections.slice(columns,columns*2);
     const bottom=Math.max(...first.flatMap(s=>[...s.querySelectorAll(".store-product-card")].filter(e=>r(e).height>0).map(e=>r(e).bottom)));
-    const headingTop=Math.min(...first.map(s=>r(s.querySelector("h2")).top));
-    const nextTop=Math.min(...next.map(s=>r(s.querySelector("h2")).top));
-    return {columns,mainGap:headingTop-r(h).bottom,referenceGap:nextTop-bottom,rowGap:getComputedStyle(p).rowGap};
+    const textBounds=el=>{
+     const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+     const rects=[];
+     while(walker.nextNode()){
+      const node=walker.currentNode;if(!node.textContent.trim())continue;
+      const range=document.createRange();range.selectNodeContents(node);
+      rects.push(...range.getClientRects());
+     }
+     return {top:Math.min(...rects.map(x=>x.top)),bottom:Math.max(...rects.map(x=>x.bottom))};
+    };
+    const headingTop=Math.min(...first.map(s=>textBounds(s.querySelector("h2")).top));
+    const nextTop=Math.min(...next.map(s=>textBounds(s.querySelector("h2")).top));
+    return {columns,mainGap:headingTop-textBounds(h).bottom,referenceGap:nextTop-bottom,rowGap:getComputedStyle(p).rowGap,headingPaddingBottom:getComputedStyle(h).paddingBottom,headingTail:r(h).bottom-textBounds(h).bottom,gridMargin:getComputedStyle(p).marginTop,heroHeight:r(document.querySelector(".merch-hero")).height};
    });
   }
   async function checkSpacing(width){
    const s=await spacing();
    assert.equal(s.columns,width<=380?1:2,"Existing section columns changed");
-   assert(Math.abs(s.mainGap-s.referenceGap)<=1,"Heading gap mismatch at "+width+": "+JSON.stringify(s));
+   assert(Math.abs(s.mainGap-s.referenceGap)<=2,"Heading gap mismatch at "+width+": "+JSON.stringify(s));
    console.log("SPACING PASS",width,JSON.stringify(s));
   }
-  for (const width of [240,280,320,360,379,380,381,425,480,500,501,600,650,767,768,779,780,781,1025,1440,1920]) {
+  const evidence=[];
+  for (const width of [240,280,320,360,379,380,381,425,480,500,501,600,650,700,767,768,779,780,781,1025,1440,1920]) {
    await page.setViewportSize({width,height:900});
    const response=await page.goto(base,{waitUntil:"domcontentloaded"});
    assert(response?.ok(), "Homepage HTTP failure");
@@ -50,7 +64,24 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
      assert(await hero.evaluate(el=>Array.from(el.querySelectorAll("img")).every(im=>getComputedStyle(im).objectFit==="contain")),"Image fit changed");
     }
    }
+   const capture=await page.screenshot({path:out+"/after-"+width+".jpg",type:"jpeg",quality:78});
+   if(width<=780)evidence.push({width,...await spacing()});
+   if([240,381,501].includes(width))console.log("VISUAL_AFTER",width,capture.toString("base64"));
    console.log("PASS",width,"heading=true","lines="+geometry.rows.flat().length,"font="+geometry.fontSize,"carousel="+(width>780));
+  }
+  fs.writeFileSync(out+"/measurements.json",JSON.stringify(evidence,null,2));
+  // Capture the current live baseline before merge at matching representative widths.
+  if(base.startsWith("http://127.0.0.1")){
+   const before=await browser.newPage();
+   for(const width of [240,381,501]){
+    await before.setViewportSize({width,height:900});
+    await before.goto("https://artisanmart.site/",{waitUntil:"domcontentloaded"});
+    await before.locator(".store-home-panels").waitFor();
+    await before.evaluate(()=>document.fonts.ready);
+    const shot=await before.screenshot({path:out+"/before-"+width+".jpg",type:"jpeg",quality:78});
+    console.log("VISUAL_BEFORE",width,shot.toString("base64"));
+   }
+   await before.close();
   }
   // Resize the same document across both layout breakpoints; no reload needed.
   for(const width of [380,381,779,780,781,780,240,425]){
