@@ -466,3 +466,6 @@
 @media(max-width:759px){.store-header .store-cart-button{height:52px;min-height:52px!important}.store-header .store-login-link{min-height:52px}}
 
 .store-header .store-login-link>span,.store-header .store-cart-button>span:last-child{position:relative;top:-1px}
+
+/* Emphasize the three utility labels without changing size or color. */
+.store-utility-links>a,.store-utility-links>button{font-weight:600}
