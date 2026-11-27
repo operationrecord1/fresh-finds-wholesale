@@ -21,6 +21,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NewsletterRouteImport } from './routes/newsletter'
 import { Route as OrderConfirmationRouteImport } from './routes/order-confirmation'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -92,6 +93,11 @@ const OrderConfirmationRoute = OrderConfirmationRouteImport.update({
   path: '/order-confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/newsletter': typeof NewsletterRoute
   '/order-confirmation': typeof OrderConfirmationRoute
+  '/orders': typeof OrdersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/newsletter': typeof NewsletterRoute
   '/order-confirmation': typeof OrderConfirmationRoute
+  '/orders': typeof OrdersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/newsletter': typeof NewsletterRoute
   '/order-confirmation': typeof OrderConfirmationRoute
+  '/orders': typeof OrdersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/newsletter'
     | '/order-confirmation'
+    | '/orders'
     | '/privacy'
     | '/register'
     | '/reset-password'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/newsletter'
     | '/order-confirmation'
+    | '/orders'
     | '/privacy'
     | '/register'
     | '/reset-password'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/newsletter'
     | '/order-confirmation'
+    | '/orders'
     | '/privacy'
     | '/register'
     | '/reset-password'
@@ -304,6 +316,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NewsletterRoute: typeof NewsletterRoute
   OrderConfirmationRoute: typeof OrderConfirmationRoute
+  OrdersRoute: typeof OrdersRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -402,6 +415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -488,6 +508,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NewsletterRoute: NewsletterRoute,
   OrderConfirmationRoute: OrderConfirmationRoute,
+  OrdersRoute: OrdersRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,

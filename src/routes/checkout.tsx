@@ -174,20 +174,22 @@ export function Checkout(){
      <Field label="Email" name="email" value={fields.email} onChange={updateField} type="email" autoComplete="email"/>
      <Field label="Phone" name="phone" value={fields.phone} onChange={updateField} type="tel" autoComplete="tel"/>
      <div className="sm:col-span-2"><AddressAutocomplete name="line1" value={fields.line1} onChange={updateField} onSelect={address=>selectAddress("",address)} inputClass={inputClass}/></div>
-     <div className="sm:col-span-2"><Field label="Apartment, suite, unit (optional)" name="line2" value={fields.line2} onChange={updateField} required={false} autoComplete="billing address-line2"/></div>
-     <Field label="City" name="city" value={fields.city} onChange={updateField} autoComplete="billing address-level2"/>
+     <div className="checkout-address-pair sm:col-span-2"><Field label="Apartment / Suite" name="line2" value={fields.line2} onChange={updateField} required={false} autoComplete="billing address-line2"/>
+     <Field label="City" name="city" value={fields.city} onChange={updateField} autoComplete="billing address-level2"/></div>
+     <div className="checkout-address-pair sm:col-span-2">
      <Field label="State" name="state" value={fields.state} onChange={updateField} autoComplete="billing address-level1"/>
-     <Field label="ZIP code" name="postal_code" value={fields.postal_code} onChange={updateField} autoComplete="billing postal-code"/>
+     <Field label="ZIP code" name="postal_code" value={fields.postal_code} onChange={updateField} autoComplete="billing postal-code"/></div>
      <label className="flex min-h-11 items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" checked={same} onChange={e=>{setSame(e.target.checked);setSession(null);}} className="h-4 w-4 accent-primary"/>Delivery address is the same as billing</label>
      {!same&&<div className="grid gap-4 border-t border-border pt-5 sm:col-span-2 sm:grid-cols-2"><h3 className="font-semibold sm:col-span-2">Delivery address</h3>
       <Field label="First name" name="shipping_first_name" value={fields.shipping_first_name} onChange={updateField} autoComplete="shipping given-name"/>
       <Field label="Last name" name="shipping_last_name" value={fields.shipping_last_name} onChange={updateField} autoComplete="shipping family-name"/>
       <Field label="Phone" name="shipping_phone" value={fields.shipping_phone} onChange={updateField} type="tel" autoComplete="shipping tel"/>
       <div className="sm:col-span-2"><AddressAutocomplete name="shipping_line1" value={fields.shipping_line1} onChange={updateField} onSelect={address=>selectAddress("shipping_",address)} inputClass={inputClass}/></div>
-      <div className="sm:col-span-2"><Field label="Apartment, suite, unit (optional)" name="shipping_line2" value={fields.shipping_line2} onChange={updateField} required={false} autoComplete="shipping address-line2"/></div>
-      <Field label="City" name="shipping_city" value={fields.shipping_city} onChange={updateField} autoComplete="shipping address-level2"/>
+      <div className="checkout-address-pair sm:col-span-2"><Field label="Apartment / Suite" name="shipping_line2" value={fields.shipping_line2} onChange={updateField} required={false} autoComplete="shipping address-line2"/>
+      <Field label="City" name="shipping_city" value={fields.shipping_city} onChange={updateField} autoComplete="shipping address-level2"/></div>
+     <div className="checkout-address-pair sm:col-span-2">
       <Field label="State" name="shipping_state" value={fields.shipping_state} onChange={updateField} autoComplete="shipping address-level1"/>
-      <Field label="ZIP code" name="shipping_postal_code" value={fields.shipping_postal_code} onChange={updateField} autoComplete="shipping postal-code"/>
+      <Field label="ZIP code" name="shipping_postal_code" value={fields.shipping_postal_code} onChange={updateField} autoComplete="shipping postal-code"/></div>
      </div>}
     </div>
     {formError&&<p role="alert" className="mt-5 rounded-xl border border-amber-700 bg-amber-950/40 px-4 py-3 text-sm leading-6 text-amber-100">{formError}</p>}
