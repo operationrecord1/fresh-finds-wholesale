@@ -1,5 +1,6 @@
 .cart-page { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:28px; max-width:1400px; margin:auto; padding:32px 20px; }
 .cart-page > * { min-width:0; }
+body:has(.cart-page){background:#fff}
 .cart-items { display:grid; gap:14px; }
 .cart-item { display:grid; grid-template-columns:minmax(0,1fr) 135px 125px; gap:20px; padding:24px; background:white; border:1px solid #dae4eb; border-radius:14px; }
 .cart-item-info { min-width:0; }

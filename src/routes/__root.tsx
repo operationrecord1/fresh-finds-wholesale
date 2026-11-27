@@ -19,6 +19,7 @@ import { SiteHeader } from "@/components/store/SiteHeader";
 import { SiteFooter } from "@/components/store/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
 import { ArtisanAuthProvider } from "@/lib/artisan-auth";
+import { ArtisanStockProvider } from "@/lib/artisan-stock";
 
 function NotFoundComponent() {
   return (
@@ -130,6 +131,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ArtisanAuthProvider>
+      <ArtisanStockProvider>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <CartProvider>
         <CartReady>
@@ -140,7 +142,7 @@ function RootComponent() {
         <Toaster />
         </CartReady>
       </CartProvider>
-      </ArtisanAuthProvider>
+      </ArtisanStockProvider></ArtisanAuthProvider>
     </QueryClientProvider>
   );
 }

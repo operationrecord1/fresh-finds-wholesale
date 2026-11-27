@@ -5,6 +5,7 @@ import { ImageOff } from "lucide-react";
 import type { Badge, Product } from "@/data/catalog";
 import { money } from "@/lib/wholesale";
 import { UniversalAddToCart } from "./UniversalAddToCart";
+import { useLiveProduct } from "@/lib/artisan-stock";
 
 const BADGE: Record<Badge, [string, string]> = {
   new: ["NEW ITEM", "bg-sec-reduced"], closeout: ["CLOSEOUT", "bg-sec-closeout"],
@@ -34,6 +35,7 @@ export function ProductImage({ p, i = 0, className = "", eager = false }: { p: P
 }
 
 export function ProductCard({ p, onQuickView, variant = "default", eager = false }: { p: Product; onQuickView?: (p: Product) => void; variant?: "default" | "listing"; eager?:boolean }) {
+  p=useLiveProduct(p);
   return (
     <div className="store-product-card group relative flex h-full min-w-0 flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
       <div className="store-product-visual relative w-full">

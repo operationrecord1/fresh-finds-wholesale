@@ -4,9 +4,11 @@ import { toast } from "sonner";
 import type { Product } from "@/data/catalog";
 import { lineTotal, money, maximumQuantity, normalizePieces, stepDown, stepUp, validateQuantity, type BuyMode } from "@/lib/wholesale";
 import { useCart } from "@/lib/cart";
+import { useLiveProduct } from "@/lib/artisan-stock";
 import "./ProductCommerce.css";
 
 export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart", compact = false }: { p: Product; initialPieces?: number | undefined; onDone?: () => void; label?: string; compact?: boolean }) {
+  p=useLiveProduct(p);
   const r = p.rules;
   const { add, set, lines } = useCart();
   const id = useId();

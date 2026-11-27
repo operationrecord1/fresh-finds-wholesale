@@ -8,7 +8,6 @@ import { lineTotal, meetsMinimum, money, ORDER_MINIMUM } from "@/lib/wholesale";
 import { useDemoCouponFeedback } from "@/hooks/useDemoCouponFeedback";
 import { QuickView } from "@/components/store/LazyQuickView";
 import { ProductImage } from "@/components/store/ProductCard";
-import { ExpressOrder } from "@/components/store/ExpressOrder";
 import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
 import { preserveCartForCheckout } from "@/lib/artisan-checkout-intent";
 
@@ -37,10 +36,9 @@ export function CartPage() {
             <div className="cart-quantity"><span>Quantity</span><strong>{l.pieces} pieces</strong><button onClick={()=>setEdit({p,pieces:l.pieces})} aria-label={`Change quantity for ${p.title}`}>Change quantity</button></div>
             <div className="cart-line-total"><span>Subtotal</span><strong>{money(lineTotal(l.pieces,p.price ?? 0))}</strong><button onClick={()=>{ requestRemove(l.sku); }} aria-label={`Remove ${p.title}`}><Trash2 size={15} aria-hidden="true"/> Remove</button></div>
           </article>; })}
-          {!lines.length && <div className="cart-empty"><ShoppingCart size={44} aria-hidden="true"/><h2>Your cart is ready for your first find</h2><p>Browse our wholesale products or add an item number below.</p><Link to="/collection/$slug" params={{slug:"imports"}}>Browse products <ArrowRight size={17}/></Link></div>}
+          {!lines.length && <div className="cart-empty"><ShoppingCart size={44} aria-hidden="true"/><h2>Your cart is ready for your first find</h2><p>Browse our wholesale products to get started.</p><Link to="/collection/$slug" params={{slug:"imports"}}>Browse products <ArrowRight size={17}/></Link></div>}
         </div>
         {lines.length > 0 && <button className="rounded border border-border bg-card px-4 py-2" onClick={requestClear}>Clear Cart</button>}
-        <ExpressOrder />
 
       </div>
       <aside className="cart-summary h-fit space-y-3">
