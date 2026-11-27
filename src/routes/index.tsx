@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/store/ProductCard";
 import { HeroCarousel } from "@/components/store/HeroCarousel";
 import { QuickView } from "@/components/store/LazyQuickView";
 import { HomeCategories } from "@/components/store/HomeCategories";
+import { useArtisanAuth } from "@/lib/artisan-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -25,6 +26,7 @@ const PANELS: { slug: CollectionSlug; title: string; color: string }[] = [
 ];
 
 function Home() {
+  const { user, ready } = useArtisanAuth();
   const [qv, setQv] = useState<Product | null>(null);
   const pick = (slug: CollectionSlug) => {
     const list = PRODUCTS.filter((p) => p.collections.includes(slug) && p.price != null);
@@ -34,7 +36,7 @@ function Home() {
   return (
     <div className="store-container">
       <h1 className="store-home-title text-center font-bold tracking-wide text-primary"><span className="store-home-title-line">Your Premier Source For</span>{" "}<span className="store-home-title-line">Wholesale General Merchandise</span></h1>
-      <HeroCarousel />
+      {ready && !user && <HeroCarousel />}
       <div className="store-home-panels mt-4 grid gap-5 lg:grid-cols-2">
         {PANELS.map((pnl) => (
           <section key={pnl.slug} data-collection={pnl.slug} className="relative rounded-t-[20px] bg-card hover:z-30 focus-within:z-30">
