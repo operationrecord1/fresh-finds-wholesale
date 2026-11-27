@@ -15,15 +15,23 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
     const columns=Math.abs(r(sections[1]).top-r(sections[0]).top)<1?2:1;
     const first=sections.slice(0,columns),next=sections.slice(columns,columns*2);
     const bottom=Math.max(...first.flatMap(s=>[...s.querySelectorAll(".store-product-card")].filter(e=>r(e).height>0).map(e=>r(e).bottom)));
+    const context=document.createElement("canvas").getContext("2d");
     const textBounds=el=>{
      const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
-     const rects=[];
+     let top=Infinity,bottom=-Infinity;
      while(walker.nextNode()){
-      const node=walker.currentNode;if(!node.textContent.trim())continue;
+      const node=walker.currentNode,text=node.textContent.trim();if(!text)continue;
       const range=document.createRange();range.selectNodeContents(node);
-      rects.push(...range.getClientRects());
+      const style=getComputedStyle(node.parentElement||el);
+      context.font=[style.fontStyle,style.fontWeight,style.fontSize,style.fontFamily].join(" ");
+      const m=context.measureText(text);
+      for(const rect of range.getClientRects()){
+       const baseline=rect.top+(rect.height+m.fontBoundingBoxAscent-m.fontBoundingBoxDescent)/2;
+       top=Math.min(top,baseline-m.actualBoundingBoxAscent);
+       bottom=Math.max(bottom,baseline+m.actualBoundingBoxDescent);
+      }
      }
-     return {top:Math.min(...rects.map(x=>x.top)),bottom:Math.max(...rects.map(x=>x.bottom))};
+     return {top,bottom};
     };
     const headingTop=Math.min(...first.map(s=>textBounds(s.querySelector("h2")).top));
     const nextTop=Math.min(...next.map(s=>textBounds(s.querySelector("h2")).top));
@@ -36,6 +44,40 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
    assert.equal(s.columns,width<=380?1:2,"Existing section columns changed");
    assert(Math.abs(s.mainGap-s.referenceGap)<=2,"Heading gap mismatch at "+width+": "+JSON.stringify(s));
    console.log("SPACING PASS",width,JSON.stringify(s));
+  }
+  // Independent painted-pixel check on the actual browser screenshot.
+  async function checkPaintedSpacing(width){
+   const shot=await page.screenshot({fullPage:true,type:"png",animations:"disabled"});
+   const result=await page.evaluate(async data=>{
+    const img=new Image();img.src="data:image/png;base64,"+data;await img.decode();
+    const canvas=document.createElement("canvas");canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+    const ctx=canvas.getContext("2d",{willReadFrequently:true});ctx.drawImage(img,0,0);
+    const rect=el=>el.getBoundingClientRect();
+    const ink=el=>{
+     const r=rect(el),left=Math.max(0,Math.floor(r.left+scrollX)),right=Math.min(canvas.width,Math.ceil(r.right+scrollX));
+     const top=Math.max(0,Math.floor(r.top+scrollY-2)),bottom=Math.min(canvas.height,Math.ceil(r.bottom+scrollY+2));
+     const w=right-left,h=bottom-top,pixels=ctx.getImageData(left,top,w,h).data;
+     let first=Infinity,last=-Infinity;
+     for(let y=0;y<h;y++){
+      for(let x=0;x<w;x++){
+       const i=(y*w+x)*4,a=pixels[i],b=pixels[i+1],c=pixels[i+2];
+       if(Math.max(a,b,c)-Math.min(a,b,c)>=45){first=Math.min(first,y+top);last=Math.max(last,y+top);break;}
+      }
+     }
+     if(!Number.isFinite(first))throw new Error("No visible heading pixels found");
+     return {top:first,bottom:last+1};
+    };
+    const sections=[...document.querySelectorAll(".store-home-panels > section")];
+    const columns=Math.abs(rect(sections[0]).top-rect(sections[1]).top)<1?2:1;
+    const first=sections.slice(0,columns),next=sections.slice(columns,columns*2);
+    const cardBottom=Math.max(...first.flatMap(s=>[...s.querySelectorAll(".store-product-card")].map(rect).filter(r=>r.height>0).map(r=>r.bottom+scrollY)));
+    const target=Math.min(...first.map(s=>ink(s.querySelector("h2")).top))-ink(document.querySelector(".store-home-title")).bottom;
+    const reference=Math.min(...next.map(s=>ink(s.querySelector("h2")).top))-cardBottom;
+    return {columns,mainGap:target,referenceGap:reference,difference:Math.abs(target-reference)};
+   },shot.toString("base64"));
+   console.log("PAINTED SPACING",width,JSON.stringify(result));
+   assert(result.difference<=2,"Visible screenshot gap mismatch at "+width+": "+JSON.stringify(result));
+   return result;
   }
   const evidence=[];
   for (const width of [240,280,320,360,379,380,381,425,480,500,501,600,650,700,767,768,779,780,781,1025,1440,1920]) {
@@ -66,7 +108,7 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
     }
    }
    const capture=await page.screenshot({path:out+"/after-"+width+".jpg",type:"jpeg",quality:78});
-   if(width<=780)evidence.push({width,...await spacing()});
+   if(width<=780)evidence.push({width,...await spacing(),painted:await checkPaintedSpacing(width)});
    if([240,381,501].includes(width))console.log("VISUAL_AFTER",width,capture.toString("base64"));
    console.log("PASS",width,"heading=true","lines="+geometry.rows.flat().length,"font="+geometry.fontSize,"carousel="+(width>780));
   }

@@ -35,20 +35,33 @@ function Home() {
     if (!heading || !panels) return;
     const mobile = window.matchMedia("(max-width: 780px)");
     const sections = Array.from(panels.querySelectorAll<HTMLElement>(":scope > section"));
+    const context = document.createElement("canvas").getContext("2d");
+    // DOM ranges contain invisible font ascent/descent. Measure visible glyph ink
+    // against the range's baseline so spacing matches the actual painted letters.
     const textBounds = (element: Element) => {
       const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-      const rects: DOMRect[] = [];
+      let top = Infinity, bottom = -Infinity;
       while (walker.nextNode()) {
         const node = walker.currentNode;
-        if (!node.textContent?.trim()) continue;
+        const text = node.textContent?.trim();
+        if (!text) continue;
         const range = document.createRange();
         range.selectNodeContents(node);
-        rects.push(...Array.from(range.getClientRects()));
+        const style = getComputedStyle(node.parentElement ?? element);
+        if (context) context.font = [style.fontStyle, style.fontWeight, style.fontSize, style.fontFamily].join(" ");
+        const metrics = context?.measureText(text);
+        for (const rect of Array.from(range.getClientRects())) {
+          if (metrics && Number.isFinite(metrics.fontBoundingBoxAscent) && Number.isFinite(metrics.fontBoundingBoxDescent)) {
+            const baseline = rect.top + (rect.height + metrics.fontBoundingBoxAscent - metrics.fontBoundingBoxDescent) / 2;
+            top = Math.min(top, baseline - metrics.actualBoundingBoxAscent);
+            bottom = Math.max(bottom, baseline + metrics.actualBoundingBoxDescent);
+          } else {
+            top = Math.min(top, rect.top);
+            bottom = Math.max(bottom, rect.bottom);
+          }
+        }
       }
-      return {
-        top: Math.min(...rects.map(rect => rect.top)),
-        bottom: Math.max(...rects.map(rect => rect.bottom)),
-      };
+      return { top, bottom };
     };
     let disposed = false;
     const measure = () => {
@@ -57,8 +70,9 @@ function Home() {
         panels.style.removeProperty("--store-home-heading-margin");
         return;
       }
-      if (sections.length < 4) return;
-      const columns = Math.abs(sections[0].getBoundingClientRect().top - sections[1].getBoundingClientRect().top) < 1 ? 2 : 1;
+      const [firstSection, secondSection] = sections;
+      if (sections.length < 4 || !firstSection || !secondSection) return;
+      const columns = Math.abs(firstSection.getBoundingClientRect().top - secondSection.getBoundingClientRect().top) < 1 ? 2 : 1;
       const first = sections.slice(0, columns);
       const next = sections.slice(columns, columns * 2);
       const cards = first.flatMap(section => Array.from(section.querySelectorAll<HTMLElement>(".store-product-card")))
@@ -75,16 +89,16 @@ function Home() {
       }
     };
     measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(heading);
-    observer.observe(panels);
-    sections.forEach(section => observer.observe(section));
+    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : undefined;
+    observer?.observe(heading);
+    observer?.observe(panels);
+    sections.forEach(section => observer?.observe(section));
     window.addEventListener("resize", measure);
     mobile.addEventListener("change", measure);
-    void document.fonts.ready.then(measure);
+    void document.fonts?.ready.then(measure);
     return () => {
       disposed = true;
-      observer.disconnect();
+      observer?.disconnect();
       window.removeEventListener("resize", measure);
       mobile.removeEventListener("change", measure);
       panels.style.removeProperty("--store-home-heading-margin");
