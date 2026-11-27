@@ -128,6 +128,7 @@
 
 /* Oct 22 reference measurements, fitted to the viewport without horizontal clipping. */
 .store-container { width: min(100% - 32px, 1452px); margin-inline: auto; }
+body:has(.store-home-panels), body:has(.store-browse-surface) { background-color:#fff; }
 .store-promo { min-height: 30px; padding: 3px 12px; font-size: 20px; line-height: 24px; }
 .store-home-title { padding: 12px 0; font-size: clamp(24px, 2.65vw, 40px); line-height: 1.2; }
 .store-hero { height: 300px; padding: 30px 32px 44px 45%; }

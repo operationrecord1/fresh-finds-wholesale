@@ -32,7 +32,7 @@
 }
 .store-listing .store-product-card .store-product-visual {
   width: 100%;
-  background: oklch(0.977 0.002 240);
+  background: white;
   border-radius: 5px;
   isolation: isolate;
 }
@@ -62,6 +62,7 @@
   overflow: hidden;
   overflow-wrap: anywhere;
   text-overflow: ellipsis;
+  text-align: center;
 }
 .store-listing .store-product-card .store-product-id,
 .store-listing .store-product-card .store-product-quantity {
