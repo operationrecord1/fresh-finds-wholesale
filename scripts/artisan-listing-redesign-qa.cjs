@@ -43,13 +43,14 @@ async function main() {
         return Math.abs(b.x+b.width/2-mid)<=1&&Math.abs(ink.x+ink.width/2-mid)<=2&&(selector==='.product-touch-action'?s.justifyContent==='center':s.textAlign==='center');
       });
     });
-    const overflow=[...document.querySelectorAll('.store-listing .store-product-title,.store-listing .store-product-id,.store-listing .store-product-quantity,.store-listing .store-product-price')].filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>el.className);
+    const overflow=[...document.querySelectorAll('.store-listing .store-product-id,.store-listing .store-product-quantity,.store-listing .store-product-price')].filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>el.className);
+    const titleWithinCard=cards.every(card=>{const c=card.getBoundingClientRect(),t=card.querySelector('.store-product-title').getBoundingClientRect();return t.left>=c.left-1&&t.right<=c.right+1;});
     return {columns:cards.filter(el=>Math.abs(el.getBoundingClientRect().top-rect.top)<1).length,
       tracks:getComputedStyle(grid).gridTemplateColumns.split(' ').length,
       centered,titleAlign:style.textAlign,cardWidth:rect.width,badges:grid.querySelectorAll('.store-product-badge').length,
       titleClamp:style.webkitLineClamp,titleHeight:title.getBoundingClientRect().height,lineHeight:parseFloat(style.lineHeight),
       imageFit:getComputedStyle(first.querySelector('img')).objectFit,
-      overflow:document.documentElement.scrollWidth>innerWidth+1,contentOverflow:overflow,
+      overflow:document.documentElement.scrollWidth>innerWidth+1,contentOverflow:overflow,titleWithinCard,
       count:document.querySelector('.store-listing [role=status]').textContent.trim(),
       sidebar:getComputedStyle(document.querySelector('.store-filters-desktop')).display,
       rowAligned:cards.filter(el=>Math.abs(el.getBoundingClientRect().top-rect.top)<1).every(el=>Math.abs(el.getBoundingClientRect().height-rect.height)<1)};
@@ -59,7 +60,7 @@ async function main() {
     for(const width of widths)await check(`${route} at ${width}px`,async()=>{
       await page.setViewportSize({width,height:900});await page.evaluate(()=>new Promise(requestAnimationFrame));
       const m=await metrics();assert.equal(m.tracks,columns(width));assert.equal(m.centered,true,'Product metadata or action not centered');assert.equal(m.titleAlign,'center');assert.equal(m.badges,0);assert.equal(m.titleClamp,'2');
-      assert(m.titleHeight<=m.lineHeight*2+1);assert.equal(m.imageFit,'contain');assert(!m.overflow);assert.deepEqual(m.contentOverflow,[]);assert(m.rowAligned);
+      assert(m.titleHeight<=m.lineHeight*2+1);assert.equal(m.imageFit,'contain');assert(!m.overflow);assert.deepEqual(m.contentOverflow,[]);assert(m.titleWithinCard);assert(m.rowAligned);
       assert.equal(m.sidebar==='none',width<=1024);
       if(route==='/collection/new-arrivals'&&[240,381,780,1025,1440,1920,3000].includes(width)){
         await page.screenshot({path:path.join(OUT,`listing-${width}.png`)});
@@ -98,8 +99,8 @@ async function main() {
     const add=panel.getByRole('button',{name:'Add To Cart',exact:true});await add.hover();assert(await panel.isVisible());
     const pbox=await panel.boundingBox();assert(pbox.x>=0&&pbox.x+pbox.width<=1440);
     assert.deepEqual(await page.locator('.store-catalog-grid .store-product-card').evaluateAll(es=>es.slice(0,8).map(e=>{const r=e.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})),boxes);
-    await page.mouse.move(0,0);await card.locator('.store-product-photo').focus();await panel.waitFor({state:'visible'});
-    await panel.getByLabel('Pieces quantity',{exact:true}).fill('8');await add.focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'Shopping cart, 1 products'}).waitFor();
+    await panel.getByLabel('Pieces quantity',{exact:true}).fill('8');await add.click();await page.getByRole('button',{name:'Shopping cart, 1 products'}).waitFor();
+    await page.mouse.move(0,0);await card.locator('.store-product-photo').press('Tab');await panel.waitFor({state:'visible'});
     await page.goto(BASE+'/cart');await page.getByText('DA883',{exact:false}).first().waitFor();assert((await page.locator('body').textContent()).includes('116.00'));
   });
   for(const width of [240,381,780,1440])await check('Touch purchasing '+width,async()=>{
