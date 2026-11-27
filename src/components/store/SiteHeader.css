@@ -460,7 +460,7 @@
 .store-header .store-cart-artwork{position:absolute;left:0;top:12px;width:38px;height:26px;background:url('/cart-navigation-sprite.png') no-repeat -10px -340px;filter:brightness(0)}
 .store-header .store-cart-icon b{left:13px;right:auto;top:8px;width:19px;transform:none;font:700 16px/16px Arial,sans-serif;color:#000;text-align:center;letter-spacing:0}
 .store-header .store-cart-button>span:last-child{display:block;font:inherit;line-height:20px;margin:0;align-self:center;transform:none}
-.store-header .store-login-link:hover,.store-header .store-cart-button:hover{color:#000;background:transparent;outline:1px solid #aaa;outline-offset:1px;border-radius:2px}
+.store-header .store-login-link:hover,.store-header .store-cart-button:hover{color:#000;background:transparent;outline:0;box-shadow:none;border-radius:2px}
 .store-header .store-login-link:focus-visible,.store-header .store-cart-button:focus-visible{outline:2px solid #555;outline-offset:2px;border-radius:2px}
 
 @media(max-width:759px){.store-header .store-cart-button{height:52px;min-height:52px!important}.store-header .store-login-link{min-height:52px}}
@@ -473,3 +473,6 @@
 /* Match all customer header labels without changing other controls. */
 .store-header .store-utility-links>a,.store-header .store-utility-links>button,.store-header .store-login-link,.store-header .store-cart-button>span:last-child{font-family:inherit;font-size:14px;font-weight:600;font-style:normal;line-height:20px}
 .store-header .store-utility-links>a,.store-header .store-utility-links>button{display:inline-flex;align-items:center;position:relative;top:-1px}
+
+/* Match the account and cart labels to the Careers link. */
+.store-header .store-login-link>span,.store-header .store-cart-button>span:last-child{color:oklch(0.32 0 0)}
