@@ -39,8 +39,10 @@ async function main(){
   assert.equal(data.toggle,false);
   assert.deepEqual(data.links.map(x=>x.text),['Industries Served','Easy Shipping','Artisan Mart Careers','Artisan Cares','Contact Us']);
   assert(data.links.every(x=>x.visible&&x.scroll<=x.w+1),`Footer link overflow at ${width}px`);
-  if(width<=540)assert(data.footer[0].y<data.footer[1].y&&data.footer[1].y<data.footer[2].y,`Footer stack order at ${width}px`);
-  if(width>900)assert(data.footer[0].x<data.footer[1].x&&data.footer[1].x<data.footer[2].x,`Footer column order at ${width}px`);
+  const [aboutColumn,newsletterColumn,addressColumn]=data.footer;
+  if(width<=540)assert(aboutColumn.y<newsletterColumn.y&&newsletterColumn.y<addressColumn.y,`Footer stack order at ${width}px`);
+  if(width>540&&width<=900)assert(aboutColumn.y<addressColumn.y&&addressColumn.y===newsletterColumn.y&&addressColumn.x<newsletterColumn.x,`Footer two-column order at ${width}px`);
+  if(width>900)assert(addressColumn.x<aboutColumn.x&&aboutColumn.x<newsletterColumn.x,`Footer three-column order at ${width}px`);
   if([240,320,540,541,900,901,1440,3000].includes(width))await page.locator('.artisan-footer').screenshot({path:path.join(out,`footer-${width}.png`)});
   await page.goto(base+'/about-us#industries-served',{waitUntil:'domcontentloaded'});
   await page.locator('.about-page').waitFor();
@@ -48,10 +50,19 @@ async function main(){
   assert(about.scrollWidth<=width,`About page overflow at ${width}px`);
   assert(about.ids.every(Boolean),`Missing About section at ${width}px`);
   assert.equal(await page.locator('.about-nav a[href="/contact"]').count(),1);
+  assert.equal(await page.locator('.about-nav .about-back').isVisible(),width>760,`About back-to-top visibility at ${width}px`);
   if([240,320,540,760,1440,3000].includes(width))await page.screenshot({path:path.join(out,`about-${width}.png`)});
+  for(const route of ['/terms-of-sale','/privacy']){
+   await page.goto(base+route,{waitUntil:'domcontentloaded'});
+   await page.locator('.terms-page').waitFor();
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${route} overflow at ${width}px`);
+   if([240,540,541,900,901,1440,3000].includes(width))await page.screenshot({path:path.join(out,`${route.slice(1)}-${width}.png`)});
+  }
   results.push({width,status:'PASS'});
   console.log('PASS footer, contact and about',width);
  }
+ await page.goto(base+'/terms-of-sale',{waitUntil:'domcontentloaded'});
+ assert.equal(await page.locator('.terms-conditions>li').nth(2).innerText(),'Online checkout currently accepts credit card payments only.');
  for(const [label,expected] of [['Industries Served','/about-us#industries-served'],['Easy Shipping','/about-us#easy-shipping'],['Artisan Mart Careers','/about-us#careers'],['Artisan Cares','/about-us#artisan-cares'],['Contact Us','/contact']]){
   await page.goto(base+'/contact',{waitUntil:'domcontentloaded'});
   const href=await page.locator('.footer-about-list').getByRole('link',{name:label,exact:true}).getAttribute('href');

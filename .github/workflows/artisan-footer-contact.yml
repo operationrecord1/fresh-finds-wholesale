@@ -6,8 +6,11 @@ on:
       - src/components/store/SiteFooter.tsx
       - src/components/store/SiteFooter.css
       - src/components/store/AboutPage.css
+      - src/components/store/TermsPage.css
       - src/components/store/ContactPage.css
       - src/routes/contact.tsx
+      - src/routes/terms-of-sale.tsx
+      - src/routes/privacy.tsx
       - scripts/footer-contact-qa.cjs
       - workers/contact.js
       - workers/contact.test.js
