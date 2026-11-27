@@ -1,9 +1,10 @@
 name: Artisan Homepage Banner Visibility
 on:
   push:
-    branches: [fix/artisan-home-banner-visibility-20261127, main]
+    branches: [fix/artisan-home-banner-visibility-20261127, fix/artisan-home-heading-two-lines-20261127, main]
     paths:
       - src/styles.css
+      - src/routes/index.tsx
       - scripts/artisan-home-banner-qa.cjs
       - .github/workflows/artisan-home-banner-visibility.yml
 permissions:
