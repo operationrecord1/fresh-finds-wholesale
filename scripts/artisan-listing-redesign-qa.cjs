@@ -103,6 +103,36 @@ async function main() {
     await page.mouse.move(0,0);await card.locator('.store-product-photo').press('Tab');await panel.waitFor({state:'visible'});
     await page.goto(BASE+'/cart');await page.getByText('DA883',{exact:false}).first().waitFor();assert((await page.locator('body').textContent()).includes('116.00'));
   });
+  await check('Buy Now pointer path and compact quantity controls',async()=>{
+    await page.setViewportSize({width:400,height:1200});await go('/collection/new-arrivals');
+    const card=page.locator('.store-catalog-grid .store-product-card').first();
+    const buy=card.getByRole('button',{name:'BUY NOW',exact:true});
+    const panel=card.locator('.product-hover-panel');
+    await buy.click();await panel.waitFor({state:'visible'});
+    const cardBox=await card.boundingBox(),buttonBox=await buy.boundingBox(),panelBox=await panel.boundingBox();
+    await page.mouse.move(cardBox.x+cardBox.width-8,buttonBox.y+buttonBox.height+12,{steps:10});
+    assert(await panel.isVisible(),'Panel closed inside card below Buy Now');
+    await page.mouse.move(panelBox.x+panelBox.width-12,panelBox.y+60,{steps:10});
+    assert(await panel.isVisible(),'Panel closed while moving into purchase controls');
+    await page.mouse.move(cardBox.x+cardBox.width/2,buttonBox.y-8,{steps:10});
+    assert(!(await panel.isVisible()),'Panel stayed open above Buy Now');
+    await buy.click();await panel.waitFor({state:'visible'});
+    await page.mouse.move(0,buttonBox.y+buttonBox.height/2);
+    assert(!(await panel.isVisible()),'Panel stayed open outside card');
+    for(const width of [240,320,400]){
+      await page.setViewportSize({width,height:1200});await go('/collection/new-arrivals');
+      const item=page.locator('.store-catalog-grid .store-product-card').first();
+      await item.getByRole('button',{name:'BUY NOW',exact:true}).click();
+      const popup=item.locator('.product-hover-panel');await popup.waitFor({state:'visible'});
+      const label=popup.getByText('Piece Quantity',{exact:true});
+      const stepper=popup.locator('.purchase-stepper');
+      const labelBox=await label.boundingBox(),stepperBox=await stepper.boundingBox();
+      assert(labelBox.x+labelBox.width<=stepperBox.x+1||labelBox.y+labelBox.height<=stepperBox.y+1,`Quantity label overlaps stepper at ${width}px`);
+      const quantity=popup.getByRole('textbox',{name:'Pieces quantity'});
+      await quantity.fill('12');assert.equal(await quantity.inputValue(),'12');
+      assert.equal(await quantity.evaluate(e=>getComputedStyle(e).outlineStyle),'none');
+    }
+  });
   for(const width of [240,320,381,400,500,780,1440])await check('Touch purchasing '+width,async()=>{
     const touch=await browser.newContext({viewport:{width,height:950},hasTouch:true,isMobile:true});const p=await touch.newPage();
     await p.goto(BASE+'/collection/new-arrivals');const card=p.locator('.store-catalog-grid .store-product-card').first();await card.getByRole('button',{name:'BUY NOW',exact:true}).tap();

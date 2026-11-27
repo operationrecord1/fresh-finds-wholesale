@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from "react";
-import { Minus, Plus, ChevronUp, ChevronDown } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { Product } from "@/data/catalog";
 import { lineTotal, money, maximumQuantity, normalizePieces, stepDown, stepUp, validateQuantity, type BuyMode } from "@/lib/wholesale";
@@ -58,9 +58,9 @@ export function PurchasePanel({ p, initialPieces, onDone, label = "Add To Cart",
           <label><input type="radio" name={id} checked={mode === m} onChange={() => choose(m)} disabled={busy}/><span><strong>{m === "case" ? "Order By Case" : compact ? "Piece Quantity" : "Order By Piece"}</strong><small>{m === "case" ? `${r.caseQty} (Pieces)` : `${r.moq} Pieces Minimum`}</small></span></label>
           <div className="purchase-stepper">
             <div>
-              <button type="button" aria-label={`Decrease ${m}`} disabled={busy || current <= minimum} onClick={() => update(m === "piece" ? stepDown(current, r) : Math.max(1, current - 1))}>{compact ? <ChevronDown size={22}/> : <Minus size={20}/>}</button>
+              <button type="button" aria-label={`Decrease ${m}`} disabled={busy || current <= minimum} onClick={() => update(m === "piece" ? stepDown(current, r) : Math.max(1, current - 1))}><Minus size={20}/></button>
               <input aria-label={`${m === "piece" ? "Pieces" : "Case"} quantity`} aria-invalid={mode === m && !!error} aria-describedby={mode === m && error ? id + "-error" : undefined} inputMode="numeric" pattern="[0-9]*" max={maximumQuantity(m, r, p.stock, existing)} disabled={busy} value={mode === m ? (m === "piece" ? pieceValue : caseValue) : ""} onFocus={() => setMode(m)} onChange={e => { const raw = e.target.value.replace(/\D/g, ""); const bounded = raw === "" ? "" : String(limit(Number(raw), m)); m === "piece" ? setPieces(bounded) : setCases(bounded); setSubmitted(false); }}/>
-              <button type="button" aria-label={`Increase ${m}`} disabled={busy || maximumReached} onClick={() => update(next)}>{compact ? <ChevronUp size={22}/> : <Plus size={20}/>}</button>
+              <button type="button" aria-label={`Increase ${m}`} disabled={busy || maximumReached} onClick={() => update(next)}><Plus size={20}/></button>
             </div>
             <small>{m === "piece" ? "PIECES" : "CASE"}</small>
           </div>

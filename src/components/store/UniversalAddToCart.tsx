@@ -41,18 +41,32 @@ export function UniversalAddToCart({ product }: { product: Product }) {
     if (!open) return;
     const outside = (event: PointerEvent) => { if (!root.current?.contains(event.target as Node)) setOpen(false); };
     const escape = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
+    const pointerMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse" || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      const card = root.current?.closest<HTMLElement>(".store-product-card");
+      const button = root.current?.querySelector<HTMLElement>(".product-touch-action");
+      const panel = root.current?.querySelector<HTMLElement>(".product-hover-panel");
+      if (!card || !button || !panel) return;
+      const cardRect = card.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      const { clientX: x, clientY: y } = event;
+      const inCardColumn = x >= cardRect.left && x <= cardRect.right && y >= buttonRect.top && y <= panelRect.bottom;
+      const inPanel = x >= panelRect.left && x <= panelRect.right && y >= panelRect.top && y <= panelRect.bottom;
+      if (!inCardColumn && !inPanel) setOpen(false);
+    };
     document.addEventListener("pointerdown", outside);
+    document.addEventListener("pointermove", pointerMove);
     document.addEventListener("keydown", escape);
     window.addEventListener("resize", place);
     return () => {
       document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("pointermove", pointerMove);
       document.removeEventListener("keydown", escape);
       window.removeEventListener("resize", place);
     };
   }, [open]);
-  return <div ref={root} className="universal-cart" data-purchase-open={open} onPointerEnter={place} onFocusCapture={place} onPointerLeave={() => {
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) setOpen(false);
-  }}>
+  return <div ref={root} className="universal-cart" data-purchase-open={open} onPointerEnter={place} onFocusCapture={place}>
     <button type="button" className="product-touch-action" aria-expanded={open} aria-controls={id} onClick={() => {
       place();
       if (!open) requestAnimationFrame(() => root.current?.querySelector(".product-hover-panel")?.scrollIntoView({ block: "nearest" }));
