@@ -80,7 +80,7 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
    return result;
   }
   const evidence=[];
-  for (const width of [240,280,320,360,379,380,381,425,480,500,501,600,650,700,767,768,779,780,781,1025,1440,1920]) {
+  for (const width of [240,280,320,360,379,380,381,425,480,500,501,600,650,700,767,768,779,780,781,1024,1025,1250,1251,1440,1920,2000,2001,2500]) {
    await page.setViewportSize({width,height:900});
    const response=await page.goto(base,{waitUntil:"domcontentloaded"});
    assert(response?.ok(), "Homepage HTTP failure");
@@ -96,6 +96,7 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
     return {rows,headingLeft:t.left,headingRight:t.right,fontSize:style.fontSize,lineHeight:parseFloat(style.lineHeight),pageOverflow:document.documentElement.scrollWidth-innerWidth,titleHeight:title.getBoundingClientRect().height,heroHeight:hero.getBoundingClientRect().height,panelsTop:panels.getBoundingClientRect().top,containerTop:title.parentElement.getBoundingClientRect().top,heroRight:hero.getBoundingClientRect().right,heroLeft:hero.getBoundingClientRect().left};
    });
    assert(geometry.titleHeight>0,"Heading occupies no space");
+   assert(geometry.pageOverflow<=1,"Horizontal overflow at "+width+": "+geometry.pageOverflow);
    if(width<=500){assert.equal(geometry.rows.length,2);assert(geometry.rows.every(r=>r.length===1),"Each phrase must occupy one line");const [a,b]=geometry.rows.map(r=>r[0]);assert(b.top>a.top+1,"Expected two lines");assert([a,b].every(r=>r.left>=geometry.headingLeft-1&&r.right<=geometry.headingRight+1),"Heading text overflow");assert(Math.abs((b.top-a.top)-geometry.lineHeight)<1,"Unexpected line spacing");}
    assert.equal(await hero.locator(".merch-arrow, .merch-prev, .merch-next, [aria-label='Previous banner'], [aria-label='Next banner']").count(),0,"Manual arrows must be removed");
    if(width<=780){assert.equal(geometry.heroHeight,0);await checkSpacing(width);}
