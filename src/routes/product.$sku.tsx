@@ -57,7 +57,6 @@ function Page() {
               {k === "Category" && p.category ? <Link to="/category/$slug" params={{ slug: slugify(p.category) }} className="text-primary underline">{v}</Link> : v}
             </td></tr>))}</tbody></table>
         </section>
-        {p.californiaWarning && <details className="rounded border border-border bg-card p-3 text-sm"><summary className="cursor-pointer font-semibold">California Warning</summary><p className="mt-2">{p.californiaWarningText ?? "Warning text to be supplied from the authorized product source."}</p></details>}
       </div>
     </div>
   );
