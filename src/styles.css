@@ -869,8 +869,8 @@
 /* Mobile homepage: match the existing 12px inter-section grid gap at the
    visible heading boundary. Preserve section/card geometry and typography. */
 @media (max-width: 780px) {
-  .store-container > .store-home-title { padding-bottom: 0; }
-  .store-container > .store-home-panels {
-    margin-top: calc(12px - (1lh - 1cap) / 2);
+  .store-container > .store-home-title {
+    padding-bottom: calc(12px - (1lh - 1cap) / 2 + 0.08em);
   }
+  .store-container > .store-home-panels { margin-top: 0; }
 }
