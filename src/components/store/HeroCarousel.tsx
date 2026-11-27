@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { PRODUCTS } from "@/data/catalog";
-import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import "./HeroCarousel.css";
 const slides = [
  {eyebrow:"BUSINESS STARTS WITH A CONVERSATION",title:"Good connections.\nBetter possibilities.",description:"Thoughtful sourcing. Personal support. Wholesale built around your business.",alt:"Two business professionals discussing merchandise in a wholesale showroom",theme:"conversation"},
@@ -11,6 +10,18 @@ const slides = [
 export function HeroCarousel(){
  const [index,setIndex]=useState(0);const start=useRef<{x:number;y:number}|null>(null);const slide=slides[index]!;
  const move=(step:number)=>setIndex(i=>(i+step+slides.length)%slides.length);
+ useEffect(()=>{
+  const hidden=window.matchMedia("(max-width: 780px)");
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const schedule=()=>{
+   if(timer!==undefined)clearTimeout(timer);
+   timer=undefined;
+   if(!hidden.matches)timer=setTimeout(()=>setIndex(i=>(i+1)%slides.length),10000);
+  };
+  schedule();
+  hidden.addEventListener("change",schedule);
+  return ()=>{if(timer!==undefined)clearTimeout(timer);hidden.removeEventListener("change",schedule);};
+ },[index]);
  return <section className={`merch-hero merch-${slide.theme}`} aria-label="Featured wholesale collections" aria-roledescription="carousel"
  onTouchStart={e=>{const t=e.touches[0];if(t)start.current={x:t.clientX,y:t.clientY}}}
  onTouchEnd={e=>{const t=e.changedTouches[0],s=start.current;if(t&&s&&Math.abs(t.clientX-s.x)>50&&Math.abs(t.clientX-s.x)>Math.abs(t.clientY-s.y))move(t.clientX<s.x?1:-1);start.current=null}}>
@@ -24,7 +35,6 @@ export function HeroCarousel(){
  <div className="merch-copy"><span className="merch-eyebrow">{slide.eyebrow}</span><h2>{slide.title.split('\n').map((line,i)=><span key={line} className={i===1?'merch-accent':''}>{line}</span>)}</h2><p>{slide.description}</p><span className="merch-signature">Artisan Mart<span aria-hidden="true"> / </span>Wholesale, thoughtfully.</span></div>
  <img key={index} className="merch-hero-image" src={`${import.meta.env.BASE_URL}images/brand-story-${index+1}.webp`} alt={slide.alt} width="1536" height="1024" fetchPriority={index===0?'high':'auto'}/>
  </div>}
- <button className="merch-arrow merch-prev" aria-label="Previous banner" onClick={()=>move(-1)}><ChevronLeft/></button><button className="merch-arrow merch-next" aria-label="Next banner" onClick={()=>move(1)}><ChevronRight/></button>
  <div className="merch-dots" aria-label="Choose banner">{slides.map((s,i)=><button key={s.theme} aria-label={`Banner ${i+1}: ${s.title.replace('\n',' ')}`} aria-pressed={index===i} onClick={()=>setIndex(i)}><span/></button>)}</div>
  </section>
 }
