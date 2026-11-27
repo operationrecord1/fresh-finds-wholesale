@@ -19,6 +19,18 @@ jobs:
       - run: bunx tsc --noEmit
       - run: bun run build:cloudflare
       - run: node --check scripts/artisan-home-banner-qa.cjs
+      - name: Verify built homepage at all requested widths before merge
+        run: |
+          npm install --prefix /tmp/artisan-banner-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-banner-browser/node_modules/.bin/playwright install --with-deps chromium
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory dist/client >/tmp/artisan-banner-server.log 2>&1 &
+          server=$!
+          trap 'kill "$server"' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/ >/dev/null && break; sleep 1; done
+          node scripts/artisan-home-banner-qa.cjs
+        env:
+          NODE_PATH: /tmp/artisan-banner-browser/node_modules
+          ARTISAN_BANNER_URL: http://127.0.0.1:8765
   production-browser:
     if: github.ref == 'refs/heads/main'
     needs: validation
