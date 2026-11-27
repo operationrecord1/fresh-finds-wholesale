@@ -11,6 +11,7 @@ import { preserveCartForCheckout, loadCheckoutCoupon } from "@/lib/artisan-check
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
 import "@/components/store/CheckoutPage.css";
 import { US_STATES } from "@/lib/us-address";
+import { AddressAutocomplete, type AddressSuggestion } from "@/components/store/AddressAutocomplete";
 
 export const Route = createFileRoute("/checkout")({
  head: () => ({ meta: [
@@ -108,6 +109,10 @@ export function Checkout(){
  const updateField=useCallback((name:string,value:string)=>{
   setFields(previous=>({...previous,[name]:value}));setFormError("");setPayError("");setSession(null);
  },[]);
+ const selectAddress=(prefix:""|"shipping_",address:AddressSuggestion)=>{
+  setFields(previous=>({...previous,[`${prefix}line1`]:address.line1,[`${prefix}city`]:address.city,[`${prefix}state`]:address.state,[`${prefix}postal_code`]:address.postal_code}));
+  setFormError("");setPayError("");setSession(null);
+ };
 
  useEffect(()=>{
   if(!user||!artisanSupabase){setProfileLoading(false);return;}
@@ -168,7 +173,7 @@ export function Checkout(){
      <div className="sm:col-span-2"><Field label="Company" name="company" value={fields.company} onChange={updateField} required={false} autoComplete="organization"/></div>
      <Field label="Email" name="email" value={fields.email} onChange={updateField} type="email" autoComplete="email"/>
      <Field label="Phone" name="phone" value={fields.phone} onChange={updateField} type="tel" autoComplete="tel"/>
-     <div className="sm:col-span-2"><Field label="Street address" name="line1" value={fields.line1} onChange={updateField} autoComplete="billing address-line1"/></div>
+     <div className="sm:col-span-2"><AddressAutocomplete name="line1" value={fields.line1} onChange={updateField} onSelect={address=>selectAddress("",address)} inputClass={inputClass}/></div>
      <Field label="City" name="city" value={fields.city} onChange={updateField} autoComplete="billing address-level2"/>
      <Field label="State" name="state" value={fields.state} onChange={updateField} autoComplete="billing address-level1"/>
      <Field label="ZIP code" name="postal_code" value={fields.postal_code} onChange={updateField} autoComplete="billing postal-code"/>
@@ -177,7 +182,7 @@ export function Checkout(){
       <Field label="First name" name="shipping_first_name" value={fields.shipping_first_name} onChange={updateField} autoComplete="shipping given-name"/>
       <Field label="Last name" name="shipping_last_name" value={fields.shipping_last_name} onChange={updateField} autoComplete="shipping family-name"/>
       <Field label="Phone" name="shipping_phone" value={fields.shipping_phone} onChange={updateField} type="tel" autoComplete="shipping tel"/>
-      <div className="sm:col-span-2"><Field label="Street address" name="shipping_line1" value={fields.shipping_line1} onChange={updateField} autoComplete="shipping address-line1"/></div>
+      <div className="sm:col-span-2"><AddressAutocomplete name="shipping_line1" value={fields.shipping_line1} onChange={updateField} onSelect={address=>selectAddress("shipping_",address)} inputClass={inputClass}/></div>
       <Field label="City" name="shipping_city" value={fields.shipping_city} onChange={updateField} autoComplete="shipping address-level2"/>
       <Field label="State" name="shipping_state" value={fields.shipping_state} onChange={updateField} autoComplete="shipping address-level1"/>
       <Field label="ZIP code" name="shipping_postal_code" value={fields.shipping_postal_code} onChange={updateField} autoComplete="shipping postal-code"/>
