@@ -55,3 +55,9 @@
  .footer-bottom{flex-direction:column;text-align:center;justify-content:center;gap:4px}
  .footer-bottom nav{justify-content:center;gap:14px 20px}
 }
+
+@media(max-width:540px){
+ .footer-newsletter{text-align:center}
+ .footer-newsletter h2{justify-content:center;margin-inline:auto}
+ .footer-social{justify-content:center}
+}

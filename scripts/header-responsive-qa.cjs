@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const http=require('node:http');
 const path=require('node:path');
 
-const widths=[240,280,320,360,380,499,500,600,759,760,761,900,999,1000,1024,1025,1200,1360,1361,1449,1450,1599,1600,1799,1800,1920,2000,2500,3000];
+const widths=[240,280,320,358,359,360,380,499,500,539,540,541,600,759,760,761,900,999,1000,1024,1025,1200,1360,1361,1449,1450,1599,1600,1799,1800,1920,2000,2500,3000];
 const base=process.env.ARTISAN_HEADER_URL||'http://127.0.0.1:4184';
 const out='header-responsive-qa';fs.mkdirSync(out,{recursive:true});
 
@@ -59,7 +59,7 @@ async function main(){
   }else{
    assert(d.careers&&d.contact&&d.knowledge,`Desktop utility links missing at ${width}px`);
    assert(d.account.left<d.cart.left,`Cart should follow account at ${width}px`);
-   if(width>=1600)assert(width-d.cart.right<=60,`Cart should align to the right edge at ${width}px`);
+   if(width>=1000)assert(await page.locator('.store-account-links a[href="/newsletter"]').evaluate((e,right)=>e.getBoundingClientRect().left>=right,d.cart.right),`Newsletter should follow cart at ${width}px`);
    assert(Math.abs(d.search.top-d.accounts.top)<6&&Math.abs(d.search.top-d.cart.top)<6,`Desktop single line at ${width}px`);
    assert(!d.navOverflow,`Navigation overflow at ${width}px`);
    assert.equal(d.closeouts,width>=1600,`Closeouts priority at ${width}px`);
@@ -81,7 +81,25 @@ async function main(){
  assert(focus.shadow.includes('0.09'),`Search focus should use a light black ring: ${focus.shadow}`);
  await page.setViewportSize({width:760,height:900});await page.getByRole('button',{name:'Categories',exact:true}).click();
  for(const label of ['Imports','Closeouts'])assert(await page.locator('#store-dropdown').getByRole('link',{name:label,exact:true}).count(),`${label} not reachable at 760px`);
- fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({base,results,menus:'PASS',focus:'PASS'},null,2));
+ for(const route of ['/login','/register','/forgot-password','/reset-password']){
+  await page.goto(base+route,{waitUntil:'load'});
+  await page.locator('.auth-shell .account-card').waitFor();
+  assert.equal(await page.locator('.store-header,.artisan-footer,[aria-label="Breadcrumb"],.account-password-requirements').count(),0,`Standalone auth shell ${route}`);
+  assert.equal(await page.locator('.auth-home img').getAttribute('alt'),'Artisan Mart');
+  for(const width of widths){
+   await page.setViewportSize({width,height:1000});
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Auth overflow ${route} ${width}`);
+   assert(await page.locator('.account-card input').evaluateAll(es=>es.every(e=>e.getBoundingClientRect().right<=innerWidth)),`Input overflow ${route} ${width}`);
+   if([240,760,3000].includes(width))await page.screenshot({path:path.join(out,`${route.slice(1)}-${width}.png`),fullPage:true});
+  }
+ }
+ await page.goto(base+'/',{waitUntil:'load'});
+ for(const width of [240,539,540]){
+  await page.setViewportSize({width,height:900});
+  assert.equal(await page.locator('.footer-newsletter').evaluate(e=>getComputedStyle(e).textAlign),'center');
+  assert.equal(await page.locator('.footer-social').evaluate(e=>getComputedStyle(e).justifyContent),'center');
+ }
+ fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({base,results,menus:'PASS',focus:'PASS',authLayouts:'PASS',footer:'PASS'},null,2));
  await browser.close();if(server)server.close();
 }
 main().catch(error=>{console.error(error);process.exit(1)});

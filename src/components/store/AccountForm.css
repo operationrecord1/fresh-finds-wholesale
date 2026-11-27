@@ -18,3 +18,29 @@
 .account-card .account-agreement .account-checkbox{margin-bottom:0}
 .account-agreement a{color:#126c9b;text-decoration:underline;text-underline-offset:2px}
 .account-agreement input[aria-invalid="true"]{outline:2px solid #b42332;outline-offset:2px}
+
+/* Standalone customer authentication shares one compact, readable form layout. */
+.auth-shell{min-height:100vh;background:#fff;padding:clamp(20px,4vw,44px) 12px;color:#193441}
+.auth-home{display:block;width:min(210px,80%);margin:0 auto 24px}
+.auth-home img{display:block;width:100%;height:auto}
+.auth-shell .account-page{width:100%;max-width:440px;padding:0;margin-inline:auto}
+.auth-shell .account-layout{display:block;border:1px solid #d8dfe3;border-radius:8px;overflow:visible}
+.auth-shell .account-card{padding:clamp(16px,4vw,28px)}
+.auth-shell .account-card h1{font-size:clamp(23px,5vw,28px);font-weight:600;line-height:1.25;margin:0 0 22px}
+.auth-shell .account-card form{display:flex;flex-direction:column;gap:16px}
+.auth-shell .account-card label,.auth-shell .account-card .account-agreement{margin:0}
+.auth-shell .account-card fieldset{display:flex;flex-direction:column;gap:16px}
+.auth-shell .account-card legend,.auth-shell .account-form-heading{display:none}
+.auth-shell .account-name-row{grid-template-columns:1fr;gap:16px}
+.auth-shell .account-card input:not([type=checkbox]){border-radius:4px;min-height:44px;font-size:16px;padding:9px 11px;margin-top:6px}
+.auth-shell .account-password button{height:40px}
+.auth-shell .account-card .account-checkbox{align-items:flex-start;min-height:0;line-height:20px;gap:9px}
+.auth-shell .account-checkbox input{flex:0 0 18px;margin:1px 0 0}
+.auth-shell .account-checkbox>span{color:inherit}
+.auth-shell .account-forgot{margin:0;min-height:24px;align-self:flex-start}
+.auth-shell .account-submit{border-radius:5px;min-height:44px;line-height:1.3;padding:10px}
+.auth-shell .account-switch{margin-top:22px;padding-top:18px;text-align:center;font-size:14px}
+.auth-shell .account-switch p{margin:0 0 4px}
+.auth-shell .account-message{overflow-wrap:anywhere}
+.auth-shell .account-page :is(input,select,button,a):focus-visible{outline:2px solid rgba(0,0,0,.22);outline-offset:2px;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+.auth-home:focus-visible{outline:2px solid rgba(0,0,0,.35);outline-offset:5px}

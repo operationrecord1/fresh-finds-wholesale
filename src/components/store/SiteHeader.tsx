@@ -98,7 +98,7 @@ export function SiteHeader() {
             </Link>
         </div>
             <form role="search" className="store-search relative" onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav({ to: "/search", search: { q: q.trim() } }); }}>
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products or item numbers" autoComplete="off" name="q" aria-label="Search products" className="h-[54px] w-full rounded-[20px] border border-border bg-secondary px-5 pr-14 font-arial text-lg" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products" autoComplete="off" name="q" aria-label="Search products" className="h-[54px] w-full rounded-[20px] border border-border bg-secondary px-5 pr-14 font-arial text-lg" />
               <button disabled={!q.trim()} aria-label="Search" className="absolute right-4 top-1/2 -translate-y-1/2 disabled:opacity-70"><Search className="h-7 w-7" /></button>
             </form>
         <a className="store-call-button" href={BUSINESS_PHONE_HREF}><Phone size={20} aria-hidden="true"/><span><small>CALL US TODAY</small><strong>{BUSINESS_PHONE}</strong></span></a>
@@ -123,8 +123,8 @@ export function SiteHeader() {
           </div>
           <div className="store-account-links leading-tight">
             <CustomerAccountMenu />
-            <Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
             <MiniCart />
+            <Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
           </div>
         </div>
       </div>

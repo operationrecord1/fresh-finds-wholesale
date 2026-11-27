@@ -1,7 +1,7 @@
 import { isValidArtisanEmail } from "@/lib/artisan-email";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { ArrowRight, LockKeyhole } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { artisanSupabase } from "@/lib/artisan-auth";
 import "@/components/store/AccountForm.css";
 
@@ -38,19 +38,9 @@ function ForgotPassword(){
     }finally{setBusy(false);}
   };
   return <main className="account-page">
-    <nav aria-label="Breadcrumb"><Link to="/">Home</Link><span>/</span><span aria-current="page">Forgot Password</span></nav>
     <div className="account-layout">
-      <aside className="account-welcome">
-        <span className="account-brand">ARTISAN <b>MART</b></span>
-        <div className="account-welcome-copy"><span className="account-eyebrow">YOUR WHOLESALE ACCOUNT</span>
-          <h1>Forgot your password?</h1>
-          <p>Enter your account email and we'll send a secure password reset link.</p>
-          <div className="account-switch"><p>Remember your password?</p><Link to="/login">Back to Login <ArrowRight size={17}/></Link></div>
-        </div>
-      </aside>
       <section className="account-card" aria-labelledby="forgot-title">
-        <span className="account-icon"><LockKeyhole aria-hidden="true"/></span>
-        <h2 id="forgot-title">{complete?"Check Your Email":"Forgot Your Password?"}</h2>
+        <h1 id="forgot-title">{complete?"Check Your Email":"Forgot Your Password?"}</h1>
         {complete?
           <><p className="account-description" role="status">If an Artisan Mart account exists with the email you provided, you'll receive a secure reset link shortly. Check your spam folder too.</p>
           <Link to="/login" className="account-submit">Back to Login</Link></>:
@@ -60,6 +50,7 @@ function ForgotPassword(){
             <button className="account-submit" disabled={busy} type="submit">{busy?"Sending...":"Send Reset Link"}<ArrowRight size={18}/></button>
             {error&&<p role="alert" className="account-message">{error}</p>}
           </form></>}
+        <div className="account-switch"><Link to="/login">Back to sign in</Link></div>
       </section>
     </div>
   </main>;

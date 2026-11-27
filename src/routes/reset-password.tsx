@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { Eye, EyeOff, LockKeyhole } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
 import { validateArtisanPassword } from "@/lib/artisan-password";
-import { PasswordChecklist } from "@/components/store/PasswordChecklist";
 import "@/components/store/AccountForm.css";
 
 export const Route = createFileRoute("/reset-password")({
@@ -40,18 +39,9 @@ function ResetPassword(){
     }finally{setBusy(false);}
   };
   return <main className="account-page">
-    <nav aria-label="Breadcrumb"><Link to="/">Home</Link><span>/</span><span aria-current="page">Reset Password</span></nav>
     <div className="account-layout">
-      <aside className="account-welcome">
-        <span className="account-brand">ARTISAN <b>MART</b></span>
-        <div className="account-welcome-copy"><span className="account-eyebrow">YOUR WHOLESALE ACCOUNT</span>
-          <h1>Create a new password.</h1><p>Restore secure access to your Artisan Mart account.</p>
-          <div className="account-switch"><p>Need a new recovery link?</p><Link to="/forgot-password">Request Reset Link</Link></div>
-        </div>
-      </aside>
       <section className="account-card" aria-labelledby="reset-title">
-        <span className="account-icon"><LockKeyhole aria-hidden="true"/></span>
-        <h2 id="reset-title">{done?"Password Updated Successfully":"Reset Password"}</h2>
+        <h1 id="reset-title">{done?"Password Updated Successfully":"Reset Password"}</h1>
         {done?<><p className="account-description" role="status">Your password has been changed. Sign in with your new password.</p>
             <Link className="account-submit" to="/login">Back to Login</Link></>:
          !ready?<p role="status">Verifying your recovery link...</p>:
@@ -59,13 +49,13 @@ function ResetPassword(){
          <><p className="account-description" role="alert">This recovery link is invalid, expired, or already used. Request another secure link.</p>
             <Link className="account-submit" to="/forgot-password">Request New Link</Link></>:
          <form onSubmit={save}>
-           <label>New password <span>*</span><div className="account-password"><input name="password" type={visible?"text":"password"} autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)} minLength={12} required aria-describedby="reset-requirements"/>
+           <label>New password <span>*</span><div className="account-password"><input name="password" type={visible?"text":"password"} autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)} minLength={12} required/>
              <button type="button" onClick={()=>setVisible(!visible)} aria-label={visible?"Hide password":"Show password"}>{visible?<EyeOff size={19}/>:<Eye size={19}/>}</button></div></label>
            <label>Confirm password <span>*</span><input name="confirmation" type={visible?"text":"password"} autoComplete="new-password" value={confirm} onChange={e=>setConfirm(e.target.value)} minLength={12} required aria-invalid={!!confirmationError}/>{confirmationError&&<span className="account-field-error" role="alert">{confirmationError}</span>}</label>
-           <PasswordChecklist password={password} id="reset-requirements"/>
            <button type="submit" className="account-submit" disabled={busy}>{busy?"Updating...":"Update Password"}</button>
            {message&&<p className="account-message" role="alert">{message}</p>}
          </form>}
+        <div className="account-switch"><Link to="/login">Back to sign in</Link></div>
       </section>
     </div>
   </main>;

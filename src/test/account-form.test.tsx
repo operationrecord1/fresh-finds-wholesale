@@ -24,7 +24,18 @@ it("does not inject a disposable address or sales representative into signup",()
   expect(screen.getByLabelText(/Email address/)).toHaveValue("");
   expect(screen.getByLabelText(/Email address/)).toHaveAttribute("autocomplete","off");
   expect(screen.queryByLabelText(/Sales representative/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Password requirements/i)).not.toBeInTheDocument();
   expect(screen.queryByText(/jicek69439@forims\.com/i)).not.toBeInTheDocument();
+});
+
+it("signs in with normalized email and preserves the account destination",async()=>{
+  auth.signInWithPassword.mockResolvedValue({error:null});
+  render(<AccountForm/>);
+  fireEvent.change(screen.getByLabelText(/Email address/),{target:{value:"Morgan@Example.com"}});
+  fireEvent.change(screen.getByLabelText(/^Password/),{target:{value:"ExistingPassword!24"}});
+  fireEvent.click(screen.getByRole("button",{name:/Sign in/}));
+  await waitFor(()=>expect(auth.signInWithPassword).toHaveBeenCalledWith({email:"morgan@example.com",password:"ExistingPassword!24"}));
+  expect(auth.navigate).toHaveBeenCalledWith({to:"/account"});
 });
 
 it("shows an actionable signup error when profile persistence fails",async()=>{
