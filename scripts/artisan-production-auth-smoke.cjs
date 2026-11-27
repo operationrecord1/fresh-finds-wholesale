@@ -26,17 +26,16 @@ async function run(name,callback){try{const detail=await callback();checks.push(
    assert.equal(await page.getByText(/You must agree to/i).count(),0);
    return "Consent required and correction clears error";
  });
- await run("Country-aware phone input and independent password rules",async()=>{
+ await run("Country-aware phone input and password confirmation",async()=>{
    await go("/register");const phone=page.locator('input[name="phone"]');
    await phone.fill("2125550123");assert.equal(await phone.inputValue(),"+1 (212) 555-0123");
    await phone.fill("+442071838750");assert.notEqual(await phone.getAttribute("aria-invalid"),"true");
    await phone.fill("+8801712345678");assert.notEqual(await phone.getAttribute("aria-invalid"),"true");
    await phone.fill("123");assert.equal(await phone.getAttribute("aria-invalid"),"true");
    const password=page.locator('input[name="password"]');
-   await password.fill("weak");assert(await page.locator(".account-rule-unsatisfied").count()>0);
-   await password.fill("StrongPassword!24");assert.equal(await page.locator(".account-rule-unsatisfied").count(),0);
+   await password.fill("StrongPassword!24");assert.equal(await page.locator(".account-password-requirements").count(),0);
    await page.locator('input[name="confirmation"]').fill("different");assert(await page.getByText("Passwords do not match.").count());
-   return "US/UK/BD phone, invalid number, password rules and mismatch";
+   return "US/UK/BD phone, invalid number, no visible checklist and password mismatch; password rules covered by unit tests";
  });
  await run("Forgot Password email validation",async()=>{
    await go("/forgot-password");
