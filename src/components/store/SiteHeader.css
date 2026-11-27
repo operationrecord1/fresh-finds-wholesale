@@ -434,3 +434,8 @@
  .store-header .store-login-link{min-height:44px;font-size:12px}
 }
 @media(max-width:359px){.store-header .store-cart-button{width:38px}.store-header .store-login-link{font-size:11px}}
+/* Keep the supplied artwork still and place the live number at its center. */
+.store-header .store-cart-button,.store-header .store-cart-button:hover,.store-header .store-cart-button:active{transform:none!important;transition:none!important;animation:none!important}
+.store-header .store-cart-icon,.store-header .store-cart-icon img{transform:none!important;transition:none!important;animation:none!important}
+.store-header .store-cart-icon b{left:50%;right:auto;top:50%;transform:translate(-50%,-50%);width:30px;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:0}
+@media(max-width:759px){.store-header .store-cart-icon b{left:50%;right:auto;top:50%;font-size:10px}}
