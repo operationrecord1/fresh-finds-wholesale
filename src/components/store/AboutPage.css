@@ -24,3 +24,4 @@ html:has(.about-page){scroll-behavior:smooth}.about-page{max-width:1452px;margin
 .cares-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0}.cares-principles article{background:#fff;border:1px solid #dfe8ec;border-radius:12px;padding:24px}.editorial-number{font-weight:700;font-size:24px;color:#1689b6}.editorial-panel{padding:28px;background:#fff;border:1px solid #dfe8ec;border-radius:12px}.editorial-status{padding:24px;margin-top:24px;background:#f1f6f8;border-left:3px solid #89bd3f;border-radius:0 12px 12px 0}
 @media(max-width:1100px){.cares-principles{grid-template-columns:1fr}}
 @media(max-width:600px){#artisan-cares .editorial-intro,.editorial-panel,.editorial-status,.cares-principles article{padding:22px}}
+@media(max-width:420px){.about-nav{grid-template-columns:1fr}.about-nav a{min-height:44px;padding-block:10px}.about-page{overflow-wrap:anywhere}}
