@@ -37,7 +37,7 @@ export function CustomerAccountMenu(){
     return()=>{document.removeEventListener("pointerdown",outside);document.removeEventListener("keydown",escape);};
   },[open]);
   if(!ready)return <span role="status" aria-label="Checking account" className="store-login-link">Account</span>;
-  if(!user)return <Link to="/login" className="store-login-link"><span className="store-login-desktop">Login Or Register</span><span className="store-login-mobile">Login / Register</span></Link>;
+  if(!user)return <Link to="/login" aria-label="Login or register" className="store-login-link"><span className="store-login-desktop">Login Or Register</span><span className="store-login-mobile">Sign in</span></Link>;
   const name=profileName||[user.user_metadata?.["first_name"],user.user_metadata?.["last_name"]].filter(Boolean).join(" ").trim()||user.email?.split("@")[0]||"My Account";
   return <div className="relative" ref={area}>
     <button type="button" aria-haspopup="menu" aria-expanded={open} aria-controls="artisan-customer-menu"
