@@ -1,0 +1,16 @@
+{
+  "name": "artisanmart-contact",
+  "main": "contact.js",
+  "compatibility_date": "2026-11-27",
+  "routes": [{ "pattern": "artisanmart.site/api/contact", "zone_name": "artisanmart.site" }],
+  "send_email": [{
+    "name": "EMAIL",
+    "destination_address": "artisanmartllc@gmail.com",
+    "allowed_sender_addresses": ["inquiries@artisanmart.site"]
+  }],
+  "ratelimits": [{
+    "name": "CONTACT_LIMIT",
+    "namespace_id": "90728",
+    "simple": { "limit": 5, "period": 60 }
+  }]
+}

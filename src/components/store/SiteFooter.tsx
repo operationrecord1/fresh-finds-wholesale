@@ -1,17 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Boxes, HandHeart, BriefcaseBusiness, Phone, Megaphone, Facebook, ChevronDown, ArrowUp, Instagram } from "lucide-react";
+import { Megaphone, Facebook, ArrowUp, Instagram } from "lucide-react";
 import "./SiteFooter.css";
 
-const shortcuts = [
-  { title: "Industries Served", page: "industries-served", icon: Boxes },
-  { title: "Artisan Cares", page: "community-outreach", icon: HandHeart },
-  { title: "Career Opportunities", page: "careers", icon: BriefcaseBusiness },
-  { title: "Contact Us", page: "contact", icon: Phone },
-];
 const aboutLinks: [string, string][] = [
   ["Industries Served", "industries-served"],
-  ["Artisan Cares", "community-outreach"], ["Easy Shipping", "shipping"],
-  ["Contact Us", "contact"], ["Artisan Mart Careers", "careers"],
+  ["Easy Shipping", "shipping"], ["Artisan Mart Careers", "careers"],
+  ["Artisan Cares", "community-outreach"], ["Contact Us", "contact"],
 ];
 function FooterLink({ page, children }: { page: string; children: React.ReactNode }) {
   if (page === "careers") return <Link to="/about-us" hash="careers">{children}</Link>;
@@ -25,22 +19,11 @@ function FooterLink({ page, children }: { page: string; children: React.ReactNod
 export function SiteFooter() {
   return (
     <footer className="artisan-footer" aria-label="Artisan Mart footer">
-      <nav className="footer-shortcuts footer-wrap" aria-label="Explore Artisan Mart">
-        {shortcuts.map(({ title, page, icon: Icon }) => <FooterLink key={page} page={page}><Icon aria-hidden="true" /><span>{title}</span></FooterLink>)}
-      </nav>
       <div className="footer-main">
         <div className="footer-wrap footer-columns">
-          <section className="footer-contact" aria-labelledby="footer-brand">
-            <h2 id="footer-brand"><Link to="/" className="footer-brand-logo" aria-label="Artisan Mart home" draggable={false} onDragStart={(e) => e.preventDefault()}><img src={`${import.meta.env.BASE_URL}artisan-mart-approved.svg`} alt="Artisan Mart" width={2052} height={346} draggable={false} /></Link></h2>
-            <address>7901 4TH ST N, STE 18005<br />ST. PETERSBURG, FL 33702, US</address>
-            
-            
-            <div className="footer-contact-links"><p>Customer Service: <a href="mailto:email@artisanmart.site">email@artisanmart.site</a></p><p>Sell Closeouts: <a href="mailto:offer@artisanmart.site">offer@artisanmart.site</a></p></div>
-          </section>
-          <section className="footer-about" aria-label="About Us">
-            <h2 className="footer-desktop-heading">About Us</h2>
-            <div className="footer-desktop-links"><AboutLinks /></div>
-            <details className="footer-mobile-links"><summary>About Us <ChevronDown aria-hidden="true" size={18} /></summary><AboutLinks /></details>
+          <section className="footer-about" aria-labelledby="footer-about-title">
+            <h2 id="footer-about-title">About Us</h2>
+            <AboutLinks />
           </section>
           <section className="footer-newsletter" aria-labelledby="footer-newsletter-title">
             <h2 id="footer-newsletter-title"><Megaphone aria-hidden="true" size={23} /> Join Our Newsletter To Get Exclusives</h2>
@@ -49,6 +32,11 @@ export function SiteFooter() {
               <a href="https://www.facebook.com/profile.php?id=61593310559477" aria-label="Artisan Mart on Facebook" target="_blank" rel="noopener noreferrer"><Facebook fill="currentColor" aria-hidden="true" /></a>
               <a href="https://www.instagram.com/artisan__mart/" aria-label="Artisan Mart on Instagram" target="_blank" rel="noopener noreferrer" style={{ background: "radial-gradient(circle at 30% 105%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%)" }}><Instagram aria-hidden="true" /></a>
             </div>
+          </section>
+          <section className="footer-contact" aria-labelledby="footer-brand">
+            <h2 id="footer-brand"><Link to="/" className="footer-brand-logo" aria-label="Artisan Mart home" draggable={false} onDragStart={(e) => e.preventDefault()}><img src={`${import.meta.env.BASE_URL}artisan-mart-approved.svg`} alt="Artisan Mart" width={2052} height={346} draggable={false} /></Link></h2>
+            <address>7901 4TH ST N, STE 18005<br />ST. PETERSBURG, FL 33702<br />United States</address>
+            <div className="footer-contact-links"><p>Customer Service: <a href="mailto:email@artisanmart.site">email@artisanmart.site</a></p><p>Sell Closeouts: <a href="mailto:offer@artisanmart.site">offer@artisanmart.site</a></p></div>
           </section>
         </div>
         <div className="footer-wrap footer-top-row"><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}>Back to top <ArrowUp size={16} aria-hidden="true" /></button></div>

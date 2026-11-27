@@ -3,3 +3,6 @@
 @media(max-width:540px){.contact-page{padding:20px 16px}.contact-intro{padding-bottom:24px}.contact-form-card,.contact-info-card{padding:22px 18px;border-radius:14px}.contact-fields,.contact-sidebar{grid-template-columns:1fr}.contact-topics{gap:8px;margin:22px 0}.contact-topics button{flex-direction:column;font-size:12px;padding:10px 8px}.contact-primary{max-width:100%;font-size:13px}.contact-layout{gap:22px}.contact-intro p{font-size:14px}}
 
 .contact-primary:disabled{opacity:.65;cursor:default}.contact-ticket-label{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;color:#126c9b}.contact-ticket-number{display:block;margin:10px 0;font-family:monospace;font-size:15px;overflow-wrap:anywhere;line-height:1.7;user-select:all}.contact-ticket p{margin:8px 0}.contact-ticket-again{min-height:44px;padding:8px 0;border:0;background:none;color:#126c9b;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.contact-honeypot{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
+.contact-error{background:#fff0f0;color:#8d2630}.contact-error a{text-decoration:underline;font-weight:700}
+@media(max-width:340px){.contact-topics{grid-template-columns:1fr}.contact-topics button{flex-direction:row}}

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Info, Store, Heart, Package, ArrowUp, ShoppingBag, School, Building2, BriefcaseBusiness } from "lucide-react";
+import { Info, Store, Heart, Package, ArrowUp, ShoppingBag, School, Building2, BriefcaseBusiness, Phone } from "lucide-react";
 import "./AboutPage.css";
 const sections = [
  { id: "about-us", label: "About Us", icon: Info },
@@ -32,6 +32,7 @@ export function AboutPage() {
   <div className="about-layout">
    <nav className="about-nav" aria-label="About Us sections">
     {sections.map(({id,label,icon:Icon})=><a key={id} href={`#${id}`} aria-current={active===id?"location":undefined} onClick={()=>setActive(id)}><Icon aria-hidden="true"/><span>{label}</span></a>)}
+    <Link to="/contact"><Phone aria-hidden="true"/><span>Contact Us</span></Link>
     <a className="about-back" href="#about-us"><ArrowUp size={16} aria-hidden="true"/>Back to top</a>
    </nav>
    <div className="about-content">
