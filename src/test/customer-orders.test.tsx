@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { CustomerOrderHistory, canRequestReturn, orderStage } from "@/components/store/CustomerOrderHistory";
 const state=vi.hoisted(()=>({orders:[] as any[]}));
-vi.mock("@tanstack/react-router",()=>({Link:({to,search,params,children,...props}:any)=><a href={to+(search?'?'+new URLSearchParams(search):'')} {...props}>{children}</a>}));
+vi.mock("@tanstack/react-router",()=>({useNavigate:()=>vi.fn(),Link:({to,search,params,children,...props}:any)=><a href={to+(search?'?'+new URLSearchParams(search):'')} {...props}>{children}</a>}));
 vi.mock("@/lib/artisan-auth",()=>({useArtisanAuth:()=>({ready:true,user:{id:"owner",email_confirmed_at:"2026-01-01"}}),artisanSupabase:{from:()=>({select:()=>({eq:()=>({eq(){return this;},order(){return this;},limit:async()=>({data:state.orders,error:null})})})})}}));
 afterEach(()=>{cleanup();state.orders=[];});
 const fixture={id:"order-1",order_number:12,status:"fulfilled",payment_status:"paid",total_cents:58000,subtotal_cents:58000,discount_cents:0,shipping_cents:0,tax_cents:0,created_at:"2026-11-25T12:00:00Z",updated_at:"2026-11-27T12:00:00Z",payment_confirmed_at:"2026-11-25T12:05:00Z",shipped_at:null,delivered_at:null,shipping_address:{first_name:"Test",last_name:"Buyer",line1:"123 Main St",line2:"Apt 4B",city:"Tampa",state:"FL",postal_code:"33602"},artisan_order_items:[{id:"item-1",sku:"BI578",title_snapshot:"Purchased product title",quantity:4,unit_price_cents:14500,line_total_cents:58000}]};

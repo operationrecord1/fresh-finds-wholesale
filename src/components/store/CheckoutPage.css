@@ -23,5 +23,6 @@ body:has(.checkout-page){background:#fff}
 .checkout-address-credit{font-size:11px;line-height:1.5;color:#596976;margin-top:4px;overflow-wrap:anywhere}
 .checkout-address-credit a{text-decoration:underline}
 .checkout-address-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;grid-column:1/-1}
-.checkout-address-pair>label{min-width:0}
+.checkout-address-pair>label{min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.checkout-address-pair>label>input,.checkout-address-pair>label>select{margin-top:auto}
 @media(max-width:380px){.checkout-address-pair{gap:10px}.checkout-address-pair input,.checkout-address-pair select{padding-inline:7px;font-size:13px}}
