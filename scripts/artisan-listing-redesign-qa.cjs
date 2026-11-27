@@ -143,6 +143,8 @@ async function main() {
     if(await thumbs.count()>1){await thumbs.nth(1).click();assert.equal(await thumbs.nth(1).getAttribute('aria-pressed'),'true');assert.equal(await dialog.locator('.store-product-badges,.store-product-badge').count(),0);}
     if((route==='/'||route==='/collection/new-arrivals')&&[240,780,1440,3000].includes(width))await page.screenshot({path:path.join(OUT,'preview-'+(route==='/'?'home':'listing')+'-'+width+'.png')});
     const detail=dialog.locator('.product-detail-link');const href=await detail.getAttribute('href');await detail.click();await page.waitForURL('**/product/**');
+    await page.locator('h1.text-3xl.font-bold.text-title').waitFor({state:'visible'});
+    await page.locator('.store-home-products,.store-catalog-grid').first().waitFor({state:'detached'});
     assert.equal(await page.locator('.store-product-badges,.store-product-badge').count(),0);
     const next=page.getByRole('button',{name:'Next image',exact:true});if(await next.count()){await next.click();assert.equal(await page.locator('.store-product-badge').count(),0);}
     if(route==='/'&&[240,1440].includes(width))await page.screenshot({path:path.join(OUT,'detail-'+width+'.png')});
