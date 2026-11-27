@@ -8,14 +8,6 @@ await access(`${dir}/_shell.html`);
 await copyFile(`${dir}/_shell.html`, `${dir}/index.html`);
 
 let html = await readFile(`${dir}/index.html`, "utf8");
-// Use a deployment-specific URL for CSS to avoid stale HTML cached for a newly created asset.
-for (const [, filename] of [...html.matchAll(/href="\/assets\/(index-[^"/]+\.css)"/g)]) {
-  const css = await readFile(`${dir}/assets/${filename}`);
-  const freshName = `header-${createHash("sha256").update(css).digest("hex").slice(0, 16)}.css`;
-  await copyFile(`${dir}/assets/${filename}`, `${dir}/assets/${freshName}`);
-  html = html.replaceAll(`/assets/${filename}`, `/assets/${freshName}`);
-}
-
 for (const [tag, attributes, body] of [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]) {
   if (/\bsrc\s*=/i.test(attributes) || !body.trim()) continue;
   const filename = `bootstrap-${createHash("sha256").update(body).digest("hex").slice(0, 16)}.js`;
