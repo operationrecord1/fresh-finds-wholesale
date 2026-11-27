@@ -1,11 +1,19 @@
 name: Artisan Header Responsive Acceptance
 on:
   push:
-    branches: [main]
+    branches: [main, codex/cart-auth-layout]
     paths:
       - src/components/store/SiteHeader.tsx
       - src/components/store/SiteHeader.css
       - src/components/store/CustomerAccountMenu.tsx
+      - src/components/store/MiniCart.tsx
+      - src/components/store/AccountForm.*
+      - src/components/store/SiteFooter.css
+      - src/routes/__root.tsx
+      - src/routes/login.tsx
+      - src/routes/register.tsx
+      - src/routes/forgot-password.tsx
+      - src/routes/reset-password.tsx
       - scripts/header-responsive-qa.cjs
       - .github/workflows/artisan-header-responsive.yml
   workflow_dispatch:
@@ -39,6 +47,7 @@ jobs:
           name: artisan-header-local-screenshots
           path: header-responsive-qa/
   production-browser:
+    if: github.ref == 'refs/heads/main'
     needs: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 20
