@@ -24,7 +24,7 @@ export async function verifyStripeSignature(
   const claim=hexBytes(candidate);
   if(!claim)continue;
   let difference=0;
-  for(let i=0;i<correct.length;i++)difference|=correct[i]!^claim[i]!;
+  for(let i=0;i<correct.length;i++)difference|=correct[i]^claim[i];
   match|=Number(difference===0);
  }
  return match===1;
