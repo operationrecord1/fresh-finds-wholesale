@@ -10,6 +10,7 @@ import { makeCheckoutRequest } from "@/lib/artisan-checkout-request";
 import { preserveCartForCheckout, loadCheckoutCoupon } from "@/lib/artisan-checkout-intent";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
 import "@/components/store/CheckoutPage.css";
+import { US_STATES } from "@/lib/us-address";
 
 export const Route = createFileRoute("/checkout")({
  head: () => ({ meta: [
@@ -24,7 +25,13 @@ export const Route = createFileRoute("/checkout")({
 type Fields = {first_name:string;last_name:string;company:string;email:string;phone:string;line1:string;city:string;state:string;postal_code:string;shipping_first_name:string;shipping_last_name:string;shipping_phone:string;shipping_line1:string;shipping_city:string;shipping_state:string;shipping_postal_code:string};
 type Session = {client_secret:string;session_id:string;order_number:number;amount_total:number;currency:string};
 const inputClass = "mt-1.5 block min-h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-[15px] text-white outline-none transition placeholder:text-slate-500 focus:border-white focus:ring-2 focus:ring-white/10";
-const Field = ({label,name,value,onChange,type="text",required=true,autoComplete}:{label:string;name:string;value:string;onChange:(name:string,value:string)=>void;type?:string;required?:boolean;autoComplete?:string}) => <label className="block text-sm font-medium text-foreground">{label}{required&&<span className="text-destructive"> *</span>}<input className={inputClass} name={name} type={type} value={value} required={required} maxLength={name.includes("line1")?240:140} autoComplete={autoComplete} onChange={e=>onChange(name,e.target.value)} /></label>;
+const Field = ({label,name,value,onChange,type="text",required=true,autoComplete}:{label:string;name:string;value:string;onChange:(name:string,value:string)=>void;type?:string;required?:boolean;autoComplete?:string}) => {
+ const shipping=name.startsWith("shipping_");
+ const token=autoComplete?.replace(/^(billing|shipping) /,"");
+ const completion=`section-${shipping?"delivery":"billing"} ${shipping?"shipping":"billing"} ${token||"off"}`;
+ const state=name.endsWith("state");
+ return <label htmlFor={`checkout-${name}`} className="block text-sm font-medium text-foreground">{label}{required&&<span className="text-destructive"> *</span>}{state?<select id={`checkout-${name}`} className={inputClass} name={name} value={value} required={required} autoComplete={completion} onChange={e=>onChange(name,e.target.value)}><option value="">Select state</option>{US_STATES.map(s=><option key={s} value={s}>{s}</option>)}</select>:<input id={`checkout-${name}`} className={inputClass} name={name} type={type} value={value} required={required} maxLength={name.includes("line1")?240:name.endsWith("postal_code")?10:140} inputMode={name.endsWith("postal_code")?"numeric":undefined} pattern={name.endsWith("postal_code")?"[0-9]{5}(-[0-9]{4})?":undefined} autoComplete={completion} onChange={e=>onChange(name,e.target.value)} />}</label>;
+};
 const usd=(cents:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(cents/100);
 async function checkoutFailureMessage(error:unknown,data:unknown):Promise<string>{
  const errorObject=error as {message?:string;context?:Response}|null;
@@ -73,7 +80,7 @@ function StripePayment({sessionId,totalCents,billing,onError,onSuccess}:{session
  if(result.type==="error")return <p role="alert" className="mt-5 text-sm text-red-700">{result.error.message}</p>;
  return <div className="mt-6 border-t border-border pt-5">
   <div className="mb-3 flex items-center gap-2"><LockKeyhole size={17} className="text-primary"/><h3 className="font-semibold">Card payment</h3></div>
-  <PaymentElement options={{layout:"tabs",paymentMethodOrder:["card"]}} />
+  <PaymentElement options={{layout:"tabs",paymentMethodOrder:["card"],wallets:{applePay:"never",googlePay:"never"}}} />
   <button type="button" onClick={()=>void confirm()} disabled={busy||!checkout} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">
    {busy?"Processing payment…":`Complete purchase · ${usd(totalCents)}`}
   </button>
@@ -152,7 +159,8 @@ export function Checkout(){
    </div>
   </header>
   <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] xl:gap-8">
-   <form id="checkout-form" onSubmit={e=>void createPayment(e)} className="min-w-0 rounded-2xl border border-slate-800 bg-[#111316] p-5 shadow-2xl sm:p-8">
+   <form id="checkout-form" autoComplete="on" onSubmit={e=>void createPayment(e)} className="min-w-0 rounded-2xl border border-slate-800 bg-[#111316] p-5 shadow-2xl sm:p-8">
+    <input type="hidden" name="country" value="US" autoComplete="section-billing billing country"/>
     <div className="mb-6 flex items-start justify-between gap-4 border-b border-slate-800 pb-5"><div><h2 className="text-xl font-bold text-white">Billing information</h2><p className="mt-1 text-sm text-slate-400">Check your contact and billing details.</p></div>{profileLoading&&<span role="status" className="text-xs text-slate-400">Loading profile…</span>}</div>
     <div className="grid gap-4 sm:grid-cols-2">
      <Field label="First name" name="first_name" value={fields.first_name} onChange={updateField} autoComplete="given-name"/>
