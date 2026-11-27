@@ -28,7 +28,7 @@ function Page() {
     ["Category", p.category ?? "Not verified"], ["Subcategory", p.subcategory ?? "Not verified"],
   ];
   return (
-    <div className="mx-auto grid max-w-[1300px] gap-8 px-4 py-6 md:grid-cols-2">
+    <div className="store-product-detail mx-auto grid max-w-[1300px] gap-8 px-4 py-6 md:grid-cols-2">
       <div>
         <div className="relative aspect-square rounded border border-border bg-card p-4">
           <ProductImage p={p} i={img} eager />
@@ -37,11 +37,11 @@ function Page() {
             <button aria-label="Next image" className="absolute right-2 top-1/2" onClick={() => setImg((img + 1) % n)}><ChevronRight /></button>
           </>}
         </div>
-        <div className="mt-3 flex gap-2">{Array.from({ length: n }, (_, k) => (
+        <div className="mt-3 flex flex-wrap gap-2">{Array.from({ length: n }, (_, k) => (
           <button aria-label={`View product image ${k + 1}`} aria-pressed={img === k} key={k} onClick={() => setImg(k)} className={`h-20 w-20 rounded border bg-card ${k === img ? "border-primary" : "border-border"}`}><ProductImage p={p} i={k} /></button>))}</div>
       </div>
       <div className="space-y-3">
-        <h1 className="text-3xl font-bold text-title">{p.title}{p.titleTruncated ? "…" : ""}</h1>
+        <h1 className="store-product-detail-title font-bold text-title">{p.title}{p.titleTruncated ? "…" : ""}</h1>
         {p.titleTruncated && <p className="text-xs text-muted-foreground">Full title not yet verified (reference showed a shortened title).</p>}
         <div className="font-arial">Item # <b>{p.sku}</b> · Qty Avail: <b>{p.stock?.toLocaleString() ?? "—"}</b></div>
         <div className="text-2xl font-bold text-price">Price: {p.price != null ? money(p.price) : "—"}</div>
@@ -52,7 +52,7 @@ function Page() {
         </section>
         <section>
           <h2 className="mb-2 text-xl font-bold">Specifications</h2>
-          <table className="w-full text-sm"><tbody>{specs.map(([k, v]) => (
+          <table className="store-product-detail-specs w-full text-sm"><tbody>{specs.map(([k, v]) => (
             <tr key={k} className="border-b border-border"><td className="py-1 pr-4 font-semibold">{k}</td><td>
               {k === "Category" && p.category ? <Link to="/category/$slug" params={{ slug: slugify(p.category) }} className="text-primary underline">{v}</Link> : v}
             </td></tr>))}</tbody></table>
