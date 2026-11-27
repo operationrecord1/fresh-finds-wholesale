@@ -469,3 +469,7 @@
 
 /* Emphasize the three utility labels without changing size or color. */
 .store-utility-links>a,.store-utility-links>button{font-weight:600}
+
+/* Match all customer header labels without changing other controls. */
+.store-header .store-utility-links>a,.store-header .store-utility-links>button,.store-header .store-login-link,.store-header .store-cart-button>span:last-child{font-family:inherit;font-size:14px;font-weight:600;font-style:normal;line-height:20px}
+.store-header .store-utility-links>a,.store-header .store-utility-links>button{display:inline-flex;align-items:center;position:relative;top:-1px}
