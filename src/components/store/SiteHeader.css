@@ -305,3 +305,61 @@
  .store-mobile-menu{left:8px;right:8px}
  .store-mobile-menu details>div{grid-template-columns:1fr}
 }
+
+/* iPad mini and wider: keep the shopping controls in one header line. */
+@media(min-width:760px) and (max-width:1360px){
+ .store-header-layout{grid-template-columns:clamp(105px,13vw,165px) minmax(100px,1fr) auto;grid-template-rows:auto auto auto;gap:3px clamp(6px,.8vw,12px);padding:0 clamp(8px,1.2vw,16px) 6px}
+ .store-minimum{grid-column:1/-1;grid-row:1;width:100%;padding:4px 6px;font-size:12px;border-radius:0 0 10px 10px}
+ .store-brand-contact{grid-column:1;grid-row:2;align-self:center;min-width:0;overflow:hidden}
+ .artisan-wordmark{width:100%;max-width:165px}
+ .store-search{grid-column:2;grid-row:2;min-width:0}
+ .store-search input{height:40px;font-size:12px;padding-left:8px}
+ .store-utilities{grid-column:3;grid-row:2;display:flex;flex-direction:row;align-self:center;align-items:center;justify-self:end;width:auto;gap:clamp(4px,.6vw,9px);border:0;padding:0}
+ .store-utility-links,.store-account-links{display:flex;align-items:center;justify-content:flex-start;gap:clamp(4px,.6vw,9px);font-size:clamp(10px,.78vw,12px);white-space:nowrap}
+ .store-header .store-utilities .store-mobile-hide,.store-header .store-utilities [data-header-secondary]{display:flex}
+ .store-login-desktop{display:inline}.store-login-mobile{display:none}
+ .store-login-link{min-height:40px;font-size:inherit}
+ .store-account-links>div{max-width:120px;min-width:0}
+ .store-cart-button{width:auto;min-height:40px!important;padding:4px 6px;gap:4px}
+ .store-cart-button>span:last-child{display:inline}
+ .store-cart-icon{width:26px;height:28px}.store-cart-icon svg{width:22px;height:22px}
+ .store-navigation-area{grid-column:1/-1;grid-row:3;display:block;min-width:0}
+ .store-nav{width:100%;min-width:0;gap:clamp(8px,1.2vw,18px);font-size:clamp(11px,1.05vw,14px)}
+ .store-nav a,.store-nav button{min-height:38px}
+ .store-mobile-menu-toggle{display:none}.store-call-button{display:none}
+}
+@media(min-width:760px) and (max-width:1360px){.store-nav-closeouts,.store-nav-imports{display:none!important}}
+@media(min-width:760px) and (max-width:999px){.store-header .store-account-links .store-mobile-hide{display:none}}
+
+/* Narrow screens: menu, logo, cart and sign-in first; search fills the next line. */
+@media(max-width:759px){
+ .store-header-layout{grid-template-columns:44px minmax(0,1fr) 48px minmax(54px,auto);grid-template-rows:auto auto auto;gap:6px;padding:0 8px 8px}
+ .store-mobile-menu-toggle{grid-column:1;grid-row:2;display:grid;place-items:center;width:44px;height:44px}
+ .store-mobile-menu-toggle svg{width:23px;height:23px}
+ .store-brand-contact{grid-column:2;grid-row:2;align-self:center;justify-self:start;min-width:0;max-width:100%;overflow:hidden}
+ .artisan-wordmark{width:clamp(76px,21vw,150px);max-width:100%}
+ .store-cart-button{grid-column:3;grid-row:2;width:48px;min-height:44px!important}
+ .store-account-links>.store-login-link,.store-account-links>div,.store-account-links>span{grid-column:4;grid-row:2;justify-self:end;align-self:center;max-width:100%}
+ .store-login-link{font-size:clamp(10px,1.6vw,12px);white-space:nowrap}
+ .store-search{grid-column:1/-1;grid-row:3;width:100%}
+ .store-search input{height:42px;font-size:14px}
+ .store-minimum{grid-column:1/-1;grid-row:1}
+ .store-mobile-menu{left:8px;right:8px}
+ .store-cart-button,.store-mobile-menu-toggle{background:transparent;border-color:#dfe8ec;color:#17485f;transition:background-color .18s ease,border-color .18s ease,transform .18s ease}
+ .store-cart-button:hover,.store-mobile-menu-toggle:hover{background:#f3f8fa;border-color:#aacbd9;transform:translateY(-1px)}
+ .store-cart-button:active,.store-mobile-menu-toggle:active{transform:translateY(0)}
+}
+@media(max-width:499px){
+ .store-minimum{display:none}
+ .store-header-layout{grid-template-rows:auto auto}
+ .store-mobile-menu-toggle,.store-brand-contact,.store-cart-button,.store-account-links>.store-login-link,.store-account-links>div,.store-account-links>span{grid-row:1}
+ .store-search{grid-row:2}
+}
+@media(max-width:280px){
+ .store-header-layout{grid-template-columns:38px minmax(0,1fr) 42px 44px;gap:4px;padding-inline:6px}
+ .store-mobile-menu-toggle{width:38px;height:40px}
+ .store-cart-button{width:42px;min-height:40px!important}
+ .artisan-wordmark{width:76px}
+ .store-login-link{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.store-cart-button,.store-mobile-menu-toggle{transition:none}}

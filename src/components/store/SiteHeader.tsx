@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { MoreHorizontal, Phone, Search, ChevronDown, Megaphone } from "lucide-react";
+import { Menu, Phone, Search, ChevronDown, Megaphone } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
@@ -15,7 +15,7 @@ export function SiteHeader() {
     if (!mobileOpen) return;
     const outside = (e: PointerEvent) => { if (!mobilePanel.current?.contains(e.target as Node) && !mobileToggle.current?.contains(e.target as Node)) setMobileOpen(false); };
     const escape = (e: KeyboardEvent) => { if (e.key === "Escape") { setMobileOpen(false); mobileToggle.current?.focus(); } };
-    const resize = () => { if (window.innerWidth > 1024) setMobileOpen(false); };
+    const resize = () => { if (window.innerWidth >= 760) setMobileOpen(false); };
     document.addEventListener("pointerdown", outside); document.addEventListener("keydown", escape); window.addEventListener("resize", resize);
     return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); window.removeEventListener("resize", resize); };
   }, [mobileOpen]);
@@ -87,7 +87,7 @@ export function SiteHeader() {
   return (
     <header onPointerLeave={(e) => { if (e.pointerType === "mouse") setMenu(null); }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMenu(null); }} ref={header} className="store-header relative z-40 bg-card shadow-sm">
       <div className="store-header-layout">
-        <button ref={mobileToggle} className="store-mobile-menu-toggle" type="button" aria-label="Browse products menu" aria-expanded={mobileOpen} aria-controls="store-mobile-menu" onClick={() => { setMobileOpen(!mobileOpen); setMenu(null); }}><MoreHorizontal aria-hidden="true" /></button>
+        <button ref={mobileToggle} className="store-mobile-menu-toggle" type="button" aria-label="Browse products menu" aria-expanded={mobileOpen} aria-controls="store-mobile-menu" onClick={() => { setMobileOpen(!mobileOpen); setMenu(null); }}><Menu aria-hidden="true" /></button>
         <Link to="/cart" className="store-minimum bg-gradient-to-b from-minimum to-minimum-deep text-center font-bold text-primary-foreground">
           Minimum <br />Order Amount <br /> $500
         </Link>
