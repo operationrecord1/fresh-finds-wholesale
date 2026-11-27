@@ -31,6 +31,7 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
    });
   }
   async function checkSpacing(width){
+   await page.waitForFunction(()=>!!document.querySelector('.store-home-panels')?.style.getPropertyValue('--store-home-heading-margin'));
    const s=await spacing();
    assert.equal(s.columns,width<=380?1:2,"Existing section columns changed");
    assert(Math.abs(s.mainGap-s.referenceGap)<=2,"Heading gap mismatch at "+width+": "+JSON.stringify(s));
