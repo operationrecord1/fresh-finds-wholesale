@@ -1,0 +1,63 @@
+name: Artisan Header Responsive Acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - src/components/store/SiteHeader.tsx
+      - src/components/store/SiteHeader.css
+      - src/components/store/CustomerAccountMenu.tsx
+      - scripts/header-responsive-qa.cjs
+      - .github/workflows/artisan-header-responsive.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+      - run: bunx tsc --noEmit
+      - run: bun run build:cloudflare
+      - run: |
+          npm install --prefix /tmp/artisan-header-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-header-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Check local rendered header
+        env:
+          NODE_PATH: /tmp/artisan-header-browser/node_modules
+          ARTISAN_QA_SERVE: '1'
+        run: node scripts/header-responsive-qa.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artisan-header-local-screenshots
+          path: header-responsive-qa/
+  production-browser:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: |
+          npm install --prefix /tmp/artisan-header-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-header-browser/node_modules/.bin/playwright install --with-deps chromium
+      - run: sleep 90
+      - name: Check live rendered header
+        env:
+          NODE_PATH: /tmp/artisan-header-browser/node_modules
+          ARTISAN_HEADER_URL: https://artisanmart.site
+        run: node scripts/header-responsive-qa.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artisan-header-live-screenshots
+          path: header-responsive-qa/

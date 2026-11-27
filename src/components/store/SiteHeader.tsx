@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { MoreHorizontal, Phone, Search, ChevronDown, ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
+import { MoreHorizontal, Phone, Search, ChevronDown, Megaphone } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
@@ -55,31 +55,6 @@ export function SiteHeader() {
     };
   }, []);
   const navigation = useRef<HTMLDivElement>(null);
-  const navItems = useRef<HTMLElement>(null);
-  const [overflow, setOverflow] = useState({ needed: false, left: false, right: false });
-  useEffect(() => {
-    const viewport = navigation.current;
-    const items = navItems.current;
-    if (!viewport || !items) return;
-    let active = true;
-    const update = () => {
-      if (!active) return;
-      const max = viewport.scrollWidth - viewport.clientWidth;
-      setOverflow({ needed: max > 1, left: viewport.scrollLeft > 1, right: viewport.scrollLeft < max - 1 });
-    };
-    const observer = new ResizeObserver(update);
-    observer.observe(viewport);
-    observer.observe(items);
-    viewport.addEventListener("scroll", update, { passive: true });
-    document.fonts.ready.then(update);
-    update();
-    return () => { active = false; observer.disconnect(); viewport.removeEventListener("scroll", update); };
-  }, []);
-  const scrollNavigation = (direction: number) => {
-    const viewport = navigation.current;
-    if (!viewport) return;
-    viewport.scrollBy({ left: direction * viewport.clientWidth * .75, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
-  };
   useEffect(() => {
     const closeOutside = (event: PointerEvent) => {
       if (!header.current?.contains(event.target as Node)) setMenu(null);
@@ -123,18 +98,17 @@ export function SiteHeader() {
             </Link>
         </div>
             <form role="search" className="store-search relative" onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav({ to: "/search", search: { q: q.trim() } }); }}>
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products or item numbers" autoComplete="off" name="q" aria-label="Search products" className="h-[54px] w-full rounded-[20px] border border-border bg-secondary px-5 pr-14 font-arial text-lg outline-none focus:ring-2 focus:ring-ring" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products or item numbers" autoComplete="off" name="q" aria-label="Search products" className="h-[54px] w-full rounded-[20px] border border-border bg-secondary px-5 pr-14 font-arial text-lg" />
               <button disabled={!q.trim()} aria-label="Search" className="absolute right-4 top-1/2 -translate-y-1/2 disabled:opacity-70"><Search className="h-7 w-7" /></button>
             </form>
         <a className="store-call-button" href={BUSINESS_PHONE_HREF}><Phone size={20} aria-hidden="true"/><span><small>CALL US TODAY</small><strong>{BUSINESS_PHONE}</strong></span></a>
-        <div className={`store-navigation-area${overflow.needed ? " has-overflow" : ""}`}>
-          {overflow.needed && <div className="store-nav-controls" aria-label="Navigation scroll controls"><button type="button" aria-label="Scroll navigation left" aria-controls="store-nav-viewport" disabled={!overflow.left} onClick={() => scrollNavigation(-1)}><ChevronLeft size={18} aria-hidden="true" /></button><button type="button" aria-label="Scroll navigation right" aria-controls="store-nav-viewport" disabled={!overflow.right} onClick={() => scrollNavigation(1)}><ChevronRight size={18} aria-hidden="true" /></button></div>}
+        <div className="store-navigation-area">
           <div id="store-nav-viewport" ref={navigation} className="store-header-scroll" tabIndex={0} role="region" aria-label="Product navigation">
-          <nav ref={navItems} className="store-nav" aria-label="Main navigation">
+          <nav className="store-nav" aria-label="Main navigation">
             <button ref={catTrigger} onPointerEnter={() => openHover("cat")} aria-expanded={menu === "cat"} aria-controls="store-dropdown" onClick={(e) => { if (e.detail > 0 && window.matchMedia("(hover: hover)").matches) setMenu("cat"); else toggle("cat"); }} className="flex items-center">Categories <ChevronDown className="h-4 w-4" /></button>
             <button ref={priceTrigger} onPointerEnter={() => openHover("price")} aria-expanded={menu === "price"} aria-controls="store-dropdown" onClick={(e) => { if (e.detail > 0 && window.matchMedia("(hover: hover)").matches) setMenu("price"); else toggle("price"); }} className="flex items-center">Shop By Price <ChevronDown className="h-4 w-4" /></button>
-            <Link to="/collection/$slug" params={{ slug: "imports" }}>Imports</Link>
-            <Link to="/collection/$slug" params={{ slug: "closeouts" }}>Closeouts</Link>
+            <Link className="store-nav-imports" to="/collection/$slug" params={{ slug: "imports" }}>Imports</Link>
+            <Link className="store-nav-closeouts" to="/collection/$slug" params={{ slug: "closeouts" }}>Closeouts</Link>
             <Link to="/collection/$slug" params={{ slug: "best-sellers" }}>Best Sellers</Link>
             <Link to="/collection/$slug" params={{ slug: "reduced-price" }}>Reduced Price</Link>
             <Link to="/collection/$slug" params={{ slug: "new-arrivals" }}>New Arrivals</Link>
@@ -158,15 +132,21 @@ export function SiteHeader() {
         <details><summary>Categories</summary><div>{CATEGORIES.map(name => <Link key={name} to="/category/$slug" params={{slug:slugify(name)}}>{name}</Link>)}</div></details>
         <details><summary>Shop By Price</summary><div>{PRICE_BANDS.map(b => <Link key={b.id} to="/shop-by-price" search={{price:b.id}}>{b.label}</Link>)}</div></details>
         {([['imports','Imports'],['closeouts','Closeouts'],['best-sellers','Best Sellers'],['reduced-price','Reduced Price'],['new-arrivals','New Arrivals']] as const).map(([slug,label]) => <Link key={slug} to="/collection/$slug" params={{slug}}>{label}</Link>)}
+        <Link to="/careers">Careers</Link><Link to="/contact">Contact Us</Link>
+        <details><summary>Knowledge Center</summary><div>{["Artisan Mart", "Shipping", "Closeouts"].map(name => <Link key={name} to="/info/$page" params={{page:slugify(name)}}>{name}</Link>)}</div></details>
+        <Link to="/newsletter">Join Our Newsletter</Link>
       </nav>}
       {menu && (
         <div ref={dropdown} id="store-dropdown" className={`store-dropdown store-dropdown-${menu}`} style={{ left: anchor.left, top: anchor.top, width: anchor.width }} onClick={() => setMenu(null)}>
           <div className="store-dropdown-surface">
             {menu === "cat" && (
+              <>
               <div className="store-category-columns">
                 {cols.map((c, i) => <ul key={i} className="space-y-2">{c.map((name) => (
                   <li key={name}><Link to="/category/$slug" params={{ slug: slugify(name) }} className="hover:underline">{name}</Link></li>))}</ul>)}
               </div>
+              <div className="store-category-collections"><Link to="/collection/$slug" params={{slug:"closeouts"}}>Closeouts</Link><Link to="/collection/$slug" params={{slug:"imports"}}>Imports</Link></div>
+              </>
             )}
             {menu === "price" && (
               <ul className="store-price-columns">{PRICE_BANDS.map((b) => (
