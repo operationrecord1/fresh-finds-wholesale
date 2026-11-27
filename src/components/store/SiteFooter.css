@@ -33,7 +33,8 @@
 .footer-bottom nav a{padding-block:8px}
 @media(max-width:900px){
  .footer-columns{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 24px}
- .footer-about{grid-column:1/-1;grid-row:1}
+ .footer-about{grid-column:1/-1;grid-row:1;text-align:center}
+ .footer-about-list a{justify-content:center}
  .footer-contact{grid-column:1;grid-row:2}
  .footer-newsletter{grid-column:2;grid-row:2}
  .footer-top-row{justify-content:center}
