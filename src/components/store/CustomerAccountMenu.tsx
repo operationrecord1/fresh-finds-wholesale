@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
@@ -36,13 +36,13 @@ export function CustomerAccountMenu(){
     document.addEventListener("keydown",escape);
     return()=>{document.removeEventListener("pointerdown",outside);document.removeEventListener("keydown",escape);};
   },[open]);
-  if(!ready)return <span role="status" aria-label="Checking account" className="store-login-link">Account</span>;
-  if(!user)return <Link to="/login" aria-label="Login or register" className="store-login-link"><span className="store-login-desktop">Login Or Register</span><span className="store-login-mobile">Sign in</span></Link>;
+  if(!ready)return <span role="status" aria-label="Checking account" className="store-login-link"><UserRound aria-hidden="true"/>Account</span>;
+  if(!user)return <Link to="/login" aria-label="Login or register" className="store-login-link"><UserRound aria-hidden="true"/><span className="store-login-desktop">Login Or Register</span><span className="store-login-mobile">Sign in</span></Link>;
   const name=profileName||[user.user_metadata?.["first_name"],user.user_metadata?.["last_name"]].filter(Boolean).join(" ").trim()||user.email?.split("@")[0]||"My Account";
   return <div className="relative" ref={area}>
     <button type="button" aria-haspopup="menu" aria-expanded={open} aria-controls="artisan-customer-menu"
       className="store-login-link flex items-center gap-1" onClick={()=>setOpen(v=>!v)}>
-      <span className="max-w-[150px] truncate">{name}</span><ChevronDown size={15} aria-hidden="true"/>
+      <UserRound aria-hidden="true"/><span className="max-w-[150px] truncate">{name}</span><ChevronDown size={15} aria-hidden="true"/>
     </button>
     {open&&<div id="artisan-customer-menu" role="menu"
       className="absolute right-0 top-full z-50 mt-2 min-w-[170px] rounded-lg border border-border bg-card p-2 shadow-lg">

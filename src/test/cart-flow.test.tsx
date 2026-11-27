@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, cleanup, waitFor, within } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { CartProvider, useCart } from "@/lib/cart";
 import { MiniCart } from "@/components/store/MiniCart";
@@ -54,17 +54,13 @@ it("cancel and Escape preserve items; confirm removes only the selected SKU; cle
   expect(screen.getByTestId("cart")).toHaveTextContent("[]|0");
   expect(sessionStorage.getItem(KEY)).toBe("[]");
 });
-it("opens a touch/keyboard cart preview and shows exact quantities and totals", () => {
+it("keeps cart navigation direct and the count stable across pointer interactions", () => {
   render(<CartProvider><Harness/></CartProvider>);
   fireEvent.click(screen.getByText("Add mirror case"));
-  fireEvent.click(screen.getByRole("button",{name:"Shopping cart, 1 products"}));
-  const preview = screen.getByRole("region",{name:"Shopping cart preview"});
-  expect(preview).toHaveTextContent("Quantity: 10");
-  expect(preview).toHaveTextContent("$145.00");
-  expect(within(preview).getByRole("button",{name:"Checkout"})).toBeDisabled();
-  fireEvent.click(within(preview).getByRole("button",{name:/Remove Black/}));
-  expect(screen.getByRole("alertdialog")).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button",{name:"Cancel"}));
+  const cartLink = screen.getByRole("link",{name:"1 Cart"});
+  expect(cartLink).toHaveAttribute("href","/cart");
+  fireEvent.pointerEnter(cartLink);
+  expect(screen.queryByRole("region",{name:"Shopping cart preview"})).not.toBeInTheDocument();
   expect(screen.getByTestId("cart")).toHaveTextContent('"pieces":10');
 });
 it("ignores malformed persisted data without crashing the cart", () => {
