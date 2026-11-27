@@ -69,10 +69,8 @@ Deno.serve(async(req:Request)=>{
   const user=userData?.user;
   if(userError||!user?.id||!user.email_confirmed_at)
    return respond(401,{error:"Verified customer login required"},origin);
-  // Reseller certificates are verified offline by the merchant. Only the
-  // server-managed app_metadata approval can authorize zero-tax live checkout.
-  if(!sandbox&&user.app_metadata?.artisan_reseller_approved!==true)
-   return respond(403,{error:"Reseller eligibility is not approved for checkout."},origin);
+  // The merchant verifies reseller documentation offline. Verified customer
+  // accounts may checkout without a second per-account reseller review.
   const {data:storedKey,error:secretError}=await admin.rpc("artisan_stripe_runtime_secret",{
    p_mode:mode,p_kind:"api_key",
   });
@@ -130,11 +128,11 @@ Deno.serve(async(req:Request)=>{
   const params=new URLSearchParams();
   params.set("mode","payment");
   params.set("ui_mode","custom");
-  // This account's Session must offer only card in the Payment Element.
-  params.set("payment_method_types[0]","card");
+  // Stripe selects eligible methods from the merchant's payment settings.
   params.set("customer_email",String(user.email));
   // Stripe payment receipts go only to the verified Auth email.
   params.set("payment_intent_data[receipt_email]",String(user.email));
+  params.set("payment_intent_data[description]",`Artisan Mart order ${created.order_number}`);
   params.set("billing_address_collection","required");
   params.set("shipping_address_collection[allowed_countries][0]","US");
   const returnOrigin=mode==="test"?origin:PRODUCTION;

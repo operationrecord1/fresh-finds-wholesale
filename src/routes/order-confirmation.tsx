@@ -35,6 +35,12 @@ function OrderConfirmation(){
   return()=>{active=false;};
  },[ready,user?.id,user?.email_confirmed_at,sessionId,retry]);
  const result=receipt?customerPaymentMessage(receipt.status,receipt.payment_status):null;
+ useEffect(()=>{if(result?.confirmed)window.dispatchEvent(new Event("artisan:stock-refresh"));},[result?.confirmed]);
+ useEffect(()=>{
+  if(!receipt||receipt.payment_status!=="unpaid"||receipt.status!=="pending_payment")return;
+  const timer=window.setTimeout(()=>setRetry(x=>x+1),3000);
+  return()=>window.clearTimeout(timer);
+ },[receipt]);
  return <main className="mx-auto max-w-[820px] px-4 py-10">
   <section className="rounded-xl border bg-card p-6 sm:p-8">
    <h1 className="text-3xl font-bold">Order Confirmation</h1>
@@ -43,7 +49,7 @@ function OrderConfirmation(){
    error?<p role="alert" className="text-red-700">{error}</p>:
    receipt?<div className="mt-4 space-y-2">
      <h2 className="text-xl font-semibold">Order #{receipt.order_number}</h2>
-     <p role="status" className={result?.confirmed?"text-green-700":"text-amber-700"}>{result?.message}</p>
+     <p role="status" className={result?.confirmed?"text-green-700":"text-amber-700"}>{result?.confirmed?"Thank you for your order! ":""}{result?.message}</p>
      <p>Order status: {receipt.status.replaceAll("_"," ")}</p>
      <p>Payment status: {receipt.payment_status.replaceAll("_"," ")}</p>
      <p className="font-bold">Total: {new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(receipt.total_cents/100)}</p>

@@ -1,0 +1,11 @@
+body:has(.checkout-page){background:#fff}
+.checkout-page{background:#fff;color:#193441}
+.checkout-page :is(form,aside>section){background:#fff;border-color:#e1e7eb;box-shadow:none}
+.checkout-page [class~="text-white"],.checkout-page [class~="text-slate-300"],.checkout-page [class~="text-slate-950"]{color:#193441}
+.checkout-page [class~="text-slate-400"],.checkout-page [class~="text-slate-500"]{color:#596976}
+.checkout-page [class~="border-slate-800"]{border-color:#e1e7eb}
+.checkout-page input:not([type=checkbox]){background:white;color:#193441;border-color:#cdd8df}
+.checkout-page button:is([type=submit],[type=button]){background:#197db8;color:white;box-shadow:none}
+.checkout-page button:is([type=submit],[type=button]):hover{background:#126591}
+.checkout-page [role=alert]{background:#fff5eb;color:#873e12;border-color:#efcfaa}
+.checkout-page [class~="text-emerald-300"],.checkout-page [class~="text-emerald-400"]{color:#267349}

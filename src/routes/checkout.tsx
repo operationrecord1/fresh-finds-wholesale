@@ -9,6 +9,7 @@ import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
 import { makeCheckoutRequest } from "@/lib/artisan-checkout-request";
 import { preserveCartForCheckout, loadCheckoutCoupon } from "@/lib/artisan-checkout-intent";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
+import "@/components/store/CheckoutPage.css";
 
 export const Route = createFileRoute("/checkout")({
  head: () => ({ meta: [
@@ -140,7 +141,7 @@ export function Checkout(){
  if(!verified)return <div className="mx-auto max-w-4xl p-10 text-center" role="status">Please sign in with a verified email to continue. <Link to="/login" className="text-primary underline">Sign in</Link></div>;
  if(!meetsMinimum(subtotal))return <div className="mx-auto max-w-4xl p-10 text-center">Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link></div>;
 
- return <main className="min-h-screen bg-[#090a0c] text-slate-100">
+ return <main className="checkout-page min-h-screen">
   <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
   {sandboxPreview&&<div role="status" className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">Sandbox checkout · Test cards only · No real charge</div>}
   <header className="mb-7 border-b border-slate-800 pb-6">
