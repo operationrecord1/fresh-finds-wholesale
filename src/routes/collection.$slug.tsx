@@ -18,15 +18,11 @@ export const Route = createFileRoute("/collection/$slug")({
 
 function Page() {
   const c = Route.useLoaderData();
-  const { primary: products, related } = collectionProducts(c.slug);
+  const { primary: products } = collectionProducts(c.slug);
   return (
     <>
       {products.length === 0 && <p className="mx-auto max-w-3xl px-4 pt-4 text-center text-sm text-muted-foreground">No verified products for this collection yet — awaiting the authorized catalog feed.</p>}
       <ProductListing key={c.slug} products={products} defaultSort={c.defaultSort} banner={<Banner kind={c.banner} title={c.title} />} />
-      {related.length > 0 && <section aria-label="More to explore">
-        <div className="store-container px-4 pt-8"><h2 className="text-2xl font-bold">More to Explore</h2><p className="mt-2 text-muted-foreground">Discover more from our wholesale catalog, beyond this collection.</p></div>
-        <ProductListing key={c.slug + "-related"} products={related} banner={<h3 className="text-xl font-semibold">Recommended Products</h3>} />
-      </section>}
     </>
   );
 }

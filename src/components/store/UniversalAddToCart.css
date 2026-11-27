@@ -1,0 +1,38 @@
+.universal-cart { position: static; align-self: center; margin-top: auto; }
+.universal-cart .product-touch-action { min-width: 100px; }
+.store-home-products .universal-cart .product-touch-action { min-width: 100px; }
+.store-listing .universal-cart { width: min(150px, 100%); }
+.store-listing .universal-cart .product-touch-action { width: 100%; }
+.universal-cart .product-hover-panel {
+  left: var(--purchase-left, 0px);
+  right: auto;
+  transform: none;
+  padding-top: 12px;
+  max-width: calc(100vw - 24px);
+}
+.universal-cart .product-hover-surface { background: #f6f8f9; }
+.universal-cart .product-hover-surface::before { background: #f6f8f9; }
+.store-listing .universal-cart .product-hover-surface,
+.store-listing .universal-cart .product-hover-surface::before { background: #f6f8f9; }
+.store-listing .universal-cart .product-hover-panel { animation: none; }
+.universal-cart .purchase-submit {
+  background: #0093d3;
+  color: white;
+  border-radius: 28px;
+  transition: background-color .16s ease, box-shadow .16s ease;
+}
+.universal-cart .purchase-submit:hover:not(:disabled),
+.universal-cart .purchase-submit:focus-visible { background: #087fb3; box-shadow: 0 3px 10px #0087bf40; }
+.universal-cart .purchase-submit:focus-visible { outline: 2px solid #074e70; outline-offset: 3px; }
+.store-product-card:has(.universal-cart[data-purchase-open=true]) { z-index: 40; }
+.universal-cart[data-purchase-open=true] .product-hover-panel { display: block; }
+@media (hover: hover) and (pointer: fine) {
+  .store-product-card:hover .universal-cart .product-hover-panel,
+  .store-product-card:focus-within .universal-cart .product-hover-panel { display: block; }
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 1026px) {
+  .universal-cart .product-touch-action { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .universal-cart .purchase-submit { transition: none; }
+}
