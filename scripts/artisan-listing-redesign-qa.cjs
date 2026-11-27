@@ -125,7 +125,7 @@ async function main() {
       await item.getByRole('button',{name:'BUY NOW',exact:true}).click();
       const popup=item.locator('.product-hover-panel');await popup.waitFor({state:'visible'});
       const label=popup.getByText('Piece Quantity',{exact:true});
-      const stepper=popup.locator('.purchase-stepper');
+      const stepper=popup.locator('.purchase-option.is-selected .purchase-stepper');
       const labelBox=await label.boundingBox(),stepperBox=await stepper.boundingBox();
       assert(labelBox.x+labelBox.width<=stepperBox.x+1||labelBox.y+labelBox.height<=stepperBox.y+1,`Quantity label overlaps stepper at ${width}px`);
       const quantity=popup.getByRole('textbox',{name:'Pieces quantity'});
