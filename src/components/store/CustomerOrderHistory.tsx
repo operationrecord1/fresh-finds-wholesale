@@ -39,7 +39,7 @@ export function CustomerOrderHistory(){
   return ()=>{active=false;};
  },[ready,user?.id,user?.email_confirmed_at,revision]);
  if(!ready || !user?.email_confirmed_at)return null;
- return <section className="mt-6 rounded-xl border bg-card p-6" aria-labelledby="artisan-order-history-heading">
+ return <section id="orders" className="mt-6 rounded-xl border bg-card p-6" aria-labelledby="artisan-order-history-heading">
   <div className="flex flex-wrap items-center justify-between gap-3">
    <h2 id="artisan-order-history-heading" className="text-xl font-bold">Order History</h2>
    <button type="button" className="rounded border px-4 py-2 text-sm" disabled={loading}

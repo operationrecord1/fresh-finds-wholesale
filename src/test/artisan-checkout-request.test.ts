@@ -7,6 +7,13 @@ const makeForm=()=>{
 };
 const key="artisan_checkout_test_123456789";
 describe("Authoritative checkout request",()=>{
+ it("keeps apartment details separate for billing and delivery",()=>{
+  const form=makeForm();form.set("line2"," Apt 4B ");form.set("shipping_line2","Suite 200");
+  const result=makeCheckoutRequest(form,[{sku:"DA883",pieces:40}],"",key,false);
+  expect(result.billing.line2).toBe("Apt 4B");expect(result.shipping.line2).toBe("Suite 200");
+  expect(makeCheckoutRequest(form,[{sku:"DA883",pieces:40}],"",key,true).shipping.line2).toBe("Apt 4B");
+  form.set("line2","x".repeat(141));expect(()=>makeCheckoutRequest(form,[{sku:"DA883",pieces:40}],"",key,true)).toThrow(/apartment/);
+ });
  it("passes quantities and validated addresses, never client totals",()=>{
   const result=makeCheckoutRequest(makeForm(),[{sku:"DA883",pieces:40,mode:"case"}],"ARTISAN",key,false);
   expect(result.items).toEqual([{sku:"DA883",quantity:40,mode:"case"}]);

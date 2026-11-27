@@ -476,6 +476,15 @@
 
 /* Match the account and cart labels to the Careers link. */
 .store-header .store-login-link>span,.store-header .store-cart-button>span:last-child{color:oklch(0.32 0 0)}
+.store-header .store-orders-link{font:inherit;font-size:14px;font-weight:600;line-height:20px;color:oklch(0.32 0 0);white-space:nowrap;align-items:center}
+.store-header .store-orders-link:hover{background:transparent;box-shadow:none}
+@media(min-width:500px) and (max-width:759px){
+ .store-header-signed-in .store-header-layout{grid-template-columns:30px minmax(0,1fr) auto auto 70px}
+ .store-header-signed-in .store-orders-link{grid-column:4;grid-row:2;align-self:center;justify-self:end}
+ .store-header-signed-in .store-cart-button{grid-column:5}
+ .store-header-signed-in .store-account-links>div{grid-column:3}
+}
+@media(max-width:499px){.store-header .store-account-links>.store-orders-link{display:none}}
 
 /* One visual icon height across account, cart and newsletter controls. */
 .store-header{--customer-icon-height:30px}
