@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Menu, Phone, Search, ChevronDown, Megaphone } from "lucide-react";
+import { Menu, Phone, Search, ChevronDown, Megaphone, X } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
@@ -129,6 +129,8 @@ export function SiteHeader() {
         </div>
       </div>
       {mobileOpen && <nav ref={mobilePanel} id="store-mobile-menu" className="store-mobile-menu" aria-label="Browse products" onClick={e => { if ((e.target as HTMLElement).closest('a')) setMobileOpen(false); }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node) && e.relatedTarget !== mobileToggle.current) setMobileOpen(false); }}>
+        <div className="store-mobile-menu-heading"><strong>Browse products</strong><button type="button" aria-label="Close menu" onClick={() => { setMobileOpen(false); mobileToggle.current?.focus(); }}><X aria-hidden="true" /></button></div>
+        <div className="store-mobile-account"><CustomerAccountMenu /></div>
         <details><summary>Categories</summary><div>{CATEGORIES.map(name => <Link key={name} to="/category/$slug" params={{slug:slugify(name)}}>{name}</Link>)}</div></details>
         <details><summary>Shop By Price</summary><div>{PRICE_BANDS.map(b => <Link key={b.id} to="/shop-by-price" search={{price:b.id}}>{b.label}</Link>)}</div></details>
         {([['imports','Imports'],['closeouts','Closeouts'],['best-sellers','Best Sellers'],['reduced-price','Reduced Price'],['new-arrivals','New Arrivals']] as const).map(([slug,label]) => <Link key={slug} to="/collection/$slug" params={{slug}}>{label}</Link>)}
