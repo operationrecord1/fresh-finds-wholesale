@@ -26,11 +26,9 @@ const base = process.env.ARTISAN_BANNER_URL || "https://artisanmart.site";
    if(width<=780)assert.equal(geometry.heroHeight,0);
    else {
     assert(geometry.heroLeft>=0&&geometry.heroRight<=width+1,"Banner overflow");
-    for(let i=0;i<3;i++){
-     await hero.locator(".merch-dots button").nth(i).click();
-     assert.equal(await hero.locator(".merch-dots button").nth(i).getAttribute("aria-pressed"),"true");
-     assert(await hero.evaluate(el=>Array.from(el.querySelectorAll("img")).every(im=>getComputedStyle(im).objectFit==="contain")),"Image fit changed");
-    }
+    assert.equal(await hero.locator(".merch-dots button").count(),0,"Manual banner controls returned");
+    assert.equal(await hero.locator('.merch-dots [aria-current="true"]').count(),1,"Expected one active banner");
+    assert(await hero.evaluate(el=>Array.from(el.querySelectorAll("img")).every(im=>getComputedStyle(im).objectFit==="contain")),"Image fit changed");
    }
    console.log("PASS",width,"heading=true","lines="+geometry.rows.flat().length,"font="+geometry.fontSize,"carousel="+(width>780));
   }
