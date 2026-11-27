@@ -109,7 +109,7 @@ Deno.serve(async(req:Request)=>{
 
   if(order.checkout_session_id){
    const previous=await stripeRequest("checkout/sessions/"+encodeURIComponent(order.checkout_session_id),"GET",key);
-   if(previous.status==="open"&&previous.client_secret&&previous.ui_mode==="custom"&&previous.client_reference_id===orderId &&
+   if(previous.status==="open"&&previous.client_secret&&previous.ui_mode==="elements"&&previous.client_reference_id===orderId &&
       previous.livemode===(mode==="live"))
     return respond(200,{client_secret:previous.client_secret,session_id:previous.id,order_number:created.order_number,amount_total:previous.amount_total,currency:previous.currency,reused:true},origin);
    return respond(409,{error:"Checkout session is no longer open. Please start a new order."},origin);
@@ -127,7 +127,7 @@ Deno.serve(async(req:Request)=>{
    return respond(503,{error:"Payment account unavailable."},origin);
   const params=new URLSearchParams();
   params.set("mode","payment");
-  params.set("ui_mode","custom");
+  params.set("ui_mode","elements");
   // Stripe selects eligible methods from the merchant's payment settings.
   params.set("customer_email",String(user.email));
   // Stripe payment receipts go only to the verified Auth email.
@@ -160,14 +160,18 @@ Deno.serve(async(req:Request)=>{
      "Idempotency-Key":"artisan-order-"+orderId},
     body:params.toString(),signal:AbortSignal.timeout(15000),
    });
-   if(!r.ok)throw new Error("Payment session request declined ("+r.status+").");
+   if(!r.ok){
+    const problem=await r.json().catch(()=>({}));
+    console.error("Stripe session setup failed",JSON.stringify({status:r.status,code:problem.error?.code,type:problem.error?.type,param:problem.error?.param,message:problem.error?.message}));
+    throw new Error("Payment session request declined ("+r.status+").");
+   }
    session=await r.json();
   }catch{
    if(sandbox)await admin.rpc("artisan_sandbox_cancel_unattached",{p_order:orderId});
    else await admin.rpc("artisan_cancel_pending_order_service",{p_order:orderId,p_customer_id:user.id});
    return respond(503,{error:"Secure payment session unavailable. Your stock reservation was not confirmed."},origin);
   }
-  if(session.livemode!==(mode==="live")||!session.id||!session.client_secret||session.ui_mode!=="custom"||
+  if(session.livemode!==(mode==="live")||!session.id||!session.client_secret||session.ui_mode!=="elements"||
      session.client_reference_id!==orderId||
      session.amount_total!==order.total_cents||session.currency!=="usd"){
    return respond(502,{error:"Payment session verification failed; do not retry this transaction."},origin);
