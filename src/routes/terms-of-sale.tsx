@@ -5,7 +5,7 @@ export const Route = createFileRoute("/terms-of-sale")({head:()=>meta("Terms of 
 const conditions = [
  "When offered Free Shipping is only valid within the contiguous 48 states unless expressed otherwise.",
  "Terms are prepaid unless open terms have been approved prior by our credit department.",
- "The payment methods listed at checkout are Credit Card and Wire Transfer.",
+ "Online checkout currently accepts credit card payments only.",
  "Orders processed via credit card are subject to an immediate hold for the full amount of the order, including shipping. Once the order is shipped, the hold will be authorized and the charge will be validated. Artisan Mart is not responsible for any overage charges levied by the issuing credit card provider. If the card is declined at the time of purchase, the customer will be notified immediately.",
  "Wire transfers, money orders and checks are accepted forms of payment for orders completed offline.",
  "Claims of shortages, damages or defective merchandise must be reported within 72 hours of receipt of order. No returns will be accepted without authorization.",
