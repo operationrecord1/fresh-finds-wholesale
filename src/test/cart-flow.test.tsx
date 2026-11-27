@@ -57,7 +57,7 @@ it("cancel and Escape preserve items; confirm removes only the selected SKU; cle
 it("keeps cart navigation direct and the count stable across pointer interactions", () => {
   render(<CartProvider><Harness/></CartProvider>);
   fireEvent.click(screen.getByText("Add mirror case"));
-  const cartLink = screen.getByRole("link",{name:"1 Cart"});
+  const cartLink = screen.getByRole("link",{name:"10 Cart"});
   expect(cartLink).toHaveAttribute("href","/cart");
   fireEvent.pointerEnter(cartLink);
   expect(screen.queryByRole("region",{name:"Shopping cart preview"})).not.toBeInTheDocument();
