@@ -448,3 +448,10 @@
 .store-header .store-cart-button>span:last-child{display:block;font:700 14px/18px Arial,sans-serif;align-self:center;margin-top:10px}
 @media(max-width:759px){.store-header-layout{grid-template-columns:30px minmax(0,1fr) auto 70px}.store-header .store-cart-button{width:70px!important}.store-header .store-cart-icon{width:36px}.store-header .store-cart-icon svg{width:36px}.store-header .store-cart-icon b{left:22px;top:4px;font-size:13px}.store-header .store-cart-button>span:last-child{font-size:13px}}
 @media(max-width:359px){.store-header-layout{grid-template-columns:24px minmax(0,1fr) auto 66px}.store-header .store-cart-button{width:66px!important}}
+
+/* Match account and cart optical alignment and icon weight. */
+.store-header .store-login-link>svg:first-child{stroke-width:2.6;align-self:center}
+.store-header .store-cart-icon{align-self:center}
+.store-header .store-cart-button>span:last-child{margin-top:0;align-self:center}
+.store-header .store-cart-icon svg{transform:translateY(-3px)!important}
+.store-header .store-cart-icon b{top:1px}
