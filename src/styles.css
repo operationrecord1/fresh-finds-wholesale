@@ -848,11 +848,20 @@
   }
 }
 
-/* Homepage banner visibility only; keep the existing carousel and heading design. */
+/* Preserve the approved homepage carousel visibility. */
 @media (max-width: 780px) {
   .store-container > .store-home-title + .merch-hero { display: none; }
 }
 @media (max-width: 500px) {
-  .store-container > .store-home-title { display: none; }
-  .store-container > .store-home-title + .merch-hero + .store-home-panels { margin-top: 0; }
+  .store-container > .store-home-title {
+    width: 100%;
+    font-size: clamp(12px, calc(6vw - 1.92px), 25px);
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+  .store-home-title > .store-home-title-line {
+    display: block;
+    white-space: nowrap;
+  }
 }
