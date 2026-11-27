@@ -27,7 +27,7 @@
 .universal-cart .purchase-submit:focus-visible { outline: 2px solid #074e70; outline-offset: 3px; }
 .store-product-card:has(.universal-cart[data-purchase-open=true]) { z-index: 40; }
 .universal-cart[data-purchase-open=true] .product-hover-panel { display: block; }
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine) and (min-width: 1026px) {
   .store-product-card:hover .universal-cart .product-hover-panel,
   .store-product-card:has(:focus-visible) .universal-cart .product-hover-panel { display: block; }
 }

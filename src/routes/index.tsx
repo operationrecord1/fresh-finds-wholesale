@@ -5,6 +5,7 @@ import { PRODUCTS, type CollectionSlug, type Product } from "@/data/catalog";
 import { ProductCard } from "@/components/store/ProductCard";
 import { HeroCarousel } from "@/components/store/HeroCarousel";
 import { QuickView } from "@/components/store/LazyQuickView";
+import { HomeCategories } from "@/components/store/HomeCategories";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -46,6 +47,7 @@ function Home() {
           </section>
         ))}
       </div>
+      <HomeCategories />
       <QuickView p={qv} onClose={() => setQv(null)} />
     </div>
   );
