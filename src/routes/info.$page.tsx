@@ -4,7 +4,7 @@ import { SalesFAQ } from "@/components/store/SalesFAQ";
 
 const PAGES: Record<string, string> = {
   "artisan-mart": "About Artisan Mart", sales: "Sales FAQ", "product-download": "Product Download", shipping: "Shipping",
-  closeouts: "Closeouts", "fba-sales": "FBA Sales", "community-outreach": "Community Outreach", blog: "Blog",
+  closeouts: "Closeouts", "fba-sales": "FBA Sales", "community-outreach": "Community Outreach",
   "terms-of-sale": "Terms of Sale", privacy: "Privacy Policy", sitemap: "Sitemap",
 };
 
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/info/$page")({
   loader: ({ params }) => {
     if (params.page === "privacy") throw redirect({ to: "/privacy" });
     if (params.page === "terms-of-sale") throw redirect({ to: "/terms-of-sale" });
-    const section = ({ "artisan-mart": "about-us", "industries-served": "industries-served", "community-outreach": "artisan-cares", shipping: "easy-shipping", blog: "blog", careers: "careers", "artisan-cares": "artisan-cares", "easy-shipping": "easy-shipping" } as Record<string, string>)[params.page];
+    const section = ({ "artisan-mart": "about-us", "industries-served": "industries-served", "community-outreach": "artisan-cares", shipping: "easy-shipping", careers: "careers", "artisan-cares": "artisan-cares", "easy-shipping": "easy-shipping" } as Record<string, string>)[params.page];
     if (section) throw redirect({ to: "/about-us", hash: section });
     const t = PAGES[params.page]; if (!t) throw notFound(); return { title: t }; },
   head: ({ loaderData }) => ({ meta: [

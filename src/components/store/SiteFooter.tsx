@@ -11,14 +11,14 @@ const shortcuts = [
 const aboutLinks: [string, string][] = [
   ["Industries Served", "industries-served"],
   ["Artisan Cares", "community-outreach"], ["Easy Shipping", "shipping"],
-  ["Contact Us", "contact"], ["Artisan Mart Careers", "careers"], ["Blog", "blog"],
+  ["Contact Us", "contact"], ["Artisan Mart Careers", "careers"],
 ];
 function FooterLink({ page, children }: { page: string; children: React.ReactNode }) {
   if (page === "careers") return <Link to="/about-us" hash="careers">{children}</Link>;
   if (page === "contact") return <Link to="/contact">{children}</Link>;
   if (page === "privacy") return <Link to="/privacy">{children}</Link>;
   if (page === "terms-of-sale") return <Link to="/terms-of-sale">{children}</Link>;
-  const section = ({ "industries-served": "industries-served", "community-outreach": "artisan-cares", shipping: "easy-shipping", blog: "blog" } as Record<string, string>)[page];
+  const section = ({ "industries-served": "industries-served", "community-outreach": "artisan-cares", shipping: "easy-shipping" } as Record<string, string>)[page];
   if (section) return <Link to="/about-us" hash={section}>{children}</Link>;
   return <Link to="/info/$page" params={{ page }}>{children}</Link>;
 }

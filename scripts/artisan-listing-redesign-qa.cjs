@@ -103,10 +103,14 @@ async function main() {
     await page.mouse.move(0,0);await card.locator('.store-product-photo').press('Tab');await panel.waitFor({state:'visible'});
     await page.goto(BASE+'/cart');await page.getByText('DA883',{exact:false}).first().waitFor();assert((await page.locator('body').textContent()).includes('116.00'));
   });
-  for(const width of [240,381,780,1440])await check('Touch purchasing '+width,async()=>{
+  for(const width of [240,320,381,400,500,780,1440])await check('Touch purchasing '+width,async()=>{
     const touch=await browser.newContext({viewport:{width,height:950},hasTouch:true,isMobile:true});const p=await touch.newPage();
     await p.goto(BASE+'/collection/new-arrivals');const card=p.locator('.store-catalog-grid .store-product-card').first();await card.getByRole('button',{name:'BUY NOW',exact:true}).tap();
     const panel=card.locator('.product-hover-panel');await panel.waitFor({state:'visible'});const b=await panel.boundingBox();assert(b.x>=0&&b.x+b.width<=width+1);
+    const geometry=await p.evaluate(()=>({viewport:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,scrollX,panel:document.querySelector('.store-catalog-grid .product-hover-panel').getBoundingClientRect().toJSON()}));
+    assert.equal(geometry.scrollX,0,'Opening purchase panel shifted the page horizontally');
+    assert(geometry.scrollWidth<=geometry.viewport,'Purchase panel caused horizontal overflow');
+    if(width<=500)assert(Math.abs(geometry.panel.left-(geometry.viewport-geometry.panel.right))<=1,'Small-screen purchase panel is not centered');
     await panel.getByRole('button',{name:'Add To Cart',exact:true}).tap();await p.getByRole('button',{name:'Shopping cart, 1 products'}).waitFor();await touch.close();
   });
   await check('All 94 collection products remain reachable',async()=>{

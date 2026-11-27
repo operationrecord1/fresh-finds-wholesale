@@ -6,6 +6,7 @@
 .universal-cart .product-hover-panel {
   left: var(--purchase-left, 0px);
   right: auto;
+  width: var(--purchase-width, 304px);
   transform: none;
   padding-top: 12px;
   max-width: calc(100vw - 24px);
