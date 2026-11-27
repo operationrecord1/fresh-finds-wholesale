@@ -32,7 +32,7 @@ function Home() {
 
   return (
     <div className="store-container">
-      <h1 className="store-home-title text-center font-bold tracking-wide text-primary">Your Premier Source For Wholesale General Merchandise</h1>
+      <h1 className="store-home-title text-center font-bold tracking-wide text-primary"><span className="store-home-title-line">Your Premier Source For</span>{" "}<span className="store-home-title-line">Wholesale General Merchandise</span></h1>
       <HeroCarousel />
       <div className="store-home-panels mt-4 grid gap-5 lg:grid-cols-2">
         {PANELS.map((pnl) => (
