@@ -83,6 +83,9 @@ Deno.serve(async(req:Request)=>{
       !Array.isArray(body.items)||body.items.length>100||
       !body.billing||!body.shipping)
    return respond(400,{error:"Invalid checkout details"},origin);
+  const states=new Set("AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY".split(" "));
+  if([body.billing,body.shipping].some(a=>a.country!=="US"||!states.has(a.state)||!/^\d{5}(-\d{4})?$/.test(a.postal_code??"")))
+   return respond(422,{error:"Enter a valid United States state and ZIP code."},origin);
   const {data:created,error:createError}=await admin.rpc(sandbox?"artisan_sandbox_begin_checkout":"artisan_begin_checkout_service",{ 
    p_customer_id:user.id,
    p_idempotency_key:body.idempotencyKey,p_items:body.items,
@@ -109,7 +112,7 @@ Deno.serve(async(req:Request)=>{
 
   if(order.checkout_session_id){
    const previous=await stripeRequest("checkout/sessions/"+encodeURIComponent(order.checkout_session_id),"GET",key);
-   if(previous.status==="open"&&previous.client_secret&&previous.ui_mode==="elements"&&previous.client_reference_id===orderId &&
+   if(previous.status==="open"&&previous.client_secret&&previous.ui_mode==="elements"&&previous.payment_method_types?.length===1&&previous.payment_method_types[0]==="card"&&previous.client_reference_id===orderId &&
       previous.livemode===(mode==="live"))
     return respond(200,{client_secret:previous.client_secret,session_id:previous.id,order_number:created.order_number,amount_total:previous.amount_total,currency:previous.currency,reused:true},origin);
    return respond(409,{error:"Checkout session is no longer open. Please start a new order."},origin);
@@ -128,7 +131,8 @@ Deno.serve(async(req:Request)=>{
   const params=new URLSearchParams();
   params.set("mode","payment");
   params.set("ui_mode","elements");
-  // Stripe selects eligible methods from the merchant's payment settings.
+  // This checkout accepts card payments only, per merchant policy.
+  params.set("allowed_payment_method_types[0]","card");
   params.set("customer_email",String(user.email));
   // Stripe payment receipts go only to the verified Auth email.
   params.set("payment_intent_data[receipt_email]",String(user.email));
