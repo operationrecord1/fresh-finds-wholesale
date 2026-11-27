@@ -1,10 +1,11 @@
-.store-home-categories { margin:28px auto 36px; max-width:1100px; padding:20px clamp(10px,2vw,28px) 24px; border:1px solid #dce8ee; border-radius:18px; background:#fff; }
+.store-home-categories { margin:28px auto 36px; max-width:1100px; padding:24px clamp(10px,2vw,28px); border-top:1px solid #e8eef1; background:transparent; }
 .store-home-categories h2 { margin-bottom:16px; color:#173e55; text-align:center; text-transform:uppercase; font-size:clamp(19px,3vw,27px); font-weight:700; line-height:1.2; }
 .store-home-category-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-.store-home-category { display:flex; min-width:0; min-height:150px; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px 4px; border:1px solid transparent; border-radius:12px; color:#153b52; text-align:center; transition:background-color .16s ease,border-color .16s ease; }
-.store-home-category:hover,.store-home-category:focus-visible { border-color:#c5e0eb; background:#f3f9fc; }
+.store-home-category { display:flex; min-width:0; min-height:150px; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px 4px; color:#153b52; text-align:center; }
 .store-home-category:focus-visible { outline:2px solid #147daf; outline-offset:2px; }
+.store-home-category.is-desktop-extra { display:none; }
 .store-home-category-icon { display:grid; width:120px; max-width:100%; height:100px; place-items:center; }
+.store-home-category-product { width:100px; height:100px; object-fit:contain; mix-blend-mode:multiply; }
 .store-home-category-sprite { display:block; width:115px; height:100px; flex:none; background-repeat:no-repeat; }
 .store-home-category-sprite.is-pet { width:92px; background-position:-25px -15px; }
 .store-home-category-sprite.is-personal { width:92px; background-position:-125px -15px; }
@@ -14,6 +15,10 @@
 .store-home-category-sprite.is-toys { width:85px; background-position:-645px -15px; }
 .store-home-category-label { width:100%; font-size:clamp(12px,2.5vw,16px); font-weight:700; line-height:1.25; overflow-wrap:anywhere; }
 @media(min-width:501px) { .store-home-category-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } }
+@media(min-width:1181px) {
+  .store-home-category-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .store-home-category.is-desktop-extra { display:flex; }
+}
 @media(max-width:320px) {
   .store-home-category-grid { gap:4px; }
   .store-home-category { min-height:112px; gap:0; padding-inline:0; }
