@@ -58,7 +58,7 @@ async function main() {
     await go(route);
     for(const width of widths)await check(`${route} at ${width}px`,async()=>{
       await page.setViewportSize({width,height:900});await page.evaluate(()=>new Promise(requestAnimationFrame));
-      const m=await metrics();assert.equal(m.tracks,columns(width));assert.equal(m.centered,true,'Product metadata or action not centered');assert.equal(m.titleAlign,'left');assert.equal(m.badges,0);assert.equal(m.titleClamp,'2');
+      const m=await metrics();assert.equal(m.tracks,columns(width));assert.equal(m.centered,true,'Product metadata or action not centered');assert.equal(m.titleAlign,'center');assert.equal(m.badges,0);assert.equal(m.titleClamp,'2');
       assert(m.titleHeight<=m.lineHeight*2+1);assert.equal(m.imageFit,'contain');assert(!m.overflow);assert.deepEqual(m.contentOverflow,[]);assert(m.rowAligned);
       assert.equal(m.sidebar==='none',width<=1024);
       if(route==='/collection/new-arrivals'&&[240,381,780,1025,1440,1920,3000].includes(width)){
