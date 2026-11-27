@@ -26,7 +26,7 @@ export default {
     const email = clean(data.email, 254);
     const company = clean(data.company, 160);
     const phone = clean(data.phone, 40);
-    const order = clean(data.order, 80);
+    const order = clean(data.order ?? "", 80);
     const message = clean(data.message, 5000);
     const topic = data.topic;
     if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !message || !["new", "existing"].includes(topic) || (topic === "existing" && !order) || company === null || phone === null || order === null) return json({ error: "Please complete the required fields." }, 400);
