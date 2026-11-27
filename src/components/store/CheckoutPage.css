@@ -12,6 +12,7 @@ body:has(.checkout-page){background:#fff}
 .checkout-page [role=alert]{background:#fff5eb;color:#873e12;border-color:#efcfaa}
 .checkout-page [class~="text-emerald-300"],.checkout-page [class~="text-emerald-400"]{color:#267349}
 .checkout-address{position:relative;min-width:0}
+.checkout-address-control{position:relative;min-width:0}
 .checkout-address-menu{position:absolute;top:100%;left:0;right:0;z-index:40;margin-top:4px;background:#fff;color:#193441;border:1px solid #cdd8df;border-radius:8px;box-shadow:0 5px 14px #00000012;overflow:hidden;font-size:14px}
 .checkout-address-menu ul{list-style:none;margin:0;padding:0;max-height:240px;max-height:min(240px,40dvh);overflow-y:auto}
 .checkout-address-menu [role=option]{padding:11px 12px;line-height:1.45;overflow-wrap:anywhere;cursor:pointer}
@@ -19,3 +20,5 @@ body:has(.checkout-page){background:#fff}
 .checkout-address-menu p{padding:10px 12px;margin:0;font-size:13px;line-height:1.5}
 .checkout-address-attribution{padding:7px 10px;border-top:1px solid #e1e7eb;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
 .checkout-address-attribution a{text-decoration:underline}
+.checkout-address-credit{font-size:11px;line-height:1.5;color:#596976;margin-top:4px;overflow-wrap:anywhere}
+.checkout-address-credit a{text-decoration:underline}

@@ -1,7 +1,10 @@
 import type { CartLine } from "@/lib/cart";
-type Address={first_name:string;last_name:string;phone:string;line1:string;city:string;state:string;postal_code:string;country:"US"};
+type Address={first_name:string;last_name:string;phone:string;line1:string;line2?:string;city:string;state:string;postal_code:string;country:"US"};
 const required=(form:FormData,k:string,m:number)=>{const v=String(form.get(k)??"").trim();if(v.length<1||v.length>m)throw Error("Invalid "+k.replaceAll("_"," "));return v;};
-const address=(f:FormData,p=""):Address=>({first_name:required(f,p+"first_name",120),last_name:required(f,p+"last_name",120),phone:required(f,p+"phone",40),line1:required(f,p+"line1",240),city:required(f,p+"city",140),state:required(f,p+"state",100),postal_code:required(f,p+"postal_code",20),country:"US"});
+const address=(f:FormData,p=""):Address=>{
+ const line2=String(f.get(p+"line2")??"").trim();if(line2.length>140)throw Error("Invalid apartment or suite");
+ return {first_name:required(f,p+"first_name",120),last_name:required(f,p+"last_name",120),phone:required(f,p+"phone",40),line1:required(f,p+"line1",240),...(line2?{line2}:{}),city:required(f,p+"city",140),state:required(f,p+"state",100),postal_code:required(f,p+"postal_code",20),country:"US"};
+};
 export function makeCheckoutRequest(f:FormData,cart:CartLine[],coupon:string,key:string,same:boolean){
  if(!/^[A-Za-z0-9_-]{20,128}$/.test(key))throw Error("Invalid checkout session");
  if(cart.length<1||cart.length>100)throw Error("Invalid cart");

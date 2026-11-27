@@ -10,7 +10,7 @@ import { makeCheckoutRequest } from "@/lib/artisan-checkout-request";
 import { preserveCartForCheckout, loadCheckoutCoupon } from "@/lib/artisan-checkout-intent";
 import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
 import "@/components/store/CheckoutPage.css";
-import { US_STATES } from "@/lib/us-address";
+import { US_STATES, US_STATE_NAMES } from "@/lib/us-address";
 import { AddressAutocomplete, type AddressSuggestion } from "@/components/store/AddressAutocomplete";
 
 export const Route = createFileRoute("/checkout")({
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/checkout")({
  component: Checkout,
 });
 
-type Fields = {first_name:string;last_name:string;company:string;email:string;phone:string;line1:string;city:string;state:string;postal_code:string;shipping_first_name:string;shipping_last_name:string;shipping_phone:string;shipping_line1:string;shipping_city:string;shipping_state:string;shipping_postal_code:string};
+type Fields = {first_name:string;last_name:string;company:string;email:string;phone:string;line1:string;line2:string;city:string;state:string;postal_code:string;shipping_first_name:string;shipping_last_name:string;shipping_phone:string;shipping_line1:string;shipping_line2:string;shipping_city:string;shipping_state:string;shipping_postal_code:string};
 type Session = {client_secret:string;session_id:string;order_number:number;amount_total:number;currency:string};
 const inputClass = "mt-1.5 block min-h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-[15px] text-white outline-none transition placeholder:text-slate-500 focus:border-white focus:ring-2 focus:ring-white/10";
 const Field = ({label,name,value,onChange,type="text",required=true,autoComplete}:{label:string;name:string;value:string;onChange:(name:string,value:string)=>void;type?:string;required?:boolean;autoComplete?:string}) => {
@@ -31,7 +31,7 @@ const Field = ({label,name,value,onChange,type="text",required=true,autoComplete
  const token=autoComplete?.replace(/^(billing|shipping) /,"");
  const completion=`section-${shipping?"delivery":"billing"} ${shipping?"shipping":"billing"} ${token||"off"}`;
  const state=name.endsWith("state");
- return <label htmlFor={`checkout-${name}`} className="block text-sm font-medium text-foreground">{label}{required&&<span className="text-destructive"> *</span>}{state?<select id={`checkout-${name}`} className={inputClass} name={name} value={value} required={required} autoComplete={completion} onChange={e=>onChange(name,e.target.value)}><option value="">Select state</option>{US_STATES.map(s=><option key={s} value={s}>{s}</option>)}</select>:<input id={`checkout-${name}`} className={inputClass} name={name} type={type} value={value} required={required} maxLength={name.includes("line1")?240:name.endsWith("postal_code")?10:140} inputMode={name.endsWith("postal_code")?"numeric":undefined} pattern={name.endsWith("postal_code")?"[0-9]{5}(-[0-9]{4})?":undefined} autoComplete={completion} onChange={e=>onChange(name,e.target.value)} />}</label>;
+ return <label htmlFor={`checkout-${name}`} className="block text-sm font-medium text-foreground">{label}{required&&<span className="text-destructive"> *</span>}{state?<select id={`checkout-${name}`} className={inputClass} name={name} value={value} required={required} autoComplete={completion} onChange={e=>onChange(name,e.target.value)}><option value="">Select state</option>{US_STATES.map(s=><option key={s} value={s}>{US_STATE_NAMES[s]}</option>)}</select>:<input id={`checkout-${name}`} className={inputClass} name={name} type={type} value={value} required={required} maxLength={name.includes("line1")?240:name.endsWith("postal_code")?10:140} inputMode={name.endsWith("postal_code")?"numeric":undefined} pattern={name.endsWith("postal_code")?"[0-9]{5}(-[0-9]{4})?":undefined} autoComplete={completion} onChange={e=>onChange(name,e.target.value)} />}</label>;
 };
 const usd=(cents:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(cents/100);
 async function checkoutFailureMessage(error:unknown,data:unknown):Promise<string>{
@@ -70,7 +70,7 @@ function StripePayment({sessionId,totalCents,billing,onError,onSuccess}:{session
    const response=await checkout.confirm({
     returnUrl:`${window.location.origin}/order-confirmation?session_id=${encodeURIComponent(sessionId)}`,
     redirect:"if_required",email:billing.email,phoneNumber:billing.phone,
-    billingAddress:{name:`${billing.first_name} ${billing.last_name}`.trim(),address:{country:"US",line1:billing.line1,city:billing.city,state:billing.state,postal_code:billing.postal_code}},
+    billingAddress:{name:`${billing.first_name} ${billing.last_name}`.trim(),address:{country:"US",line1:billing.line1,line2:billing.line2,city:billing.city,state:billing.state,postal_code:billing.postal_code}},
    });
    if(response.type==="error")onError(response.error.message||"Your card payment could not be confirmed. Please check the details and try again.");
    else onSuccess();
@@ -94,7 +94,7 @@ export function Checkout(){
  const navigate=useNavigate();
  const [same,setSame]=useState(true);
  const [coupon,setCoupon]=useState(()=>loadCheckoutCoupon());
- const [fields,setFields]=useState<Fields>({first_name:"",last_name:"",company:"",email:"",phone:"",line1:"",city:"",state:"",postal_code:"",shipping_first_name:"",shipping_last_name:"",shipping_phone:"",shipping_line1:"",shipping_city:"",shipping_state:"",shipping_postal_code:""});
+ const [fields,setFields]=useState<Fields>({first_name:"",last_name:"",company:"",email:"",phone:"",line1:"",line2:"",city:"",state:"",postal_code:"",shipping_first_name:"",shipping_last_name:"",shipping_phone:"",shipping_line1:"",shipping_line2:"",shipping_city:"",shipping_state:"",shipping_postal_code:""});
  const [profileLoading,setProfileLoading]=useState(true);
  const [formError,setFormError]=useState("");
  const [payError,setPayError]=useState("");
@@ -174,6 +174,7 @@ export function Checkout(){
      <Field label="Email" name="email" value={fields.email} onChange={updateField} type="email" autoComplete="email"/>
      <Field label="Phone" name="phone" value={fields.phone} onChange={updateField} type="tel" autoComplete="tel"/>
      <div className="sm:col-span-2"><AddressAutocomplete name="line1" value={fields.line1} onChange={updateField} onSelect={address=>selectAddress("",address)} inputClass={inputClass}/></div>
+     <div className="sm:col-span-2"><Field label="Apartment, suite, unit (optional)" name="line2" value={fields.line2} onChange={updateField} required={false} autoComplete="billing address-line2"/></div>
      <Field label="City" name="city" value={fields.city} onChange={updateField} autoComplete="billing address-level2"/>
      <Field label="State" name="state" value={fields.state} onChange={updateField} autoComplete="billing address-level1"/>
      <Field label="ZIP code" name="postal_code" value={fields.postal_code} onChange={updateField} autoComplete="billing postal-code"/>
@@ -183,6 +184,7 @@ export function Checkout(){
       <Field label="Last name" name="shipping_last_name" value={fields.shipping_last_name} onChange={updateField} autoComplete="shipping family-name"/>
       <Field label="Phone" name="shipping_phone" value={fields.shipping_phone} onChange={updateField} type="tel" autoComplete="shipping tel"/>
       <div className="sm:col-span-2"><AddressAutocomplete name="shipping_line1" value={fields.shipping_line1} onChange={updateField} onSelect={address=>selectAddress("shipping_",address)} inputClass={inputClass}/></div>
+      <div className="sm:col-span-2"><Field label="Apartment, suite, unit (optional)" name="shipping_line2" value={fields.shipping_line2} onChange={updateField} required={false} autoComplete="shipping address-line2"/></div>
       <Field label="City" name="shipping_city" value={fields.shipping_city} onChange={updateField} autoComplete="shipping address-level2"/>
       <Field label="State" name="shipping_state" value={fields.shipping_state} onChange={updateField} autoComplete="shipping address-level1"/>
       <Field label="ZIP code" name="shipping_postal_code" value={fields.shipping_postal_code} onChange={updateField} autoComplete="shipping postal-code"/>

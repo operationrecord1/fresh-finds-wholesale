@@ -41,6 +41,7 @@ export function AddressAutocomplete({name,value,onChange,onSelect,inputClass,api
  const choose=(item:AddressSuggestion)=>{selected.current=item.line1;dismissed.current=item.line1;setItems([]);setStatus("");setActive(-1);onSelect(item);};
  return <div className="checkout-address">
   <label htmlFor={id} className="block text-sm font-medium text-foreground">Street address <span className="text-destructive">*</span></label>
+  <div className="checkout-address-control">
   <input id={id} name={name} value={value} required maxLength={240} className={inputClass} autoComplete={apiKey?"off":`section-${name.startsWith("shipping_")?"delivery shipping":"billing billing"} address-line1`}
    role="combobox" aria-autocomplete="list" aria-expanded={open} aria-controls={open?`${id}-list`:undefined} aria-activedescendant={open&&active>=0?`${id}-${active}`:undefined}
    onFocus={()=>setFocused(true)} onBlur={()=>{setFocused(false);setItems([]);setStatus("");}}
@@ -55,7 +56,8 @@ export function AddressAutocomplete({name,value,onChange,onSelect,inputClass,api
     {items.map((item,index)=><li key={item.label} id={`${id}-${index}`} role="option" aria-selected={index===active} onPointerDown={e=>e.preventDefault()} onClick={()=>choose(item)}>{item.label}</li>)}
    </ul>
    {status&&<p role="status">{status}</p>}
-   <div className="checkout-address-attribution">Powered by <a href="https://www.geoapify.com/" target="_blank" rel="noopener noreferrer">Geoapify</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a></div>
   </div>}
+  </div>
+  {apiKey&&<div className="checkout-address-credit">Address suggestions: <a href="https://www.geoapify.com/" target="_blank" rel="noopener noreferrer">Geoapify</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a></div>}
  </div>;
 }

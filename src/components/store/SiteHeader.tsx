@@ -6,8 +6,10 @@ import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
 import { MiniCart } from "./MiniCart";
 import { CustomerAccountMenu } from "./CustomerAccountMenu";
+import { useArtisanAuth } from "@/lib/artisan-auth";
 
 export function SiteHeader() {
+  const {user}=useArtisanAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileToggle = useRef<HTMLButtonElement>(null);
   const mobilePanel = useRef<HTMLElement>(null);
@@ -85,7 +87,7 @@ export function SiteHeader() {
   const cols = Array.from({ length: 7 }, (_, i) => CATEGORIES.slice(i * 5, i * 5 + 5));
 
   return (
-    <header onPointerLeave={(e) => { if (e.pointerType === "mouse") setMenu(null); }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMenu(null); }} ref={header} className="store-header relative z-40 bg-card shadow-sm">
+    <header onPointerLeave={(e) => { if (e.pointerType === "mouse") setMenu(null); }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMenu(null); }} ref={header} className={`store-header relative z-40 bg-card shadow-sm${user?" store-header-signed-in":""}`}>
       <div className="store-header-layout">
         <button ref={mobileToggle} className="store-mobile-menu-toggle" type="button" aria-label="Browse products menu" aria-expanded={mobileOpen} aria-controls="store-mobile-menu" onClick={() => { setMobileOpen(!mobileOpen); setMenu(null); }}><Menu aria-hidden="true" /></button>
         <Link to="/cart" className="store-minimum bg-gradient-to-b from-minimum to-minimum-deep text-center font-bold text-primary-foreground">
@@ -123,20 +125,22 @@ export function SiteHeader() {
           </div>
           <div className="store-account-links leading-tight">
             <CustomerAccountMenu />
+            {user&&<Link to="/account" hash="orders" className="store-orders-link">Orders</Link>}
             <MiniCart />
-            <Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>
+            {!user&&<Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>}
           </div>
         </div>
       </div>
       {mobileOpen && <nav ref={mobilePanel} id="store-mobile-menu" className="store-mobile-menu" aria-label="Browse products" onClick={e => { if ((e.target as HTMLElement).closest('a')) setMobileOpen(false); }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node) && e.relatedTarget !== mobileToggle.current) setMobileOpen(false); }}>
         <div className="store-mobile-menu-heading"><strong>Browse products</strong><button type="button" aria-label="Close menu" onClick={() => { setMobileOpen(false); mobileToggle.current?.focus(); }}><X aria-hidden="true" /></button></div>
         <div className="store-mobile-account"><CustomerAccountMenu fullName /></div>
+        {user&&<Link to="/account" hash="orders">Orders</Link>}
         <details><summary>Categories</summary><div>{CATEGORIES.map(name => <Link key={name} to="/category/$slug" params={{slug:slugify(name)}}>{name}</Link>)}</div></details>
         <details><summary>Shop By Price</summary><div>{PRICE_BANDS.map(b => <Link key={b.id} to="/shop-by-price" search={{price:b.id}}>{b.label}</Link>)}</div></details>
         {([['imports','Imports'],['closeouts','Closeouts'],['best-sellers','Best Sellers'],['reduced-price','Reduced Price'],['new-arrivals','New Arrivals']] as const).map(([slug,label]) => <Link key={slug} to="/collection/$slug" params={{slug}}>{label}</Link>)}
         <Link to="/careers">Careers</Link><Link to="/contact">Contact Us</Link>
         <details><summary>Knowledge Center</summary><div>{["Artisan Mart", "Shipping", "Closeouts"].map(name => <Link key={name} to="/info/$page" params={{page:slugify(name)}}>{name}</Link>)}</div></details>
-        <Link to="/newsletter">Join Our Newsletter</Link>
+        {!user&&<Link to="/newsletter">Join Our Newsletter</Link>}
       </nav>}
       {menu && (
         <div ref={dropdown} id="store-dropdown" className={`store-dropdown store-dropdown-${menu}`} style={{ left: anchor.left, top: anchor.top, width: anchor.width }} onClick={() => setMenu(null)}>
