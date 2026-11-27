@@ -1,0 +1,170 @@
+/* Listing presentation only. Homepage cards and all commerce rules stay shared. */
+.store-browse-surface {
+  background: oklch(1 0 0);
+  color: var(--color-foreground);
+}
+.store-browse-surface .store-listing {
+  width: min(calc(100% - 32px), 2800px);
+  gap: 24px;
+  padding-block: 20px 32px;
+}
+.store-listing .store-catalog-grid {
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 16px;
+  row-gap: 28px;
+  margin-top: 20px;
+  align-items: stretch;
+}
+.store-listing .store-product-card {
+  padding: 0 0 12px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  align-items: stretch;
+  text-align: left;
+}
+.store-listing .store-product-card .store-product-visual {
+  width: 100%;
+  background: oklch(0.977 0.002 240);
+  border-radius: 5px;
+  isolation: isolate;
+}
+.store-listing .store-product-card .store-product-photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  padding: 12px;
+}
+.store-listing .store-product-photo img {
+  object-fit: contain;
+  object-position: center;
+  mix-blend-mode: multiply;
+}
+.store-listing .store-product-card .store-product-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  height: 2.7em;
+  min-height: 2.7em;
+  max-height: 2.7em;
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+}
+.store-listing .store-product-card .store-product-id,
+.store-listing .store-product-card .store-product-quantity {
+  margin-top: 5px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.store-listing .store-product-card .store-product-quantity {
+  color: var(--color-muted-foreground);
+}
+.store-listing .store-product-card .store-product-price {
+  margin: 9px 0 12px;
+  text-align: left;
+  font-size: 20px;
+  line-height: 1.3;
+  white-space: normal;
+}
+.store-listing .store-product-card .product-touch-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  width: min(150px, 100%);
+  min-height: 44px;
+  margin-top: auto;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: oklch(0.59 0.12 231);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+.store-listing .store-product-card :is(button, a):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+.store-listing .product-hover-surface {
+  background: oklch(0.977 0.002 240);
+  border-color: oklch(0.88 0.01 240);
+  box-shadow: 0 8px 24px #19344120;
+}
+.store-listing .product-hover-surface::before {
+  background: oklch(0.977 0.002 240);
+}
+.store-listing .store-desktop-filter-card {
+  background: transparent;
+  border-radius: 0;
+  padding: 4px 20px 16px 0;
+  border-right: 1px solid oklch(0.92 0.005 240);
+}
+.store-listing .store-desktop-filter-choice { font-size: 14px; }
+.store-listing .store-filter-trigger {
+  min-height: 44px;
+  border-color: oklch(0.82 0.025 240);
+  color: var(--color-title);
+  background: oklch(0.977 0.002 240);
+}
+.store-listing .store-filter-close { min-width: 44px; min-height: 44px; }
+.store-listing .store-filter-popover .store-filters-panel-inner { background: white; }
+.store-listing .store-filter-option { min-height: 44px; }
+@media (min-width: 381px) {
+  .store-listing .store-catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 781px) {
+  .store-listing .store-catalog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1280px) {
+  .store-listing .store-catalog-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1536px) {
+  .store-listing .store-catalog-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (min-width: 1840px) {
+  .store-listing .store-catalog-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (min-width: 2240px) {
+  .store-listing .store-catalog-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+@media (min-width: 1025px) {
+  .store-browse-surface .store-listing { grid-template-columns: 232px minmax(0, 1fr); }
+}
+@media (max-width: 1024px) {
+  .store-browse-surface .store-listing { grid-template-columns: minmax(0, 1fr); }
+  .store-listing .store-filter-mobile-toolbar { height: 48px; margin-top: 8px; }
+  .store-listing .store-listing-content > .store-catalog-grid { margin-top: 12px; }
+}
+@media (min-width: 381px) and (max-width: 500px) {
+  .store-listing .store-catalog-grid { column-gap: 12px; }
+  .store-listing .store-product-card .store-product-title { font-size: 14px; }
+  .store-listing .store-product-card .store-product-price { font-size: 17px; }
+  .store-listing .store-product-card .store-product-id,
+  .store-listing .store-product-card .store-product-quantity { font-size: 12px; }
+  .store-listing .store-product-card .store-product-photo { padding: 8px; }
+}
+/* Keep the existing purchase panel outside grid flow, with a continuous pointer
+   bridge from the card. Keyboard focus and explicit touch expansion also work. */
+@media (hover: hover) and (pointer: fine) {
+  .store-listing .store-product-card:hover .product-hover-panel,
+  .store-listing .store-product-card:focus-within .product-hover-panel { display: block; }
+  .store-listing .product-hover-panel { animation: listing-purchase-reveal .14s ease-out; }
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 1026px) {
+  .store-listing .store-product-card .product-touch-action { display: none; }
+}
+@keyframes listing-purchase-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .store-listing .product-hover-panel { animation: none; }
+}

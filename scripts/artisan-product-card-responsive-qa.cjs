@@ -10,7 +10,7 @@ const check = async (name, fn) => {
   catch(e){results.push({name,status:"FAIL",detail:String(e.message).slice(0,380)});console.error("FAIL | "+name+" | "+e.message);}
 };
 (async()=>{
- const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
+ const browser=await chromium.launch({headless:true,args:["--no-sandbox"],...(process.env.ARTISAN_CHROME_PATH?{executablePath:process.env.ARTISAN_CHROME_PATH}:{})});
  const page=await browser.newPage({viewport:{width:1200,height:900},deviceScaleFactor:1});
  const errors=[];
  page.on("pageerror",e=>errors.push(e.message));
@@ -54,7 +54,7 @@ const check = async (name, fn) => {
     titleReadable:box(title).height>=30,
     idOneLine:getComputedStyle(id).whiteSpace==="nowrap"&&id.scrollWidth<=id.clientWidth+1,
     quantityOneLine:getComputedStyle(quantity).whiteSpace==="nowrap"&&quantity.scrollWidth<=quantity.clientWidth+1,
-    priceOneLine:getComputedStyle(price).whiteSpace==="nowrap"&&price.scrollWidth<=price.clientWidth+1,
+    priceOneLine:price.scrollWidth<=price.clientWidth+1&&box(price).height<=parseFloat(getComputedStyle(price).lineHeight)+1,
     rowCards:cards.length
    };
   },{gridSelector});
@@ -62,6 +62,7 @@ const check = async (name, fn) => {
   assert.equal(data.buttonShown,width<=1025,"BUY NOW visibility mismatch at "+width);
   assert.equal(data.buttonLabel,"BUY NOW","BUY NOW label");
   assert(data.badgeCount<=2,"Tag count > 2");
+  if(gridSelector==='.store-catalog-grid')assert.equal(data.badgeCount,0,"Listing image must not have promotional tags");
   assert(data.badgesSingleLine,"Badge wraps or overflows");
   assert(data.overlay,"Badges do not overlay image");
   assert(data.imageWidth>100&&data.imageHeight>100,"Image area too small");
@@ -77,7 +78,7 @@ const check = async (name, fn) => {
   await check("Homepage collection grid at "+width+"px",()=>inspect(width,"/",'.store-home-products',columns));
  }
  for(const width of [1200,1020,1019,780,779,390]){
-  const columns=width<780?1:width<1020?2:width<=1100?3:4;
+  const columns=width<=380?1:width<=780?2:width<1280?3:width<1536?4:width<1840?5:width<2240?6:7;
   await check("Collection listing grid at "+width+"px",()=>inspect(width,"/collection/new-arrivals",'.store-catalog-grid',columns));
  }
  await check("BUY NOW preserves existing order options popup",async()=>{

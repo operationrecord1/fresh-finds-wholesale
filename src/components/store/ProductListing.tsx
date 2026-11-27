@@ -6,6 +6,7 @@ import { ProductCard } from "./ProductCard";
 import { QuickView } from "./LazyQuickView";
 import { useIncrementalProducts } from "@/lib/useIncrementalProducts";
 import "./ProductFilters.css";
+import "./ProductListing.css";
 
 const SPECIAL_OPTIONS: {value: Badge; label: string}[] = [
   {value:"new",label:"New Arrivals"}, {value:"hot",label:"Hot Items"},
@@ -177,7 +178,7 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
       onSelect={setSub} expanded={expanded==="subcategory"} onToggle={()=>toggle("subcategory")} id={subId+"-"+mode}/>
   </div>;
 
-  return <div className="store-container store-listing py-4">
+  return <div className="store-browse-surface"><div className="store-container store-listing py-4">
     <aside className="store-filters-desktop" aria-label="Product filters">
       <div className="store-desktop-filter-card">
         <div className="store-desktop-filter-top">
@@ -214,7 +215,7 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
         </>}
       </div>
       <div className="store-catalog-grid mt-4 grid" aria-busy={pending}>
-        {filtered.slice(0,shown).map(p=><ProductCard key={p.sku} p={p} onQuickView={setQv}/>)}
+        {filtered.slice(0,shown).map(p=><ProductCard key={p.sku} p={p} onQuickView={setQv} variant="listing"/>)}
       </div>
       {filtered.length===0&&<p className="mt-8 text-center">No products match these filters.</p>}
       <div ref={sentinel} className="h-8"/>
@@ -226,7 +227,7 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
       </p>
     </div>
     <QuickView p={qv} onClose={()=>setQv(null)}/>
-  </div>;
+  </div></div>;
 }
 
 export function Banner({ kind, title }: { kind: string; title: string }) {
