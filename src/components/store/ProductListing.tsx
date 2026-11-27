@@ -232,5 +232,5 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
 
 export function Banner({ kind, title }: { kind: string; title: string }) {
   const cls: Record<string, string> = { new: "bg-sky text-sec-closeout", best: "bg-best-banner text-primary-foreground", closeout: "bg-promo text-hero", reduced: "bg-sec-reduced text-primary-foreground", imports: "bg-hero text-primary-foreground", plain: "bg-primary text-primary-foreground" };
-  return <div className={`rounded py-2 text-center font-display text-4xl font-bold uppercase italic tracking-wide md:text-5xl ${cls[kind] ?? cls["plain"]}`}>{title}</div>;
+  return <div className={`store-listing-banner${title.length > 16 ? " is-long" : ""} rounded py-2 text-center font-display font-bold uppercase italic tracking-wide ${cls[kind] ?? cls["plain"]}`}>{title}</div>;
 }

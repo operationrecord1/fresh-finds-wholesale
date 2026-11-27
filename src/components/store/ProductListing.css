@@ -1,4 +1,10 @@
 /* Listing presentation only. Homepage cards and all commerce rules stay shared. */
+.store-listing-banner {
+  font-size: clamp(22px, 8vw, 48px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.store-listing-banner.is-long { font-size: clamp(22px, 6vw, 48px); }
 .store-browse-surface {
   background: oklch(1 0 0);
   color: var(--color-foreground);
