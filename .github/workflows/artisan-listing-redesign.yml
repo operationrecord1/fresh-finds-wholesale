@@ -1,0 +1,42 @@
+name: Artisan Listing Redesign Acceptance
+on:
+  push:
+    branches: [codex/listing-redesign, main]
+    paths:
+      - src/components/store/ProductCard.tsx
+      - src/components/store/ProductListing.tsx
+      - src/components/store/ProductListing.css
+      - scripts/artisan-listing-redesign-qa.cjs
+      - .github/workflows/artisan-listing-redesign.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+      - run: bunx tsc --noEmit
+      - run: bun run build:cloudflare
+      - name: Install isolated browser testing tools
+        run: |
+          npm install --prefix /tmp/artisan-listing-browser --no-save --ignore-scripts playwright@1.56.1
+          /tmp/artisan-listing-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test real rendered product listings
+        env:
+          NODE_PATH: /tmp/artisan-listing-browser/node_modules
+          ARTISAN_QA_SERVE: '1'
+        run: node scripts/artisan-listing-redesign-qa.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: listing-redesign-browser-evidence
+          path: listing-redesign-qa/
+          retention-days: 7

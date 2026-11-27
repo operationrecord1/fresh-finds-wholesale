@@ -33,7 +33,7 @@ export function ProductImage({ p, i = 0, className = "", eager = false }: { p: P
   );
 }
 
-export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: Product) => void }) {
+export function ProductCard({ p, onQuickView, variant = "default" }: { p: Product; onQuickView?: (p: Product) => void; variant?: "default" | "listing" }) {
   const [expanded, setExpanded] = useState(false);
   const card = useRef<HTMLDivElement>(null);
   const panelId = useId();
@@ -59,7 +59,7 @@ export function ProductCard({ p, onQuickView }: { p: Product; onQuickView?: (p: 
         <button type="button" onClick={() => onQuickView?.(p)} className="store-product-photo block w-full" aria-label={`Quick view ${p.title}`}>
           <ProductImage p={p} />
         </button>
-        <Badges badges={p.badges} />
+        {variant !== "listing" && <Badges badges={p.badges} />}
       </div>
       <Link onClick={e => { if (onQuickView && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); onQuickView(p); } }} to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} className="store-product-title font-semibold text-title hover:underline">
         {p.title}

@@ -11,7 +11,7 @@ async function run(name,fn){
  catch(e){checks.push({name,status:"FAIL",detail:String(e.message).slice(0,360)});console.error("FAIL | "+name+" | "+e.message);}
 }
 (async()=>{
- const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
+ const browser=await chromium.launch({headless:true,args:["--no-sandbox"],...(process.env.ARTISAN_CHROME_PATH?{executablePath:process.env.ARTISAN_CHROME_PATH}:{})});
  const page=await browser.newPage({viewport:{width:1024,height:900},deviceScaleFactor:1});
  const errors=[];page.on("pageerror",e=>errors.push(e.message));
  async function visit(path){
@@ -52,8 +52,8 @@ async function run(name,fn){
     if(mobile){
       const cap=width<=359?0:width<=560?2:3;
       assert(s.triggerVisible&&s.triggerWidth>=70,"Filter control not visible");
-      assert(s.barTop-s.titleBottom>=-0.5&&s.barTop-s.titleBottom<=2.5,"Heading-to-filter gap exceeds 2px: "+(s.barTop-s.titleBottom));
-      assert(s.gridTop-s.barBottom>=-0.5&&s.gridTop-s.barBottom<=2.5,"Filter-to-products gap exceeds 2px: "+(s.gridTop-s.barBottom));
+      assert(Math.abs(s.barTop-s.titleBottom-8)<=0.5,"Heading-to-filter gap must be 8px: "+(s.barTop-s.titleBottom));
+      assert(Math.abs(s.gridTop-s.barBottom-12)<=0.5,"Filter-to-products gap must be 12px: "+(s.gridTop-s.barBottom));
       assert(s.totalLinks<=cap,"Quick navigation exceeds maximum for width");
       if(width<=359)assert.equal(s.totalLinks,0,"Links must be absent below 360px");
       assert(!s.navScroll&&s.navFits,"Quick links clipped, scrolling or wrapping");
@@ -114,7 +114,8 @@ async function run(name,fn){
       await reopened.getByRole("button",{name:"Clear All"}).click();
       if(available)assert.equal(await retained.first().getAttribute("aria-pressed"),"false","Clear All failed");
       assert((await status.innerText()).includes("of "+initialTotal+" products"),"Clear All did not restore listing");
-      await root.locator(".store-filter-outside").click({position:{x:width-2,y:850},force:true});
+      // Click above the panel: expanded options can legitimately reach y=850.
+      await root.locator(".store-filter-outside").click({position:{x:width-2,y:2},force:true});
       assert.equal(await root.getByRole("dialog",{name:"Product filters"}).count(),0,"Outside click failed");
       if([240,359,360,560,561,779,780,1024].includes(width))await page.screenshot({path:OUT+"/width-"+width+".png",animations:"disabled"});
     }else{
