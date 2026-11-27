@@ -21,3 +21,8 @@
 - Preserve valid existing work and published history. Keep changes within the requested scope; do not combine visual work with backend synchronization or historical PRs.
 - Listing redesigns must use listing-specific styles/variants. Preserve the homepage, navigation, footer, catalog, pricing, stock validation, wholesale rules, authentication, cart, checkout, Stripe and Supabase unless explicitly included in the task.
 - Verify current production and repository state independently. Document discrepancies rather than assuming historical reports describe the current implementation.
+
+### Definition of done — production release
+- The deliverable of a website modification is the actual updated production website at https://artisanmart.site. Code, commits, development branches, pull requests, preview screenshots, started tests and pending deployments are not completion.
+- Continue monitoring running tests and deployments when execution capabilities permit; independently resolve implementation-related failures and handle branch/PR/merge decisions within the authorized scope without repeated routine approval. Try supported alternatives when verification is unavailable.
+- Complete only after relevant tests, final diff review, merge into main, successful Cloudflare production deployment of the intended commit, live browser verification and post-release regressions. For visual changes, capture and inspect fresh live screenshots. Report actual evidence and any unresolved limitation; never claim completion without live verification.

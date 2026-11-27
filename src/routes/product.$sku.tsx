@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getProduct, slugify } from "@/data/catalog";
 import { money } from "@/lib/wholesale";
-import { Badges, ProductImage } from "@/components/store/ProductCard";
+import { ProductImage } from "@/components/store/ProductCard";
 import { PurchasePanel } from "@/components/store/PurchasePanel";
 
 export const Route = createFileRoute("/product/$sku")({
@@ -31,7 +31,7 @@ function Page() {
     <div className="mx-auto grid max-w-[1300px] gap-8 px-4 py-6 md:grid-cols-2">
       <div>
         <div className="relative aspect-square rounded border border-border bg-card p-4">
-          <Badges badges={p.badges} /><ProductImage p={p} i={img} eager />
+          <ProductImage p={p} i={img} eager />
           {n > 1 && <>
             <button aria-label="Previous image" className="absolute left-2 top-1/2" onClick={() => setImg((img - 1 + n) % n)}><ChevronLeft /></button>
             <button aria-label="Next image" className="absolute right-2 top-1/2" onClick={() => setImg((img + 1) % n)}><ChevronRight /></button>

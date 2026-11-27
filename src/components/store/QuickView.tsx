@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { XCircle } from "lucide-react";
 import type { Product } from "@/data/catalog";
 import { money } from "@/lib/wholesale";
-import { Badges, ProductImage } from "./ProductCard";
+import { ProductImage } from "./ProductCard";
 import { PurchasePanel } from "./PurchasePanel";
 import "./ProductCommerce.css";
 
@@ -37,7 +37,7 @@ function ProductDialog({ p, onClose, initialPieces }: { p: Product; onClose: () 
     <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="quick-product-title" tabIndex={-1} className="product-modal">
       <button type="button" className="product-modal-close" aria-label="Close quick view" onClick={onClose}><XCircle size={28}/></button>
       <div className="product-gallery">
-        <div className="product-gallery-main"><Badges badges={p.badges}/><ProductImage p={p} i={image} eager/></div>
+        <div className="product-gallery-main"><ProductImage p={p} i={image} eager/></div>
         {p.images.length > 1 && <div className="product-thumbnails" aria-label="Product images">{p.images.map((src, index) => <button key={src + index} type="button" aria-label={`View product image ${index + 1}`} aria-pressed={image === index} onClick={() => setImage(index)}><ProductImage p={p} i={index}/></button>)}</div>}
       </div>
       <div className="product-modal-content">

@@ -34,10 +34,19 @@ async function main() {
     const grid=document.querySelector('.store-catalog-grid');
     const cards=[...grid.children];const first=cards[0];const rect=first.getBoundingClientRect();
     const title=first.querySelector('.store-product-title');const style=getComputedStyle(title);
+    const centered=cards.every(card=>{
+      const r=card.getBoundingClientRect(),mid=r.x+r.width/2;
+      return ['.store-product-id','.store-product-quantity','.store-product-price','.product-touch-action'].every(selector=>{
+        const e=card.querySelector(selector),s=getComputedStyle(e),b=e.getBoundingClientRect();
+        if(s.display==='none')return selector==='.product-touch-action'&&innerWidth>=1026;
+        const range=document.createRange();range.selectNodeContents(e);const ink=range.getBoundingClientRect();
+        return Math.abs(b.x+b.width/2-mid)<=1&&Math.abs(ink.x+ink.width/2-mid)<=2&&(selector==='.product-touch-action'?s.justifyContent==='center':s.textAlign==='center');
+      });
+    });
     const overflow=[...document.querySelectorAll('.store-listing .store-product-title,.store-listing .store-product-id,.store-listing .store-product-quantity,.store-listing .store-product-price')].filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>el.className);
     return {columns:cards.filter(el=>Math.abs(el.getBoundingClientRect().top-rect.top)<1).length,
       tracks:getComputedStyle(grid).gridTemplateColumns.split(' ').length,
-      cardWidth:rect.width,badges:grid.querySelectorAll('.store-product-badge').length,
+      centered,titleAlign:style.textAlign,cardWidth:rect.width,badges:grid.querySelectorAll('.store-product-badge').length,
       titleClamp:style.webkitLineClamp,titleHeight:title.getBoundingClientRect().height,lineHeight:parseFloat(style.lineHeight),
       imageFit:getComputedStyle(first.querySelector('img')).objectFit,
       overflow:document.documentElement.scrollWidth>innerWidth+1,contentOverflow:overflow,
@@ -49,7 +58,7 @@ async function main() {
     await go(route);
     for(const width of widths)await check(`${route} at ${width}px`,async()=>{
       await page.setViewportSize({width,height:900});await page.evaluate(()=>new Promise(requestAnimationFrame));
-      const m=await metrics();assert.equal(m.tracks,columns(width));assert.equal(m.badges,0);assert.equal(m.titleClamp,'2');
+      const m=await metrics();assert.equal(m.tracks,columns(width));assert.equal(m.centered,true,'Product metadata or action not centered');assert.equal(m.titleAlign,'left');assert.equal(m.badges,0);assert.equal(m.titleClamp,'2');
       assert(m.titleHeight<=m.lineHeight*2+1);assert.equal(m.imageFit,'contain');assert(!m.overflow);assert.deepEqual(m.contentOverflow,[]);assert(m.rowAligned);
       assert.equal(m.sidebar==='none',width<=1024);
       if(route==='/collection/new-arrivals'&&[240,381,780,1025,1440,1920,3000].includes(width)){
@@ -85,7 +94,7 @@ async function main() {
   await check('Hover continuity, keyboard access, stable geometry and cart',async()=>{
     await page.setViewportSize({width:1440,height:1000});await go('/collection/new-arrivals');const card=page.locator('.store-catalog-grid .store-product-card').first();
     const boxes=await page.locator('.store-catalog-grid .store-product-card').evaluateAll(es=>es.slice(0,8).map(e=>{const r=e.getBoundingClientRect();return [r.x,r.y,r.width,r.height]}));
-    const panel=card.locator('.product-hover-panel');assert(!(await panel.isVisible()));await card.hover();await panel.waitFor({state:'visible'});
+    const panel=card.locator('.product-hover-panel');assert(!(await panel.isVisible()));await card.hover();await panel.waitFor({state:'visible'});assert((await metrics()).centered,'Hover changed alignment');
     const add=panel.getByRole('button',{name:'Add To Cart',exact:true});await add.hover();assert(await panel.isVisible());
     const pbox=await panel.boundingBox();assert(pbox.x>=0&&pbox.x+pbox.width<=1440);
     assert.deepEqual(await page.locator('.store-catalog-grid .store-product-card').evaluateAll(es=>es.slice(0,8).map(e=>{const r=e.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})),boxes);
@@ -120,6 +129,26 @@ async function main() {
       assert.deepEqual(now,baseline[width]);
     }
     if(width===1440)await page.screenshot({path:path.join(OUT,'homepage-1440.png')});
+  });
+  for(const width of [240,381,780,1025,1440,3000])for(const route of ['/','/collection/new-arrivals','/category/pet-supplies','/search?q=hat','/shop-by-price?price=%22581%22'])await check('Badge-free image preview '+route+' '+width,async()=>{
+    await page.setViewportSize({width,height:900});await go(route);
+    const cards=page.locator('.store-product-card:visible');
+    const card=route==='/'?cards.filter({has:page.locator('.store-product-badge')}).first():cards.first();
+    const before=await card.locator('.store-product-badge').count();
+    if(route==='/')assert(before>0);else assert.equal(before,0);
+    await card.locator('.store-product-photo').click();
+    const dialog=page.locator('.product-modal');await dialog.waitFor({state:'visible'});
+    assert.equal(await dialog.locator('.store-product-badges,.store-product-badge').count(),0);
+    const thumbs=dialog.locator('.product-thumbnails button');
+    if(await thumbs.count()>1){await thumbs.nth(1).click();assert.equal(await thumbs.nth(1).getAttribute('aria-pressed'),'true');assert.equal(await dialog.locator('.store-product-badges,.store-product-badge').count(),0);}
+    if((route==='/'||route==='/collection/new-arrivals')&&[240,780,1440,3000].includes(width))await page.screenshot({path:path.join(OUT,'preview-'+(route==='/'?'home':'listing')+'-'+width+'.png')});
+    const detail=dialog.locator('.product-detail-link');const href=await detail.getAttribute('href');await detail.click();await page.waitForURL('**/product/**');
+    await page.locator('h1.text-3xl.font-bold.text-title').waitFor({state:'visible'});
+    await page.locator('.store-home-products,.store-catalog-grid').first().waitFor({state:'detached'});
+    assert.equal(await page.locator('.store-product-badges,.store-product-badge').count(),0);
+    const next=page.getByRole('button',{name:'Next image',exact:true});if(await next.count()){await next.click();assert.equal(await page.locator('.store-product-badge').count(),0);}
+    if(route==='/'&&[240,1440].includes(width))await page.screenshot({path:path.join(OUT,'detail-'+width+'.png')});
+    return href;
   });
   await check('No browser exceptions',()=>assert.deepEqual(errors,[]));
   fs.writeFileSync(path.join(OUT,'results.json'),JSON.stringify({base:BASE,widths,results},null,2));
