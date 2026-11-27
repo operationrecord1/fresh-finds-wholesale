@@ -33,12 +33,12 @@ export function ProductImage({ p, i = 0, className = "", eager = false }: { p: P
   );
 }
 
-export function ProductCard({ p, onQuickView, variant = "default" }: { p: Product; onQuickView?: (p: Product) => void; variant?: "default" | "listing" }) {
+export function ProductCard({ p, onQuickView, variant = "default", eager = false }: { p: Product; onQuickView?: (p: Product) => void; variant?: "default" | "listing"; eager?:boolean }) {
   return (
     <div className="store-product-card group relative flex h-full min-w-0 flex-col rounded-md bg-card p-3 text-center hover:z-30 focus-within:z-30">
       <div className="store-product-visual relative w-full">
         <Link to="/product/$sku" params={{ sku: p.sku.toLowerCase() }} onClick={e => { if (onQuickView && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); onQuickView(p); } }} className="store-product-photo block w-full" aria-label={`Quick view ${p.title}`}>
-          <ProductImage p={p} />
+          <ProductImage p={p} eager={eager} />
         </Link>
         {variant !== "listing" && <Badges badges={p.badges} />}
       </div>

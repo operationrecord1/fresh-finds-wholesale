@@ -215,7 +215,7 @@ export function ProductListing({ products, banner, defaultSort = "position", ini
         </>}
       </div>
       <div className="store-catalog-grid mt-4 grid" aria-busy={pending}>
-        {filtered.slice(0,shown).map(p=><ProductCard key={p.sku} p={p} onQuickView={setQv} variant="listing"/>)}
+        {filtered.slice(0,shown).map((p,i)=><ProductCard key={p.sku} p={p} onQuickView={setQv} variant="listing" eager={i<2}/>)}
       </div>
       {filtered.length===0&&<p className="mt-8 text-center">No products match these filters.</p>}
       <div ref={sentinel} className="h-8"/>

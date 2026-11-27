@@ -5,6 +5,7 @@ import "./UniversalAddToCart.css";
 
 export function UniversalAddToCart({ product }: { product: Product }) {
   const [open, setOpen] = useState(false);
+  const [activated, setActivated] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const id = useId();
   useEffect(() => {
@@ -13,6 +14,7 @@ export function UniversalAddToCart({ product }: { product: Product }) {
     return () => { if (card) delete card.dataset["purchaseOpen"]; };
   }, [open]);
   const place = () => {
+    setActivated(true);
     const element = root.current;
     const card = element?.closest<HTMLElement>(".store-product-card");
     if (!element || !card) return;
@@ -73,7 +75,7 @@ export function UniversalAddToCart({ product }: { product: Product }) {
       setOpen(value => !value);
     }}>BUY NOW</button>
     <div id={id} className="product-hover-panel">
-      <div className="product-hover-surface"><PurchasePanel p={product} compact onDone={() => setOpen(false)} /></div>
+      <div className="product-hover-surface">{activated&&<PurchasePanel p={product} compact onDone={() => setOpen(false)} />}</div>
     </div>
   </div>;
 }
