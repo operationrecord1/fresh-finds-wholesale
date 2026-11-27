@@ -12,6 +12,7 @@
 }
 .universal-cart .product-hover-surface { background: #f6f8f9; }
 .universal-cart .product-hover-surface::before { background: #f6f8f9; }
+.universal-cart .product-hover-surface::before { left: calc(var(--purchase-pointer-left, 50%) - 8px); }
 .store-listing .universal-cart .product-hover-surface,
 .store-listing .universal-cart .product-hover-surface::before { background: #f6f8f9; }
 .store-listing .universal-cart .product-hover-panel { animation: none; }

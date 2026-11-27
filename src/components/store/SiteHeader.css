@@ -223,6 +223,9 @@
  .store-mobile-menu details a { display:flex; align-items:center; min-height:44px; padding:8px 0; font-size:13px; overflow-wrap:anywhere; }
  .store-mobile-menu a:hover { color:#0076aa; background:#f5fafc; }
 }
+@media(max-width:280px) {
+ .store-mobile-menu details > div { grid-template-columns:minmax(0,1fr); }
+}
 
 .store-dropdown-kc .store-dropdown-surface { padding:10px 12px; }
 .store-dropdown-kc .store-price-columns { grid-template-columns:minmax(0,1fr); gap:0; }

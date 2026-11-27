@@ -20,6 +20,7 @@ export function UniversalAddToCart({ product }: { product: Product }) {
     const width = Math.min(304, window.innerWidth - 24);
     const left = Math.max(12, Math.min(rect.left + (rect.width - width) / 2, window.innerWidth - width - 12)) - rect.left;
     element.style.setProperty("--purchase-left", `${left}px`);
+    element.style.setProperty("--purchase-pointer-left", `${Math.max(18, Math.min(rect.width / 2 - left, width - 18))}px`);
   };
   useEffect(() => {
     const card = root.current?.closest<HTMLElement>(".store-product-card");
