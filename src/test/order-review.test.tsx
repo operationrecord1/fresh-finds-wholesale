@@ -1,0 +1,10 @@
+import {afterEach,expect,it,vi} from 'vitest';
+import{cleanup,fireEvent,render,screen}from'@testing-library/react';
+import{OrderReview}from'@/components/store/OrderReview';
+import type{CustomerOrder}from'@/lib/customer-order';
+const state=vi.hoisted(()=>({insert:vi.fn(),fail:false}));
+vi.mock('@/lib/artisan-auth',()=>({artisanSupabase:{from:()=>({select:()=>({in:async()=>({data:[],error:null})}),insert:(payload:any)=>{state.insert(payload);return{select:()=>({single:async()=>({data:state.fail?null:{...payload,created_at:'2026-11-28T12:00:00Z'},error:state.fail?{message:'denied'}:null})})};}})}}));
+afterEach(()=>{cleanup();state.fail=false;state.insert.mockClear();});
+const order={id:'order',artisan_order_items:[{id:'owned-item',sku:'SKU',title_snapshot:'Purchased item'}]} as CustomerOrder;
+it('persists a review and shows the server-provided timestamp',async()=>{render(<OrderReview order={order} onClose={()=>{}}/>);fireEvent.change(await screen.findByRole('textbox',{name:'Your review'}),{target:{value:'Useful product'}});fireEvent.click(screen.getByRole('button',{name:'Save review'}));expect(await screen.findByText(/Review saved · Added Nov 28, 2026/)).toBeInTheDocument();expect(state.insert).toHaveBeenCalledWith({order_item_id:'owned-item',rating:5,review_text:'Useful product'});});
+it('does not claim success when the backend rejects a review',async()=>{state.fail=true;render(<OrderReview order={order} onClose={()=>{}}/>);fireEvent.change(await screen.findByRole('textbox',{name:'Your review'}),{target:{value:'Test'}});fireEvent.click(screen.getByRole('button',{name:'Save review'}));expect(await screen.findByRole('alert')).toHaveTextContent('could not be saved');expect(screen.queryByText(/Review saved/)).not.toBeInTheDocument();});
