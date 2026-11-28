@@ -27,9 +27,11 @@ export function CartPage() {
   const ok = meetsMinimum(subtotal);
   return (
     <div className="cart-page">
-      <div className="cart-items-panel space-y-6">
+      <div className="cart-page-heading">
         <h1 className="text-3xl font-bold">Shopping Cart</h1>
-        {!ok && <p className="cart-minimum-message" role="alert">Minimum order {money(ORDER_MINIMUM)}. Add {money(ORDER_MINIMUM - subtotal)} more to check out.</p>}
+        {!ok && <p className="cart-minimum-message rounded bg-sec-closeout/10 p-3 font-semibold text-sec-closeout" role="alert">Your order subtotal must be at least {money(ORDER_MINIMUM)} to check out. Add {money(ORDER_MINIMUM - subtotal)} more.</p>}
+      </div>
+      <div className="cart-items-panel space-y-6">
         <div className="cart-items">
           {lines.map(l => { const p = getProduct(l.sku); if (!p) return null; return <article className="cart-item" key={l.sku}>
             <div className="cart-item-info"><div className="cart-product-image"><ProductImage p={p}/></div><div className="cart-product-heading"><span className="cart-sku">ITEM #{p.sku}</span><Link title={p.title} to="/product/$sku" params={{sku:p.sku.toLowerCase()}}>{p.title}</Link></div></div>
