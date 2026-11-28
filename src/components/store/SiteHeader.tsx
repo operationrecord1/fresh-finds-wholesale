@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Menu, Phone, Search, ChevronDown, UserRound, X } from "lucide-react";
+import { Menu, Search, ChevronDown, UserRound, X } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
-import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
+import { CallUsButton } from "./CallUsButton";
 import "./SiteHeader.css";
 import { MiniCart } from "./MiniCart";
 import { CustomerAccountMenu } from "./CustomerAccountMenu";
@@ -104,7 +104,7 @@ export function SiteHeader() {
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products" autoComplete="off" name="q" aria-label="Search products" className="h-[54px] w-full rounded-[20px] border border-border bg-secondary px-5 pr-14 font-arial text-lg" />
               <button disabled={!q.trim()} aria-label="Search" className="absolute right-4 top-1/2 -translate-y-1/2 disabled:opacity-70"><Search className="h-7 w-7" /></button>
             </form>
-        <a className="store-call-button" href={BUSINESS_PHONE_HREF}><Phone size={20} aria-hidden="true"/><span><small>CALL US TODAY</small><strong>{BUSINESS_PHONE}</strong></span></a>
+        <CallUsButton />
         <div className="store-navigation-area">
           <div id="store-nav-viewport" ref={navigation} className="store-header-scroll" tabIndex={0} role="region" aria-label="Product navigation">
           <nav className="store-nav" aria-label="Main navigation">

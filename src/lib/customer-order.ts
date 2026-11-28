@@ -6,7 +6,8 @@ export const orderNumber=(o:CustomerOrder)=>formatOrderNumber(o.order_number);
 export const orderMoney=(c:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(c/100);
 export const orderDate=(s:string)=>new Date(s.length===10?s+'T12:00:00':s).toLocaleDateString("en-US",{dateStyle:"long"});
 export const orderTime=(s:string)=>new Date(s).toLocaleString("en-US",{dateStyle:"medium",timeStyle:"short"});
-export const closedOrder=(o:Pick<CustomerOrder,'status'|'payment_status'|'payment_decline_code'>)=>['cancelled','expired'].includes(o.status)||['failed','cancelled'].includes(o.payment_status)||!!o.payment_decline_code;
+export const closedOrder=(o:Pick<CustomerOrder,'status'|'payment_status'|'payment_decline_code'>)=>['cancelled','expired'].includes(o.status)||o.payment_status==='cancelled';
+export const declinedOrder=(o:Pick<CustomerOrder,'payment_status'|'payment_decline_code'>)=>o.payment_status==='failed'||!!o.payment_decline_code;
 export const paidOrder=(o:CustomerOrder)=>['paid','partially_refunded','refunded'].includes(o.payment_status)&&!closedOrder(o);
 export function orderStage(o:Pick<CustomerOrder,'status'|'payment_status'|'delivered_at'|'shipped_at'|'payment_decline_code'>){
  if(o.status==='expired')return 'Expired';if(o.status==='cancelled')return 'Cancelled';if(o.payment_status==='refunded')return 'Refunded';if(o.payment_status==='failed'||o.payment_decline_code)return 'Payment declined';

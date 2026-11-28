@@ -1,0 +1,8 @@
+.store-call-dialog{position:fixed;inset:0;margin:auto;width:360px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);padding:0;border:1px solid #d5dde1;border-radius:10px;background:#fff;color:#193441;overflow:auto;text-align:center;white-space:normal}
+.store-call-dialog::backdrop{background:#0b233b66}
+.store-call-dialog-content{position:relative;padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.store-call-dialog h2{font-size:22px;font-weight:600;line-height:1.3}
+.store-call-dialog p{font-size:18px}
+.store-call-dialog a{background:#197db8;color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none}
+.store-call-dialog .store-call-close{position:absolute;top:8px;right:8px;padding:6px;background:transparent;border:0;color:inherit}
+.store-call-dialog :focus-visible{outline:2px solid #333;outline-offset:2px}
