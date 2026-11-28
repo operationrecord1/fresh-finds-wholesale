@@ -29,16 +29,19 @@ export function CartPage() {
     <div className="cart-page">
       <div className="cart-items-panel space-y-6">
         <h1 className="text-3xl font-bold">Shopping Cart</h1>
-        {!ok && <div className="rounded bg-sec-closeout/10 p-3 font-semibold text-sec-closeout">Your order subtotal must be at least {money(ORDER_MINIMUM)} to check out. Add {money(ORDER_MINIMUM - subtotal)} more.</div>}
+        {!ok && <p className="cart-minimum-message" role="alert">Minimum order {money(ORDER_MINIMUM)}. Add {money(ORDER_MINIMUM - subtotal)} more to check out.</p>}
         <div className="cart-items">
           {lines.map(l => { const p = getProduct(l.sku); if (!p) return null; return <article className="cart-item" key={l.sku}>
-            <div className="cart-item-info"><button className="cart-product-image" aria-label={`View ${p.title}`} onClick={()=>setEdit({p,pieces:l.pieces})}><ProductImage p={p}/></button><span className="cart-sku">ITEM #{p.sku}</span><Link title={p.title} to="/product/$sku" params={{sku:p.sku.toLowerCase()}}>{p.title}</Link><p>{money(p.price ?? 0)} / piece</p></div>
+            <div className="cart-item-info"><div className="cart-product-image"><ProductImage p={p}/></div><div className="cart-product-heading"><span className="cart-sku">ITEM #{p.sku}</span><Link title={p.title} to="/product/$sku" params={{sku:p.sku.toLowerCase()}}>{p.title}</Link></div></div>
+            <div className="cart-item-purchase">
+            <div className="cart-unit-price"><span>Price / piece</span><strong>{money(p.price ?? 0)}</strong></div>
             <div className="cart-quantity"><span>Quantity</span><strong>{l.pieces} pieces</strong><button onClick={()=>setEdit({p,pieces:l.pieces})} aria-label={`Change quantity for ${p.title}`}>Change quantity</button></div>
             <div className="cart-line-total"><span>Subtotal</span><strong>{money(lineTotal(l.pieces,p.price ?? 0))}</strong><button onClick={()=>{ requestRemove(l.sku); }} aria-label={`Remove ${p.title}`}><Trash2 size={15} aria-hidden="true"/> Remove</button></div>
+            </div>
           </article>; })}
           {!lines.length && <div className="cart-empty"><ShoppingCart size={44} aria-hidden="true"/><h2>Your cart is ready for your first find</h2><p>Browse our wholesale products to get started.</p><Link to="/collection/$slug" params={{slug:"imports"}}>Browse products <ArrowRight size={17}/></Link></div>}
         </div>
-        {lines.length > 0 && <button className="rounded border border-border bg-card px-4 py-2" onClick={requestClear}>Clear Cart</button>}
+        {lines.length > 0 && <button className="cart-clear" onClick={requestClear}><Trash2 size={15} aria-hidden="true"/> Clear Cart</button>}
 
       </div>
       <aside className="cart-summary h-fit space-y-3">

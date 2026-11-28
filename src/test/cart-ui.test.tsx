@@ -3,7 +3,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { CartPage } from "@/routes/cart";
 import type { ReactNode } from "react";
 
-const actions = vi.hoisted(() => ({ remove: vi.fn(), clear: vi.fn() }));
+const actions = vi.hoisted(() => ({ remove: vi.fn(), clear: vi.fn(), subtotal: 580 }));
 vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (config: unknown) => config,
   Link: ({ children }: { children: ReactNode }) => <a>{children}</a>,
@@ -11,7 +11,7 @@ vi.mock("@tanstack/react-router", () => ({
 vi.mock("@/lib/cart", () => ({
   useCart: () => ({
     lines: [{ sku: "DA883", pieces: 40 }],
-    subtotal: 580,
+    subtotal: actions.subtotal,
     requestRemove: actions.remove,
     requestClear: actions.clear,
   }),
@@ -21,7 +21,23 @@ vi.mock("@/components/store/ExpressOrder", () => ({ ExpressOrder: () => null }))
 vi.mock("@/components/store/LazyQuickView", () => ({
   QuickView: ({ p }: { p: { sku: string } | null }) => p ? <output data-testid="cart-edit-open">{p.sku}</output> : null,
 }));
-afterEach(() => { cleanup(); vi.useRealTimers(); vi.clearAllMocks(); });
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.clearAllMocks(); actions.subtotal = 580; });
+
+it("allows quantity editing only through Change quantity and retains Clear Cart", () => {
+  render(<CartPage />);
+  expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /^View Black/ })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Clear Cart" }));
+  expect(actions.clear).toHaveBeenCalledOnce();
+});
+
+it("shows the minimum-order message below the heading and blocks checkout below $500", () => {
+  actions.subtotal = 400;
+  render(<CartPage />);
+  expect(screen.getByRole("alert")).toHaveTextContent("Minimum order $500.00. Add $100.00 more to check out.");
+  expect(screen.getByRole("heading", { name: "Shopping Cart" }).nextElementSibling).toBe(screen.getByRole("alert"));
+  expect(screen.getByRole("button", { name: "Proceed to Checkout" })).toBeDisabled();
+});
 
 it("retains Change quantity and Remove in their respective side-by-side action columns", () => {
   render(<CartPage />);
