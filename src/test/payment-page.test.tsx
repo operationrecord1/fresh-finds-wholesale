@@ -1,0 +1,16 @@
+import { cleanup, render, screen, fireEvent } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
+import { PaymentPage } from '@/routes/payment';
+import { clearPaymentPage,loadPaymentPage,savePaymentPage } from '@/lib/artisan-payment-page';
+import type { PaymentBilling } from '@/components/store/StripePayment';
+const state=vi.hoisted(()=>({navigate:vi.fn(),confirm:vi.fn().mockResolvedValue({type:'success'})}));
+vi.mock('@tanstack/react-router',()=>({createFileRoute:()=> (c:unknown)=>c,Link:({children,to}:any)=><a href={to}>{children}</a>,useNavigate:()=>state.navigate}));
+vi.mock('@/lib/artisan-auth',()=>({useArtisanAuth:()=>({ready:true,user:{id:'owner',email_confirmed_at:'2026-01-01'}})}));
+vi.mock('@stripe/stripe-js',()=>({loadStripe:()=>Promise.resolve({})}));
+vi.mock('@stripe/react-stripe-js/checkout',()=>({CheckoutElementsProvider:({children}:any)=><div>{children}</div>,PaymentElement:()=> <div data-testid="stripe-card-fields"/>,useCheckoutElements:()=>({type:'success',checkout:{confirm:state.confirm}})}));
+const billing:PaymentBilling={first_name:'Test',last_name:'Buyer',company:'',email:'test@example.invalid',phone:'2025550100',line1:'123 Main St',line2:'',city:'Tampa',state:'FL',postal_code:'33602',shipping_first_name:'',shipping_last_name:'',shipping_phone:'',shipping_line1:'',shipping_line2:'',shipping_city:'',shipping_state:'',shipping_postal_code:''};
+const session={client_secret:'cs_test_secret',session_id:'cs_test_session',order_number:12,amount_total:58000,currency:'usd'};
+afterEach(()=>{cleanup();sessionStorage.clear();vi.unstubAllEnvs();vi.clearAllMocks()});
+it('restores the tab handoff, binds it to its owner and rejects expiry',()=>{savePaymentPage('owner',session,billing,true);expect(loadPaymentPage('owner')?.billing).toEqual(billing);expect(loadPaymentPage('other')).toBeNull();const now=vi.spyOn(Date,'now').mockReturnValue(Date.now()+31*60*1000);expect(loadPaymentPage('owner')).toBeNull();now.mockRestore();clearPaymentPage();expect(loadPaymentPage('owner')).toBeNull()});
+it('offers a safe billing return when opened without a pending session',()=>{render(<PaymentPage/>);expect(screen.getByRole('link',{name:'Back to billing'})).toHaveAttribute('href','/checkout');expect(screen.queryByTestId('stripe-card-fields')).not.toBeInTheDocument()});
+it('uses the same Stripe card form and completes through the existing confirmation route',async()=>{vi.stubEnv('VITE_ARTISAN_STRIPE_PUBLISHABLE_KEY','pk_live_test');savePaymentPage('owner',session,billing,true);render(<PaymentPage/>);expect(screen.getByTestId('stripe-card-fields')).toBeInTheDocument();fireEvent.click(screen.getByRole('button',{name:'Complete purchase · $580.00'}));await vi.waitFor(()=>expect(state.navigate).toHaveBeenCalledWith({to:'/order-confirmation',search:{session_id:'cs_test_session'}}));expect(state.confirm.mock.calls[0]?.[0]).not.toHaveProperty('returnUrl');expect(loadPaymentPage('owner')).toBeNull()});

@@ -1,8 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { CheckoutElementsProvider } from "@stripe/react-stripe-js/checkout";
 import { loadStripe } from "@stripe/stripe-js";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, LockKeyhole, ShieldCheck } from "lucide-react";
+import { ArrowLeft, LockKeyhole } from "lucide-react";
 import { getProduct } from "@/data/catalog";
 import { useCart } from "@/lib/cart";
 import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
@@ -12,9 +11,8 @@ import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
 import "@/components/store/CheckoutPage.css";
 import { US_STATES, US_STATE_NAMES } from "@/lib/us-address";
 import { AddressAutocomplete, type AddressSuggestion } from "@/components/store/AddressAutocomplete";
-import { StripePayment } from "@/components/store/StripePayment";
-import { formatOrderNumber } from "@/lib/artisan-order-number";
 import { resumableCheckoutKey, type CheckoutAttempt } from "@/lib/artisan-checkout-resume";
+import { loadPaymentPage, savePaymentPage } from "@/lib/artisan-payment-page";
 
 export const Route = createFileRoute("/checkout")({
  head: () => ({ meta: [
@@ -27,7 +25,6 @@ export const Route = createFileRoute("/checkout")({
 });
 
 type Fields = {first_name:string;last_name:string;company:string;email:string;phone:string;line1:string;line2:string;city:string;state:string;postal_code:string;shipping_first_name:string;shipping_last_name:string;shipping_phone:string;shipping_line1:string;shipping_line2:string;shipping_city:string;shipping_state:string;shipping_postal_code:string};
-type Session = {client_secret:string;session_id:string;order_number:number|string;amount_total:number;currency:string};
 const inputClass = "mt-1.5 block min-h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-[15px] text-white outline-none transition placeholder:text-slate-500 focus:border-white focus:ring-2 focus:ring-white/10";
 const Field = ({label,name,value,onChange,type="text",required=true,autoComplete}:{label:string;name:string;value:string;onChange:(name:string,value:string)=>void;type?:string;required?:boolean;autoComplete?:string}) => {
  const shipping=name.startsWith("shipping_");
@@ -36,7 +33,6 @@ const Field = ({label,name,value,onChange,type="text",required=true,autoComplete
  const state=name.endsWith("state");
  return <label htmlFor={`checkout-${name}`} className="block text-sm font-medium text-foreground"><span>{label}{required&&<span className="text-destructive"> *</span>}</span>{state?<select id={`checkout-${name}`} className={inputClass} name={name} value={value} required={required} autoComplete={completion} onChange={e=>onChange(name,e.target.value)}><option value="">Select state</option>{US_STATES.map(s=><option key={s} value={s}>{US_STATE_NAMES[s]}</option>)}</select>:<input id={`checkout-${name}`} className={inputClass} name={name} type={type} value={value} required={required} maxLength={name.includes("line1")?240:name.endsWith("postal_code")?10:140} inputMode={name.endsWith("postal_code")?"numeric":undefined} pattern={name.endsWith("postal_code")?"[0-9]{5}(-[0-9]{4})?":undefined} autoComplete={completion} onChange={e=>onChange(name,e.target.value)} />}</label>;
 };
-const usd=(cents:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(cents/100);
 async function checkoutFailureMessage(error:unknown,data:unknown):Promise<string>{
  const errorObject=error as {message?:string;context?:Response}|null;
  const response=errorObject?.context;
@@ -72,9 +68,7 @@ export function Checkout(){
  const [fields,setFields]=useState<Fields>({first_name:"",last_name:"",company:"",email:"",phone:"",line1:"",line2:"",city:"",state:"",postal_code:"",shipping_first_name:"",shipping_last_name:"",shipping_phone:"",shipping_line1:"",shipping_line2:"",shipping_city:"",shipping_state:"",shipping_postal_code:""});
  const [profileLoading,setProfileLoading]=useState(true);
  const [formError,setFormError]=useState("");
- const [payError,setPayError]=useState("");
  const [busy,setBusy]=useState(false);
- const [session,setSession]=useState<Session|null>(null);
  const pendingAttempt=useRef<{signature:string;key:string}|null>(null);
  const previousAttempt=useRef<CheckoutAttempt|null>(null);
  const summary=useRef<HTMLElement>(null);
@@ -84,11 +78,11 @@ export function Checkout(){
  const stripePromise=useMemo(()=>typeof publishableKey==="string"&&publishableKey.startsWith(sandboxPreview?"pk_test_":"pk_live_")?loadStripe(publishableKey):null,[publishableKey,sandboxPreview]);
  const verified=!!user?.email_confirmed_at;
  const updateField=useCallback((name:string,value:string)=>{
-  setFields(previous=>({...previous,[name]:value}));setFormError("");setPayError("");setSession(null);
+  setFields(previous=>({...previous,[name]:value}));setFormError("");
  },[]);
  const selectAddress=(prefix:""|"shipping_",address:AddressSuggestion)=>{
   setFields(previous=>({...previous,[`${prefix}line1`]:address.line1,[`${prefix}city`]:address.city,[`${prefix}state`]:address.state,[`${prefix}postal_code`]:address.postal_code}));
-  setFormError("");setPayError("");setSession(null);
+  setFormError("");
  };
 
  useEffect(()=>{
@@ -101,6 +95,8 @@ export function Checkout(){
  },[user?.id]);
  useEffect(()=>{
   if(!user||!artisanSupabase){setProfileLoading(false);return;}
+  const saved=loadPaymentPage(user.id);
+  if(saved){setFields(saved.billing);setSame(saved.same);setProfileLoading(false);return;}
   let alive=true;
   Promise.resolve(artisanSupabase.from("artisan_profiles").select("first_name,last_name,phone").eq("user_id",user.id).maybeSingle())
    .then(({data})=>{if(!alive)return;setFields(previous=>({...previous,first_name:data?.first_name??"",last_name:data?.last_name??"",phone:data?.phone??"",email:user.email??""}));})
@@ -114,7 +110,7 @@ export function Checkout(){
  },[ready,verified,navigate,lines]);
 
  const createPayment=async(event:FormEvent<HTMLFormElement>)=>{
-  event.preventDefault();setFormError("");setPayError("");
+  event.preventDefault();setFormError("");
   if(!event.currentTarget.reportValidity())return;
   if(!enabled||!stripePromise||!artisanSupabase||!user?.email_confirmed_at){setFormError("Secure card checkout is not available right now. Please try again shortly.");return;}
   if(busy)return;
@@ -132,7 +128,8 @@ export function Checkout(){
    if(error)throw Error(await checkoutFailureMessage(error,data));
    if(typeof data?.client_secret!=="string"||typeof data?.session_id!=="string"||!Number.isSafeInteger(data?.amount_total)||data?.currency!=="usd")
     throw Error(await checkoutFailureMessage(null,data));
-   setSession({client_secret:data.client_secret,session_id:data.session_id,order_number:data.order_number,amount_total:data.amount_total,currency:data.currency});
+   savePaymentPage(user.id,{client_secret:data.client_secret,session_id:data.session_id,order_number:data.order_number,amount_total:data.amount_total,currency:data.currency},fields,same);
+   await navigate({to:"/payment"});
   }catch(e){setFormError(e instanceof Error?e.message:"Secure checkout could not start. Please try again.");}
   finally{setBusy(false);}
  };
@@ -141,7 +138,7 @@ export function Checkout(){
  if(!verified)return <div className="mx-auto max-w-4xl p-10 text-center" role="status">Please sign in with a verified email to continue. <Link to="/login" className="text-primary underline">Sign in</Link></div>;
  if(!meetsMinimum(subtotal))return <div className="mx-auto max-w-4xl p-10 text-center">Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link></div>;
 
- return <main className={`checkout-page min-h-screen${!session?" checkout-billing-step":""}`}>
+ return <main className="checkout-page checkout-billing-step min-h-screen">
   <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
   {sandboxPreview&&<div role="status" className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">Sandbox checkout · Test cards only · No real charge</div>}
   <header className="mb-7 border-b border-slate-800 pb-6">
@@ -167,7 +164,7 @@ export function Checkout(){
      <Field label="State" name="state" value={fields.state} onChange={updateField} autoComplete="billing address-level1"/></div>
      <div className="checkout-address-pair sm:col-span-2"><Field label="ZIP code" name="postal_code" value={fields.postal_code} onChange={updateField} autoComplete="billing postal-code"/>
      <label className="block text-sm font-medium"><span>Country</span><input className={inputClass} value="United States" readOnly autoComplete="section-billing billing country-name"/></label></div>
-     <label className="flex min-h-11 items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" checked={same} onChange={e=>{setSame(e.target.checked);setSession(null);}} className="h-4 w-4 accent-primary"/>Delivery address is the same as billing</label>
+     <label className="flex min-h-11 items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" checked={same} onChange={e=>setSame(e.target.checked)} className="h-4 w-4 accent-primary"/>Delivery address is the same as billing</label>
      {!same&&<div className="grid gap-4 border-t border-border pt-5 sm:col-span-2 sm:grid-cols-2"><h3 className="font-semibold sm:col-span-2">Delivery address</h3>
       <Field label="First name" name="shipping_first_name" value={fields.shipping_first_name} onChange={updateField} autoComplete="shipping given-name"/>
       <Field label="Last name" name="shipping_last_name" value={fields.shipping_last_name} onChange={updateField} autoComplete="shipping family-name"/>
@@ -182,7 +179,7 @@ export function Checkout(){
      </div>}
     </div>
     {formError&&<p role="alert" className="mt-5 rounded-xl border border-amber-700 bg-amber-950/40 px-4 py-3 text-sm leading-6 text-amber-100">{formError}</p>}
-    {!session&&<button type="submit" className="sr-only" aria-hidden="true" tabIndex={-1} disabled={!enabled||!stripePromise||busy}>Prepare secure payment</button>}
+    <button type="submit" className="sr-only" aria-hidden="true" tabIndex={-1} disabled={!enabled||!stripePromise||busy}>Prepare secure payment</button>
     <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-500"><LockKeyhole size={14} className="mt-0.5 shrink-0"/>Card details are encrypted and handled by Stripe. Your card is charged only after you complete the purchase.</p>
    </form>
    <aside ref={summary} className="min-w-0 lg:sticky lg:top-6" aria-busy={busy}>
@@ -191,9 +188,9 @@ export function Checkout(){
     <div className="mt-4 divide-y divide-slate-800 border-y border-slate-800">
      {lines.map(line=>{const product=getProduct(line.sku);return product?<div key={line.sku} className="flex items-start justify-between gap-4 py-3 text-sm"><span className="min-w-0"><span className="block font-medium">{product.title}</span><span className="mt-0.5 block text-muted-foreground">Qty {line.pieces}</span></span><span className="shrink-0 font-medium">{money(lineTotal(line.pieces,product.price??0))}</span></div>:null;})}
     </div>
-    <label className="mt-4 block text-sm font-medium text-slate-300">Coupon or discount code<input className={inputClass} name="coupon" value={coupon} onChange={e=>{setCoupon(e.target.value);setSession(null);}} placeholder="Enter code" autoComplete="off"/></label>
-    <div className="mt-5 flex items-end justify-between gap-3 border-t border-slate-800 pt-4"><span className="font-semibold text-slate-300">Total</span><span className="text-2xl font-bold text-white">{session?usd(session.amount_total):money(subtotal)}</span></div>
-    {session&&stripePromise?<><div className="mb-3 mt-5 flex items-center gap-2 text-sm font-medium text-emerald-300"><ShieldCheck size={17}/><span>Secure payment ready · Order # {formatOrderNumber(session.order_number)}</span></div><CheckoutElementsProvider stripe={stripePromise} options={{clientSecret:session.client_secret}}><StripePayment same={same} totalCents={session.amount_total} billing={fields} onError={setPayError} onSuccess={()=>void navigate({to:"/order-confirmation",search:{session_id:session.session_id} as never})}/></CheckoutElementsProvider>{payError&&<p role="alert" className="mt-3 rounded-lg bg-red-950/50 px-3 py-2 text-sm text-red-200">{payError}</p>}</>:<button type="submit" form="checkout-form" disabled={!enabled||!stripePromise||busy} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal)}`:"Card checkout unavailable"}</button>}
+    <label className="mt-4 block text-sm font-medium text-slate-300">Coupon or discount code<input className={inputClass} name="coupon" value={coupon} onChange={e=>setCoupon(e.target.value)} placeholder="Enter code" autoComplete="off"/></label>
+    <div className="mt-5 flex items-end justify-between gap-3 border-t border-slate-800 pt-4"><span className="font-semibold text-slate-300">Total</span><span className="text-2xl font-bold text-white">{money(subtotal)}</span></div>
+    <button type="submit" form="checkout-form" disabled={!enabled||!stripePromise||busy} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal)}`:"Card checkout unavailable"}</button>
     <div className="mt-4 flex items-center gap-2 text-xs text-slate-500"><LockKeyhole size={14}/>Card payment powered by Stripe</div>
     <p className="mt-4 text-xs leading-5 text-slate-500">By completing this purchase, you agree to the <Link to="/terms-of-sale" className="underline underline-offset-2 hover:text-slate-300">Terms of Sale</Link> and <Link to="/privacy" className="underline underline-offset-2 hover:text-slate-300">Privacy Policy</Link>.</p>
     </section>
