@@ -52,7 +52,7 @@ function OrderConfirmation(){
    receipt?<div className="mt-4 space-y-2">
      <h2 className="text-xl font-semibold">Order # {formatOrderNumber(receipt.order_number)}</h2>
      <p role="status" className={result?.confirmed?"text-green-700":"text-amber-700"}>{result?.confirmed?"Thank you for your order! ":""}{result?.message}</p>
-     <p>Order status: {receipt.status.replaceAll("_"," ")}</p>
+     <p>Order status: {(receipt.status==="expired"?"cancelled":receipt.status.replaceAll("_"," "))}</p>
      <p>Payment status: {receipt.payment_status.replaceAll("_"," ")}</p>
      <p className="font-bold">Total: {new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(receipt.total_cents/100)}</p>
    </div>:null}

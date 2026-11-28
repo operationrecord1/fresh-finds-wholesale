@@ -9,6 +9,6 @@ export function customerPaymentMessage(status:string,paymentStatus:string):{mess
  if(paymentStatus==="failed")
   return {message:"Payment failed. No paid order was confirmed.",confirmed:false};
  if(paymentStatus==="cancelled"||status==="cancelled"||status==="expired")
-  return {message:"Checkout was cancelled or expired. No paid order was confirmed.",confirmed:false};
+  return {message:"Checkout was cancelled. No paid order was confirmed.",confirmed:false};
  return {message:"Payment has not been confirmed yet. Do not pay again until the status is updated.",confirmed:false};
 }
