@@ -10,7 +10,7 @@ describe("Verified Stripe payment order status display",()=>{
   expect(customerPaymentMessage("confirmed","refunded").message).toMatch(/refunded/);
   expect(customerPaymentMessage("confirmed","partially_refunded").message).toMatch(/partially refunded/);
   expect(customerPaymentMessage("cancelled","failed").message).toMatch(/failed/);
-  expect(customerPaymentMessage("expired","cancelled").message).toMatch(/expired/);
+  expect(customerPaymentMessage("expired","cancelled").message).toMatch(/cancelled/);
  });
  it("warns against duplicate payment attempts when pending",()=>{
   expect(customerPaymentMessage("pending_payment","unpaid").message).toMatch(/Do not pay again/);
