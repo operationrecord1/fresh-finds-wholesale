@@ -141,7 +141,7 @@ export function Checkout(){
  if(!verified)return <div className="mx-auto max-w-4xl p-10 text-center" role="status">Please sign in with a verified email to continue. <Link to="/login" className="text-primary underline">Sign in</Link></div>;
  if(!meetsMinimum(subtotal))return <div className="mx-auto max-w-4xl p-10 text-center">Your cart is below the $500 minimum. <Link to="/cart" className="text-primary underline">Return to cart</Link></div>;
 
- return <main className="checkout-page min-h-screen">
+ return <main className={`checkout-page min-h-screen${!session?" checkout-billing-step":""}`}>
   <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
   {sandboxPreview&&<div role="status" className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">Sandbox checkout · Test cards only · No real charge</div>}
   <header className="mb-7 border-b border-slate-800 pb-6">
@@ -151,7 +151,7 @@ export function Checkout(){
     <div className="flex items-center gap-2 text-sm text-slate-400"><ShieldCheck size={18} className="text-emerald-400"/><span>Secure card payment by Stripe</span></div>
    </div>
   </header>
-  <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] xl:gap-8">
+  <div className="checkout-layout grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] xl:gap-8">
    <form id="checkout-form" autoComplete="on" onSubmit={e=>void createPayment(e)} className="min-w-0 rounded-2xl border border-slate-800 bg-[#111316] p-5 shadow-2xl sm:p-8">
     <input type="hidden" name="country" value="US" autoComplete="section-billing billing country"/>
     <div className="mb-6 flex items-start justify-between gap-4 border-b border-slate-800 pb-5"><div><h2 className="text-xl font-bold text-white">Billing information</h2><p className="mt-1 text-sm text-slate-400">Check your contact and billing details.</p></div>{profileLoading&&<span role="status" className="text-xs text-slate-400">Loading profile…</span>}</div>
@@ -161,24 +161,25 @@ export function Checkout(){
      <div className="sm:col-span-2"><Field label="Company" name="company" value={fields.company} onChange={updateField} required={false} autoComplete="organization"/></div>
      <Field label="Email" name="email" value={fields.email} onChange={updateField} type="email" autoComplete="email"/>
      <Field label="Phone" name="phone" value={fields.phone} onChange={updateField} type="tel" autoComplete="tel"/>
-     <label className="block text-sm font-medium sm:col-span-2">Country<input className={inputClass} value="United States" readOnly autoComplete="section-billing billing country-name"/></label>
-     <div className="sm:col-span-2"><AddressAutocomplete name="line1" value={fields.line1} onChange={updateField} onSelect={address=>selectAddress("",address)} inputClass={inputClass}/></div>
-     <div className="checkout-address-pair sm:col-span-2"><Field label="Apartment / Suite" name="line2" value={fields.line2} onChange={updateField} required={false} autoComplete="billing address-line2"/>
-     <Field label="City" name="city" value={fields.city} onChange={updateField} autoComplete="billing address-level2"/></div>
+     <div className="checkout-address-pair sm:col-span-2"><AddressAutocomplete name="line1" value={fields.line1} onChange={updateField} onSelect={address=>selectAddress("",address)} inputClass={inputClass}/>
+     <Field label="Apartment / Suite" name="line2" value={fields.line2} onChange={updateField} required={false} autoComplete="billing address-line2"/></div>
      <div className="checkout-address-pair sm:col-span-2">
-     <Field label="State" name="state" value={fields.state} onChange={updateField} autoComplete="billing address-level1"/>
-     <Field label="ZIP code" name="postal_code" value={fields.postal_code} onChange={updateField} autoComplete="billing postal-code"/></div>
+     <Field label="City" name="city" value={fields.city} onChange={updateField} autoComplete="billing address-level2"/>
+     <Field label="State" name="state" value={fields.state} onChange={updateField} autoComplete="billing address-level1"/></div>
+     <div className="checkout-address-pair sm:col-span-2"><Field label="ZIP code" name="postal_code" value={fields.postal_code} onChange={updateField} autoComplete="billing postal-code"/>
+     <label className="block text-sm font-medium">Country<input className={inputClass} value="United States" readOnly autoComplete="section-billing billing country-name"/></label></div>
      <label className="flex min-h-11 items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" checked={same} onChange={e=>{setSame(e.target.checked);setSession(null);}} className="h-4 w-4 accent-primary"/>Delivery address is the same as billing</label>
      {!same&&<div className="grid gap-4 border-t border-border pt-5 sm:col-span-2 sm:grid-cols-2"><h3 className="font-semibold sm:col-span-2">Delivery address</h3>
       <Field label="First name" name="shipping_first_name" value={fields.shipping_first_name} onChange={updateField} autoComplete="shipping given-name"/>
       <Field label="Last name" name="shipping_last_name" value={fields.shipping_last_name} onChange={updateField} autoComplete="shipping family-name"/>
       <Field label="Phone" name="shipping_phone" value={fields.shipping_phone} onChange={updateField} type="tel" autoComplete="shipping tel"/>
-      <div className="sm:col-span-2"><AddressAutocomplete name="shipping_line1" value={fields.shipping_line1} onChange={updateField} onSelect={address=>selectAddress("shipping_",address)} inputClass={inputClass}/></div>
-      <div className="checkout-address-pair sm:col-span-2"><Field label="Apartment / Suite" name="shipping_line2" value={fields.shipping_line2} onChange={updateField} required={false} autoComplete="shipping address-line2"/>
-      <Field label="City" name="shipping_city" value={fields.shipping_city} onChange={updateField} autoComplete="shipping address-level2"/></div>
+      <div className="checkout-address-pair sm:col-span-2"><AddressAutocomplete name="shipping_line1" value={fields.shipping_line1} onChange={updateField} onSelect={address=>selectAddress("shipping_",address)} inputClass={inputClass}/>
+      <Field label="Apartment / Suite" name="shipping_line2" value={fields.shipping_line2} onChange={updateField} required={false} autoComplete="shipping address-line2"/></div>
      <div className="checkout-address-pair sm:col-span-2">
-      <Field label="State" name="shipping_state" value={fields.shipping_state} onChange={updateField} autoComplete="shipping address-level1"/>
-      <Field label="ZIP code" name="shipping_postal_code" value={fields.shipping_postal_code} onChange={updateField} autoComplete="shipping postal-code"/></div>
+      <Field label="City" name="shipping_city" value={fields.shipping_city} onChange={updateField} autoComplete="shipping address-level2"/>
+      <Field label="State" name="shipping_state" value={fields.shipping_state} onChange={updateField} autoComplete="shipping address-level1"/></div>
+      <div className="checkout-address-pair sm:col-span-2"><Field label="ZIP code" name="shipping_postal_code" value={fields.shipping_postal_code} onChange={updateField} autoComplete="shipping postal-code"/>
+      <label className="block text-sm font-medium">Country<input className={inputClass} value="United States" readOnly autoComplete="section-delivery shipping country-name"/></label></div>
      </div>}
     </div>
     {formError&&<p role="alert" className="mt-5 rounded-xl border border-amber-700 bg-amber-950/40 px-4 py-3 text-sm leading-6 text-amber-100">{formError}</p>}
