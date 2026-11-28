@@ -34,7 +34,7 @@ it("allows quantity editing only through Change quantity and retains Clear Cart"
 it("shows the minimum-order message below the heading and blocks checkout below $500", () => {
   actions.subtotal = 400;
   render(<CartPage />);
-  expect(screen.getByRole("alert")).toHaveTextContent("Minimum order $500.00. Add $100.00 more to check out.");
+  expect(screen.getByRole("alert")).toHaveTextContent("Your order subtotal must be at least $500.00 to check out. Add $100.00 more.");
   expect(screen.getByRole("heading", { name: "Shopping Cart" }).nextElementSibling).toBe(screen.getByRole("alert"));
   expect(screen.getByRole("button", { name: "Proceed to Checkout" })).toBeDisabled();
 });
