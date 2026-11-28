@@ -6,3 +6,5 @@
 .store-call-dialog a{background:#197db8;color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none}
 .store-call-dialog .store-call-close{position:absolute;top:8px;right:8px;padding:6px;background:transparent;border:0;color:inherit}
 .store-call-dialog :focus-visible{outline:2px solid #333;outline-offset:2px}
+
+.store-call-button>span{text-align:left}.store-call-button small,.store-call-button strong{padding-left:0;margin-left:0}
