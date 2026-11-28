@@ -71,7 +71,6 @@ export function Checkout(){
  const [busy,setBusy]=useState(false);
  const pendingAttempt=useRef<{signature:string;key:string}|null>(null);
  const previousAttempt=useRef<CheckoutAttempt|null>(null);
- const summary=useRef<HTMLElement>(null);
  const sandboxPreview=typeof window!=="undefined"&&window.location.hostname.endsWith(".artisanmart-staging.pages.dev");
  const enabled=sandboxPreview?import.meta.env["VITE_ARTISAN_SANDBOX_CHECKOUT_ENABLED"]==="true":import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
   const publishableKey=import.meta.env["VITE_ARTISAN_STRIPE_PUBLISHABLE_KEY"];
@@ -115,7 +114,6 @@ export function Checkout(){
   if(!enabled||!stripePromise||!artisanSupabase||!user?.email_confirmed_at){setFormError("Secure card checkout is not available right now. Please try again shortly.");return;}
   if(busy)return;
   setBusy(true);
-  summary.current?.scrollIntoView?.({behavior:"smooth",block:"start"});
   try{
    const form=new FormData();
    for(const [name,value] of Object.entries(fields))form.set(name,value.trim());
@@ -182,7 +180,7 @@ export function Checkout(){
     <button type="submit" className="sr-only" aria-hidden="true" tabIndex={-1} disabled={!enabled||!stripePromise||busy}>Prepare secure payment</button>
     <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-500"><LockKeyhole size={14} className="mt-0.5 shrink-0"/>Card details are encrypted and handled by Stripe. Your card is charged only after you complete the purchase.</p>
    </form>
-   <aside ref={summary} className="min-w-0 lg:sticky lg:top-6" aria-busy={busy}>
+   <aside className="min-w-0 lg:sticky lg:top-6" aria-busy={busy}>
     <section className="min-w-0 rounded-2xl border border-slate-800 bg-[#111316] p-5 shadow-2xl sm:p-6" aria-labelledby="order-summary-title">
     <div className="flex items-baseline justify-between gap-3"><h2 id="order-summary-title" className="text-xl font-bold text-white">Order summary</h2><span className="text-xs font-medium text-slate-400">{lines.reduce((count,line)=>count+line.pieces,0)} items</span></div>
     <div className="mt-4 divide-y divide-slate-800 border-y border-slate-800">
