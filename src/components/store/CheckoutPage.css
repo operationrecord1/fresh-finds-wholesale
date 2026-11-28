@@ -57,6 +57,7 @@ body:has(.checkout-page){background:#fff}
  .checkout-billing-step>div{padding-inline:12px}
  .checkout-billing-step #checkout-form,.checkout-billing-step aside>section{padding:14px}
  .checkout-billing-step .checkout-address-pair{gap:8px}
+ .checkout-billing-step .checkout-address-pair>label>span,.checkout-billing-step .checkout-address-pair>.checkout-address>label{display:block;min-height:34px;line-height:17px}
  .checkout-billing-step .checkout-address-pair input,.checkout-billing-step .checkout-address-pair select{padding-inline:5px;font-size:11px}
  .checkout-billing-step .checkout-address-menu{max-width:calc(100vw - 56px)}
  .checkout-billing-step .checkout-address-credit{font-size:10px}
