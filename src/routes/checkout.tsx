@@ -167,7 +167,7 @@ export function Checkout(){
      <Field label="City" name="city" value={fields.city} onChange={updateField} autoComplete="billing address-level2"/>
      <Field label="State" name="state" value={fields.state} onChange={updateField} autoComplete="billing address-level1"/></div>
      <div className="checkout-address-pair sm:col-span-2"><Field label="ZIP code" name="postal_code" value={fields.postal_code} onChange={updateField} autoComplete="billing postal-code"/>
-     <label className="block text-sm font-medium">Country<input className={inputClass} value="United States" readOnly autoComplete="section-billing billing country-name"/></label></div>
+     <label className="block text-sm font-medium"><span>Country</span><input className={inputClass} value="United States" readOnly autoComplete="section-billing billing country-name"/></label></div>
      <label className="flex min-h-11 items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" checked={same} onChange={e=>{setSame(e.target.checked);setSession(null);}} className="h-4 w-4 accent-primary"/>Delivery address is the same as billing</label>
      {!same&&<div className="grid gap-4 border-t border-border pt-5 sm:col-span-2 sm:grid-cols-2"><h3 className="font-semibold sm:col-span-2">Delivery address</h3>
       <Field label="First name" name="shipping_first_name" value={fields.shipping_first_name} onChange={updateField} autoComplete="shipping given-name"/>
@@ -179,7 +179,7 @@ export function Checkout(){
       <Field label="City" name="shipping_city" value={fields.shipping_city} onChange={updateField} autoComplete="shipping address-level2"/>
       <Field label="State" name="shipping_state" value={fields.shipping_state} onChange={updateField} autoComplete="shipping address-level1"/></div>
       <div className="checkout-address-pair sm:col-span-2"><Field label="ZIP code" name="shipping_postal_code" value={fields.shipping_postal_code} onChange={updateField} autoComplete="shipping postal-code"/>
-      <label className="block text-sm font-medium">Country<input className={inputClass} value="United States" readOnly autoComplete="section-delivery shipping country-name"/></label></div>
+      <label className="block text-sm font-medium"><span>Country</span><input className={inputClass} value="United States" readOnly autoComplete="section-delivery shipping country-name"/></label></div>
      </div>}
     </div>
     {formError&&<p role="alert" className="mt-5 rounded-xl border border-amber-700 bg-amber-950/40 px-4 py-3 text-sm leading-6 text-amber-100">{formError}</p>}
