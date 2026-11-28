@@ -14,6 +14,7 @@ import { US_STATES, US_STATE_NAMES } from "@/lib/us-address";
 import { AddressAutocomplete, type AddressSuggestion } from "@/components/store/AddressAutocomplete";
 import { StripePayment } from "@/components/store/StripePayment";
 import { formatOrderNumber } from "@/lib/artisan-order-number";
+import { resumableCheckoutKey, type CheckoutAttempt } from "@/lib/artisan-checkout-resume";
 
 export const Route = createFileRoute("/checkout")({
  head: () => ({ meta: [
@@ -75,6 +76,7 @@ export function Checkout(){
  const [busy,setBusy]=useState(false);
  const [session,setSession]=useState<Session|null>(null);
  const pendingAttempt=useRef<{signature:string;key:string}|null>(null);
+ const previousAttempt=useRef<CheckoutAttempt|null>(null);
  const summary=useRef<HTMLElement>(null);
  const sandboxPreview=typeof window!=="undefined"&&window.location.hostname.endsWith(".artisanmart-staging.pages.dev");
  const enabled=sandboxPreview?import.meta.env["VITE_ARTISAN_SANDBOX_CHECKOUT_ENABLED"]==="true":import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
@@ -89,6 +91,14 @@ export function Checkout(){
   setFormError("");setPayError("");setSession(null);
  };
 
+ useEffect(()=>{
+  previousAttempt.current=null;
+  if(!user?.id||!artisanSupabase)return;
+  let active=true;
+  Promise.resolve(artisanSupabase.from("artisan_orders").select("idempotency_key,status,payment_status,reservation_expires_at,billing_address,shipping_address,artisan_order_items(sku,quantity,mode)").eq("customer_id",user.id).eq("status","pending_payment").eq("payment_status","unpaid").gt("reservation_expires_at",new Date().toISOString()).not("checkout_session_id","is",null).order("created_at",{ascending:false}).limit(1))
+   .then(({data,error})=>{if(active&&!error)previousAttempt.current=data?.[0] as CheckoutAttempt??null;}).catch(()=>{/* Normal new checkout remains available. */});
+  return()=>{active=false;};
+ },[user?.id]);
  useEffect(()=>{
   if(!user||!artisanSupabase){setProfileLoading(false);return;}
   let alive=true;
@@ -116,6 +126,8 @@ export function Checkout(){
    const signature=JSON.stringify({lines,coupon,values:Object.fromEntries(form.entries()),same});
    if(pendingAttempt.current?.signature!==signature)pendingAttempt.current={signature,key:crypto.randomUUID()};
    const payload=makeCheckoutRequest(form,lines,coupon,pendingAttempt.current.key,same);
+   const resumeKey=resumableCheckoutKey(previousAttempt.current,payload);
+   if(resumeKey){payload.idempotencyKey=resumeKey;pendingAttempt.current={signature,key:resumeKey};}
    const {data,error}=await artisanSupabase.functions.invoke(sandboxPreview?"artisan-create-checkout-sandbox":"artisan-create-checkout",{body:payload});
    if(error)throw Error(await checkoutFailureMessage(error,data));
    if(typeof data?.client_secret!=="string"||typeof data?.session_id!=="string"||!Number.isSafeInteger(data?.amount_total)||data?.currency!=="usd")

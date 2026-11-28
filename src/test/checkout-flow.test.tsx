@@ -4,7 +4,7 @@ import { Checkout } from "@/routes/checkout";
 
 const state=vi.hoisted(()=>({user:null as null|{id:string;email:string;email_confirmed_at?:string},ready:true,subtotal:580,lines:[{sku:"DA883",pieces:40}],navigate:vi.fn(),profile:null as null|Record<string,string>,invoke:vi.fn()}));
 vi.mock("@tanstack/react-router",()=>({createFileRoute:()=> (config:unknown)=>config,Link:({children,to}:any)=><a href={to}>{children}</a>,useNavigate:()=>state.navigate}));
-vi.mock("@/lib/artisan-auth",()=>({useArtisanAuth:()=>({user:state.user,ready:state.ready}),artisanSupabase:{from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:state.profile})})})}),functions:{invoke:state.invoke}}}));
+vi.mock("@/lib/artisan-auth",()=>({useArtisanAuth:()=>({user:state.user,ready:state.ready}),artisanSupabase:{from:(table:string)=>table==="artisan_orders"?({select:()=>{const q:any={eq:()=>q,gt:()=>q,not:()=>q,order:()=>q,limit:async()=>({data:[],error:null})};return q;}}):({select:()=>({eq:()=>({maybeSingle:async()=>({data:state.profile})})})}),functions:{invoke:state.invoke}}}));
 vi.mock("@/lib/cart",()=>({useCart:()=>({lines:state.lines,subtotal:state.subtotal})}));
 vi.mock("@stripe/react-stripe-js/checkout",()=>({CheckoutElementsProvider:({children}:any)=><div>{children}</div>,PaymentElement:()=> <div data-testid="stripe-payment-element">Stripe secure card fields</div>,useCheckoutElements:()=>({type:"success",checkout:{confirm:vi.fn().mockResolvedValue({type:"success"}),total:{total:{amount:"580.00"}}}})}));
 vi.mock("@stripe/stripe-js",()=>({loadStripe:()=>Promise.resolve({})}));
