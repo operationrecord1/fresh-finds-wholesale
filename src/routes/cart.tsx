@@ -27,7 +27,7 @@ export function CartPage() {
   const ok = meetsMinimum(subtotal);
   return (
     <div className="cart-page">
-      <div className="space-y-6">
+      <div className="cart-items-panel space-y-6">
         <h1 className="text-3xl font-bold">Shopping Cart</h1>
         {!ok && <div className="rounded bg-sec-closeout/10 p-3 font-semibold text-sec-closeout">Your order subtotal must be at least {money(ORDER_MINIMUM)} to check out. Add {money(ORDER_MINIMUM - subtotal)} more.</div>}
         <div className="cart-items">
