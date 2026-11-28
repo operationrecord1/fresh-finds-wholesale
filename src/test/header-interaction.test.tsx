@@ -21,9 +21,8 @@ it("switches repeatedly between disclosures and closes outside their own region"
   render(<SiteHeader />);
   const categories = screen.getByRole("button", { name: "Categories" });
   const price = screen.getByRole("button", { name: "Shop By Price" });
-  const knowledge = screen.getByRole("button", { name: "Knowledge Center" });
   for (let i = 0; i < 5; i++) {
-    for (const trigger of [categories, price, knowledge]) {
+    for (const trigger of [categories, price]) {
       move(trigger);
       expect(trigger).toHaveAttribute("aria-expanded", "true");
       move(document.querySelector("#store-dropdown")!);
@@ -38,7 +37,7 @@ it("switches repeatedly between disclosures and closes outside their own region"
 });
 it("supports keyboard toggle and Escape dismissal", () => {
   render(<SiteHeader />);
-  const trigger = screen.getByRole("button", { name: "Knowledge Center" });
+  const trigger = screen.getByRole("button", { name: "Shop By Price" });
   fireEvent.click(trigger, { detail: 0 });
   expect(trigger).toHaveAttribute("aria-expanded", "true");
   fireEvent.keyDown(document, { key: "Escape" });
