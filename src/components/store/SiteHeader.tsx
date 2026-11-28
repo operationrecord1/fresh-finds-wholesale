@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Menu, Phone, Search, ChevronDown, Megaphone, X } from "lucide-react";
+import { Menu, Phone, Search, ChevronDown, UserRound, X } from "lucide-react";
 import { CATEGORIES, PRICE_BANDS, slugify } from "@/data/catalog";
 import { BUSINESS_PHONE, BUSINESS_PHONE_HREF } from "@/lib/business";
 import "./SiteHeader.css";
@@ -12,35 +12,36 @@ export function SiteHeader() {
   const {user}=useArtisanAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileToggle = useRef<HTMLButtonElement>(null);
-  const mobilePanel = useRef<HTMLElement>(null);
+  const mobilePanel = useRef<HTMLDialogElement>(null);
   useEffect(() => {
+    const panel = mobilePanel.current;
+    if (!panel) return;
+    if (mobileOpen && !panel.open) panel.showModal();
+    if (!mobileOpen && panel.open) panel.close();
     if (!mobileOpen) return;
-    const outside = (e: PointerEvent) => { if (!mobilePanel.current?.contains(e.target as Node) && !mobileToggle.current?.contains(e.target as Node)) setMobileOpen(false); };
-    const escape = (e: KeyboardEvent) => { if (e.key === "Escape") { setMobileOpen(false); mobileToggle.current?.focus(); } };
     const resize = () => { if (window.innerWidth >= 760) setMobileOpen(false); };
-    document.addEventListener("pointerdown", outside); document.addEventListener("keydown", escape); window.addEventListener("resize", resize);
-    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); window.removeEventListener("resize", resize); };
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
   }, [mobileOpen]);
   const [q, setQ] = useState("");
-  const [menu, updateMenu] = useState<null | "cat" | "price" | "kc">(null);
+  const [menu, updateMenu] = useState<null | "cat" | "price">(null);
   const activeMenu = useRef<typeof menu>(null);
   const setMenu = (next: typeof menu) => { activeMenu.current = next; updateMenu(next); };
   const header = useRef<HTMLElement>(null);
   const catTrigger = useRef<HTMLButtonElement>(null);
   const priceTrigger = useRef<HTMLButtonElement>(null);
   const [anchor, setAnchor] = useState({ left: 12, top: 0, width: 360 });
-  const kcTrigger = useRef<HTMLButtonElement>(null);
   const dropdown = useRef<HTMLDivElement>(null);
-  const openHover = (next: "cat" | "price" | "kc") => {
+  const openHover = (next: "cat" | "price") => {
     if (window.matchMedia("(hover: hover)").matches) setMenu(next);
   };
   useEffect(() => {
-    const triggers = { cat: catTrigger, price: priceTrigger, kc: kcTrigger };
+    const triggers = { cat: catTrigger, price: priceTrigger };
     const leaveRegion = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
       const target = event.target as Node;
       // Resolve the new trigger first; an old menu cannot close its replacement.
-      for (const key of ["cat", "price", "kc"] as const) {
+      for (const key of ["cat", "price"] as const) {
         if (triggers[key].current?.contains(target)) { setMenu(key); return; }
       }
       if (activeMenu.current && !dropdown.current?.contains(target)) setMenu(null);
@@ -70,9 +71,9 @@ export function SiteHeader() {
     if (!menu) return;
     const position = () => {
       const h = header.current?.getBoundingClientRect();
-      const trigger = ({ cat: catTrigger, price: priceTrigger, kc: kcTrigger }[menu]).current?.getBoundingClientRect();
+      const trigger = ({ cat: catTrigger, price: priceTrigger }[menu]).current?.getBoundingClientRect();
       if (!h) return;
-      const width = Math.min(menu === "cat" ? 1100 : menu === "kc" ? (trigger?.width ?? 160) : 370, h.width - 24);
+      const width = Math.min(menu === "cat" ? 1100 : 370, h.width - 24);
       const left = Math.max(12, Math.min((trigger?.left ?? h.left + 12) - h.left, h.width - width - 12));
       setAnchor({ left, top: (trigger?.bottom ?? h.bottom) - h.top, width });
     };
@@ -118,30 +119,22 @@ export function SiteHeader() {
           </div>
         </div>
         <div className="store-utilities" role="group" aria-label="Customer links">
-          <div className="store-utility-links">
-            <Link className="store-mobile-hide" to="/careers">Careers</Link><Link to="/contact">Contact Us</Link>
-            <button ref={kcTrigger} onPointerEnter={() => openHover("kc")} data-header-secondary="true" aria-expanded={menu === "kc"} aria-controls="store-dropdown" onClick={(e) => { if (e.detail > 0 && window.matchMedia("(hover: hover)").matches) setMenu("kc"); else toggle("kc"); }} className="flex items-center">Knowledge Center <ChevronDown className="h-4 w-4" /></button>
-
-          </div>
           <div className="store-account-links leading-tight">
             <CustomerAccountMenu />
-            {user&&<Link to="/orders" className="store-orders-link">Orders</Link>}
+            <Link to="/orders" className="store-orders-link">Orders</Link>
             <MiniCart />
-            {!user&&<Link to="/newsletter" className="store-mobile-hide flex items-center gap-2"><Megaphone className="h-9 w-9 text-primary" /><span>Join Our <br />Newsletter</span></Link>}
           </div>
         </div>
       </div>
-      {mobileOpen && <nav ref={mobilePanel} id="store-mobile-menu" className="store-mobile-menu" aria-label="Browse products" onClick={e => { if ((e.target as HTMLElement).closest('a')) setMobileOpen(false); }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node) && e.relatedTarget !== mobileToggle.current) setMobileOpen(false); }}>
+      <dialog ref={mobilePanel} id="store-mobile-menu" className="store-mobile-menu" aria-label="Browse products" onCancel={() => setMobileOpen(false)} onClose={() => {setMobileOpen(false);mobileToggle.current?.focus();}} onClick={e => { if (e.target === e.currentTarget || (e.target as HTMLElement).closest('a')) setMobileOpen(false); }}>
         <div className="store-mobile-menu-heading"><strong>Browse products</strong><button type="button" aria-label="Close menu" onClick={() => { setMobileOpen(false); mobileToggle.current?.focus(); }}><X aria-hidden="true" /></button></div>
-        <div className="store-mobile-account"><CustomerAccountMenu fullName /></div>
-        {user&&<Link to="/orders">Orders</Link>}
+        <nav aria-label="Mobile navigation">
+        <div className="store-mobile-customer"><Link to={user?"/account":"/login"}><UserRound aria-hidden="true"/>{user?"Profile":"Login"}</Link><Link to="/orders">Orders</Link></div>
         <details><summary>Categories</summary><div>{CATEGORIES.map(name => <Link key={name} to="/category/$slug" params={{slug:slugify(name)}}>{name}</Link>)}</div></details>
         <details><summary>Shop By Price</summary><div>{PRICE_BANDS.map(b => <Link key={b.id} to="/shop-by-price" search={{price:b.id}}>{b.label}</Link>)}</div></details>
         {([['imports','Imports'],['closeouts','Closeouts'],['best-sellers','Best Sellers'],['reduced-price','Reduced Price'],['new-arrivals','New Arrivals']] as const).map(([slug,label]) => <Link key={slug} to="/collection/$slug" params={{slug}}>{label}</Link>)}
-        <Link to="/careers">Careers</Link><Link to="/contact">Contact Us</Link>
-        <details><summary>Knowledge Center</summary><div>{["Artisan Mart", "Shipping", "Closeouts"].map(name => <Link key={name} to="/info/$page" params={{page:slugify(name)}}>{name}</Link>)}</div></details>
-        {!user&&<Link to="/newsletter">Join Our Newsletter</Link>}
-      </nav>}
+        </nav>
+      </dialog>
       {menu && (
         <div ref={dropdown} id="store-dropdown" className={`store-dropdown store-dropdown-${menu}`} style={{ left: anchor.left, top: anchor.top, width: anchor.width }} onClick={() => setMenu(null)}>
           <div className="store-dropdown-surface">
@@ -157,10 +150,6 @@ export function SiteHeader() {
             {menu === "price" && (
               <ul className="store-price-columns">{PRICE_BANDS.map((b) => (
                 <li key={b.id}><Link to="/shop-by-price" search={{ price: b.id }} className="hover:underline">{b.label}</Link></li>))}</ul>
-            )}
-            {menu === "kc" && (
-              <ul className="store-price-columns">{["Artisan Mart", "Shipping", "Closeouts"].map((x) => (
-                <li key={x}><Link to="/info/$page" params={{ page: slugify(x) }} className="hover:underline">{x}</Link></li>))}</ul>
             )}
           </div>
         </div>
