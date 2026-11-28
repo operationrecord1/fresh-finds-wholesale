@@ -32,7 +32,7 @@ export function CartPage() {
         {!ok && <div className="rounded bg-sec-closeout/10 p-3 font-semibold text-sec-closeout">Your order subtotal must be at least {money(ORDER_MINIMUM)} to check out. Add {money(ORDER_MINIMUM - subtotal)} more.</div>}
         <div className="cart-items">
           {lines.map(l => { const p = getProduct(l.sku); if (!p) return null; return <article className="cart-item" key={l.sku}>
-            <div className="cart-item-info"><button className="cart-product-image" aria-label={`View ${p.title}`} onClick={()=>setEdit({p,pieces:l.pieces})}><ProductImage p={p}/></button><span className="cart-sku">ITEM #{p.sku}</span><Link to="/product/$sku" params={{sku:p.sku.toLowerCase()}}>{p.title}</Link><p>{money(p.price ?? 0)} / piece</p></div>
+            <div className="cart-item-info"><button className="cart-product-image" aria-label={`View ${p.title}`} onClick={()=>setEdit({p,pieces:l.pieces})}><ProductImage p={p}/></button><span className="cart-sku">ITEM #{p.sku}</span><Link title={p.title} to="/product/$sku" params={{sku:p.sku.toLowerCase()}}>{p.title}</Link><p>{money(p.price ?? 0)} / piece</p></div>
             <div className="cart-quantity"><span>Quantity</span><strong>{l.pieces} pieces</strong><button onClick={()=>setEdit({p,pieces:l.pieces})} aria-label={`Change quantity for ${p.title}`}>Change quantity</button></div>
             <div className="cart-line-total"><span>Subtotal</span><strong>{money(lineTotal(l.pieces,p.price ?? 0))}</strong><button onClick={()=>{ requestRemove(l.sku); }} aria-label={`Remove ${p.title}`}><Trash2 size={15} aria-hidden="true"/> Remove</button></div>
           </article>; })}
@@ -44,11 +44,10 @@ export function CartPage() {
       <aside className="cart-summary h-fit space-y-3">
         <h2 className="text-xl font-bold">Order Summary</h2>
         <div className="flex justify-between"><span>Subtotal</span><span>{money(subtotal)}</span></div>
-        <div className="flex justify-between text-lg font-bold"><span>Merchandise total</span><span>{money(subtotal)}</span></div>
-        <p className="text-sm text-muted-foreground">Shipping and tax are not included.</p><div className="cart-promo-block" style={{ marginBlockEnd: 0 }}><div className="flex gap-[15px]"><input aria-label="Promo code" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Promo code" className="min-w-0 flex-1 rounded border p-2" />
+        <div className="cart-merchandise-total flex justify-between text-lg font-bold"><span>Merchandise total</span><span>{money(subtotal)}</span></div>
+        <div className="cart-promo-block" style={{ marginBlockEnd: 0 }}><div className="flex gap-[15px]"><input aria-label="Promo code" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Promo code" className="min-w-0 flex-1 rounded border p-2" />
           <button className="rounded bg-primary px-3 text-primary-foreground" onClick={() => applyCoupon(coupon)}>Apply</button></div>
         <DemoCouponFeedback message={message} /></div>
-        <select aria-label="Sales representative" style={{ marginBlockStart: 0 }} className="w-full rounded border p-2" defaultValue="web"><option value="web">Sales Rep: Web Customer</option></select>
         {ok ? <Link to="/checkout" onClick={()=>preserveCartForCheckout(lines,coupon)} className="block rounded-full bg-accent py-3 text-center font-bold text-accent-foreground">Proceed to Checkout</Link>
             : <button disabled className="w-full rounded-full bg-accent py-3 font-bold text-accent-foreground opacity-50">Proceed to Checkout</button>}
       </aside>

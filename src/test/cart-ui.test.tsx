@@ -43,7 +43,8 @@ it("keeps a fixed-size red 10px promo error with 15px separation, without changi
   expect(slot).toHaveClass("h-[15px]");
   expect((slot.parentElement as HTMLElement).style.marginBlockEnd).toBe("0");
   expect(slot).toHaveClass("py-[2.5px]");
-  expect(slot.parentElement?.nextElementSibling).toBe(screen.getByRole("combobox", { name: "Sales representative" }));
+  expect(screen.queryByRole("combobox", { name: "Sales representative" })).not.toBeInTheDocument();
+  expect(screen.queryByText("Shipping and tax are not included.")).not.toBeInTheDocument();
   const apply = screen.getByRole("button", { name: "Apply" });
   for (const code of ["artisan", "ARTISAN ", "VIP8", ""]) {
     fireEvent.change(field, { target: { value: code } });

@@ -25,3 +25,26 @@ body:has(.cart-page){background:#fff}
 .cart-empty a { display:inline-flex; align-items:center; gap:10px; background:#147fae; color:white; border-radius:9px; padding:12px 20px; font-weight:700; }
 @media(max-width:1000px) { .cart-page { grid-template-columns:1fr; } }
 @media(max-width:600px) { .cart-page { padding:24px 14px; gap:20px; } .cart-item { grid-template-columns:minmax(0,1fr) minmax(0,1fr); padding:18px; gap:16px; } .cart-item-info { grid-column:1/-1; } .cart-line-total { align-items:flex-end; } .cart-summary { padding:20px; } }
+
+.cart-summary>div{gap:8px;flex-wrap:wrap}
+.cart-summary>div>span:last-child{white-space:nowrap}
+@media(max-width:359px){
+ .cart-item{padding:12px;gap:14px 8px}
+ .cart-item-info{display:grid;grid-template-columns:52px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;column-gap:10px;min-height:104px}
+ .cart-item-info .cart-product-image{float:none!important;grid-column:1;grid-row:1/4;width:52px;height:104px;margin:0}
+ .cart-item-info .cart-sku{grid-column:2;grid-row:1;font-size:10px;letter-spacing:.2px;margin:0}
+ .cart-item-info>a{grid-column:2;grid-row:2;align-self:center;font-size:12px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+ .cart-item-info>p{grid-column:2;grid-row:3;margin:0;font-size:11px;white-space:nowrap}
+ .cart-quantity strong,.cart-line-total strong{font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+ .cart-quantity>button,.cart-line-total>button{font-size:12px}
+ .cart-summary{padding:16px}
+ .cart-merchandise-total{flex-direction:column;gap:4px!important}
+ .cart-merchandise-total>span:first-child{font-size:16px;white-space:nowrap}
+}
+@media(max-width:279px){
+ .cart-item{grid-template-columns:minmax(0,1fr)}
+ .cart-quantity,.cart-line-total{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 8px}
+ .cart-quantity>button,.cart-line-total>button{grid-column:1/-1;align-self:start;justify-self:start}
+ .cart-line-total{align-items:start}
+ .cart-line-total>button{align-self:start}
+}
