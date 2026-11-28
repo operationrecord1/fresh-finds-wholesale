@@ -147,8 +147,7 @@ export function Checkout(){
   <header className="mb-7 border-b border-slate-800 pb-6">
    <Link to="/cart" className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-white"><ArrowLeft size={16}/> Back to cart</Link>
    <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-    <div><div className="mb-2 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"><LockKeyhole size={13}/> Secure checkout</div><h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Checkout</h1><p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Enter your billing details and pay securely by card.</p></div>
-    <div className="flex items-center gap-2 text-sm text-slate-400"><ShieldCheck size={18} className="text-emerald-400"/><span>Secure card payment by Stripe</span></div>
+    <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Checkout</h1>
    </div>
   </header>
   <div className="checkout-layout grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] xl:gap-8">
