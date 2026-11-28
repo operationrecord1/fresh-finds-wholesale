@@ -26,3 +26,39 @@ body:has(.checkout-page){background:#fff}
 .checkout-address-pair>label{min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
 .checkout-address-pair>label>input,.checkout-address-pair>label>select{margin-top:auto}
 @media(max-width:380px){.checkout-address-pair{gap:10px}.checkout-address-pair input,.checkout-address-pair select{padding-inline:7px;font-size:13px}}
+
+/* Connected panels apply only to the billing step; payment keeps its existing layout. */
+.checkout-billing-step>div{max-width:1220px}
+.checkout-billing-step .checkout-layout{gap:0;border:1px solid #d9e4ea;border-radius:8px;align-items:stretch}
+.checkout-billing-step #checkout-form{border:0;border-radius:8px 0 0 8px;padding:26px;min-width:0}
+.checkout-billing-step #checkout-form>div:first-of-type{border-bottom:0;padding-bottom:0}
+.checkout-billing-step #checkout-form h2{border-left:3px solid #147fae;padding-left:12px}
+.checkout-billing-step .checkout-layout>aside{position:static;background:#f5f9fb;border-left:1px solid #d9e4ea;border-radius:0 8px 8px 0}
+.checkout-billing-step aside>section{background:transparent;border:0;border-radius:0;padding:26px}
+.checkout-billing-step :is(input:not([type=checkbox]),select){border-radius:4px;min-height:43px}
+.checkout-billing-step aside button[type=submit]{border-radius:5px}
+.checkout-billing-step .checkout-address-pair{align-items:start}
+.checkout-billing-step .checkout-address-pair>label{display:block}
+.checkout-billing-step .checkout-address-pair>label>input,.checkout-billing-step .checkout-address-pair>label>select{margin-top:6px}
+.checkout-billing-step .checkout-address-menu{min-width:100%;width:max-content;max-width:min(430px,calc(100vw - 60px))}
+@media(max-width:1023px){
+ .checkout-billing-step .checkout-layout{grid-template-columns:1fr}
+ .checkout-billing-step #checkout-form{border-radius:8px 8px 0 0}
+ .checkout-billing-step .checkout-layout>aside{border-left:0;border-top:1px solid #d9e4ea;border-radius:0 0 8px 8px}
+}
+@media(max-width:500px){
+ .checkout-billing-step #checkout-form,.checkout-billing-step aside>section{padding:18px}
+ .checkout-billing-step .checkout-address-pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+ .checkout-billing-step .checkout-address-pair label{font-size:12px}
+ .checkout-billing-step aside>section>div{flex-wrap:wrap}
+ .checkout-billing-step aside>section>div>div{min-width:0}
+}
+@media(max-width:359px){
+ .checkout-billing-step>div{padding-inline:12px}
+ .checkout-billing-step #checkout-form,.checkout-billing-step aside>section{padding:14px}
+ .checkout-billing-step .checkout-address-pair{gap:8px}
+ .checkout-billing-step .checkout-address-pair input,.checkout-billing-step .checkout-address-pair select{padding-inline:5px;font-size:11px}
+ .checkout-billing-step .checkout-address-menu{max-width:calc(100vw - 56px)}
+ .checkout-billing-step .checkout-address-credit{font-size:10px}
+ .checkout-billing-step aside button[type=submit]{padding-inline:8px;font-size:13px}
+}
