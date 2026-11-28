@@ -2,7 +2,7 @@
 /**
  * Artisan Mart Auth configuration via official Supabase Management API.
  * Run only from the controlled GitHub workflow; never log credentials or raw config.
- * VERIFY prints booleans; APPLY updates only the two existing email templates,
+ * VERIFY prints booleans; APPLY updates only the approved authentication email templates,
  * and configures Brevo SMTP only when two dedicated workflow secrets are present.
  * Actual delivery and password recovery still require separate end-to-end tests.
  */
@@ -24,15 +24,17 @@ if(!PAT)throw Error("Missing SUPABASE_MANAGEMENT_TOKEN GitHub Actions secret. No
 if(Boolean(BREVO_LOGIN)!==Boolean(BREVO_KEY))throw Error("BREVO_SMTP_LOGIN and BREVO_SMTP_KEY must either both exist or both be absent.");
 const local={
   confirm:fs.readFileSync(path.join(__dirname,"..","supabase/email-templates/confirm-signup.html"),"utf8"),
-  recover:fs.readFileSync(path.join(__dirname,"..","supabase/email-templates/reset-password.html"),"utf8")
+  recover:fs.readFileSync(path.join(__dirname,"..","supabase/email-templates/reset-password.html"),"utf8"),
+  emailChange:fs.readFileSync(path.join(__dirname,"..","supabase/email-templates/email-change.html"),"utf8"),
+  passwordChanged:fs.readFileSync(path.join(__dirname,"..","supabase/email-templates/password-changed.html"),"utf8")
 };
 for(const [kind,html] of Object.entries(local)){
- if(!html.includes("{{ .ConfirmationURL }}")||!html.includes("<!doctype html>")||html.length<500)
+ if((kind!=="passwordChanged"&&!html.includes("{{ .ConfirmationURL }}"))||!html.includes("<!doctype html>")||html.length<500)
   throw Error("Invalid local "+kind+" HTML template; no changes made");
 }
 async function request(method,body){
  const res=await fetch(ENDPOINT,{method,headers:{"Authorization":"Bearer "+PAT,"Content-Type":"application/json","Accept":"application/json"},...(body?{body:JSON.stringify(body)}:{})});
- if(!res.ok())throw Error("Supabase Management API "+method+" failed HTTP "+res.status+" (check access permissions and project settings)");
+ if(!res.ok)throw Error("Supabase Management API "+method+" failed HTTP "+res.status+" (check access permissions and project settings)");
  return await res.json();
 }
 const digest=s=>createHash("sha256").update(s).digest("hex").slice(0,16);
@@ -50,6 +52,11 @@ async function main(){
    mailer_subjects_recovery:SUBJECT_RECOVER,
    mailer_templates_confirmation_content:local.confirm,
    mailer_templates_recovery_content:local.recover,
+   mailer_subjects_email_change:"Confirm your new email address",
+   mailer_templates_email_change_content:local.emailChange,
+   mailer_notifications_password_changed_enabled:true,
+   mailer_subjects_password_changed_notification:"Your Artisan Mart password was changed",
+   mailer_templates_password_changed_notification_content:local.passwordChanged,
   };
   if(providedSMTP){
     Object.assign(patch,{
@@ -77,6 +84,9 @@ async function main(){
   recoverySubjectMatches:after.mailer_subjects_recovery===SUBJECT_RECOVER,
   confirmationHTMLMatches:after.mailer_templates_confirmation_content===local.confirm,
   recoveryHTMLMatches:after.mailer_templates_recovery_content===local.recover,
+  emailChangeHTMLMatches:after.mailer_templates_email_change_content===local.emailChange,
+  passwordChangedHTMLMatches:after.mailer_templates_password_changed_notification_content===local.passwordChanged,
+  passwordChangedNotificationEnabled:after.mailer_notifications_password_changed_enabled===true,
   templateFingerprints:{confirmation:digest(local.confirm),recovery:digest(local.recover)},
   siteURLMatches:typeof after.site_url==="string"&&after.site_url.replace(/\/$/,"")==="https://artisanmart.site",
   approvedRedirectsContainRoutes:typeof after.uri_allow_list==="string"&&
@@ -89,7 +99,7 @@ async function main(){
  console.log("Auth config verification (no credentials or email tokens):",JSON.stringify(report));
  const checks=["customBrevoHostConfigured","senderAddressMatches","senderNameMatches",
   "emailConfirmationRequired","confirmationSubjectMatches","recoverySubjectMatches",
-  "confirmationHTMLMatches","recoveryHTMLMatches","siteURLMatches","approvedRedirectsContainRoutes"];
+  "confirmationHTMLMatches","recoveryHTMLMatches","emailChangeHTMLMatches","passwordChangedHTMLMatches","passwordChangedNotificationEnabled","siteURLMatches","approvedRedirectsContainRoutes"];
  if(checks.some(k=>report[k]!==true))throw Error("Auth configuration verification incomplete. See sanitized report; user action may be required.");
  console.log("Configuration verified. Separate external inbox / real auth browser tests are mandatory.");
 }
