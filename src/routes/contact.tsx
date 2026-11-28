@@ -5,7 +5,7 @@ import { MapPin, Mail, MessageSquare, Package, ArrowRight } from "lucide-react";
 import { meta } from "@/components/store/SimplePage";
 import "@/components/store/ContactPage.css";
 
-export const Route = createFileRoute("/contact")({validateSearch:(s:Record<string,unknown>):{order?:string;request?:string}=>({...(typeof s["order"]==="string"&&s["order"].length<=80?{order:s["order"]}:{}),...(s["request"]==="return"||s["request"]==="replacement"?{request:s["request"]}:{})}), head: () => meta("Contact Us", "Contact Artisan Mart about wholesale products, orders and closeouts."), component: Contact });
+export const Route = createFileRoute("/contact")({validateSearch:(s:Record<string,unknown>):{order?:string;request?:string}=>({...(typeof s["order"]==="string"&&s["order"].length<=80?{order:s["order"]}:{}),...(["return","replacement","cancel","edit"].includes(String(s["request"]))?{request:String(s["request"])}:{})}), head: () => meta("Contact Us", "Contact Artisan Mart about wholesale products, orders and closeouts."), component: Contact });
 function Contact() {
  const context=Route.useSearch();
  const [topic, setTopic] = useState(context.order?"existing":"new");
@@ -17,6 +17,7 @@ function Contact() {
   <header className="contact-intro"><span className="contact-eyebrow">LET'S TALK WHOLESALE</span><h1>How can we help?</h1><p>Questions about products, an order, or selling your closeouts? You're in the right place.</p></header>
   <div className="contact-layout">
    <section className="contact-form-card" aria-labelledby="contact-form-title">
+    {context.request==="cancel"&&<p className="contact-status" role="status">To cancel order {context.order}, please call customer service at <a href={BUSINESS_PHONE_HREF}>{BUSINESS_PHONE}</a>. Your order is not cancelled until our team confirms it.</p>}
     <h2 id="contact-form-title">Contact Us</h2><p className="contact-muted">Choose your inquiry type and tell us what you need.</p>
     <div className="contact-topics" role="group" aria-label="Inquiry type">{[{id:"new",label:"New order inquiry",icon:MessageSquare},{id:"existing",label:"Existing order inquiry",icon:Package}].map(({id,label,icon:Icon})=><button key={id} type="button" aria-pressed={topic===id} onClick={()=>{setTopic(id);setTicket(null);setError(null);}}><Icon size={19} aria-hidden="true"/>{label}</button>)}</div>
     <form onChange={()=>{setTicket(null);setError(null);}} onSubmit={async e=>{
@@ -37,7 +38,7 @@ function Contact() {
      <label className="contact-honeypot" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
      <div className="contact-fields"><label>Full name <span>*</span><input name="name" autoComplete="name" required maxLength={120}/></label><label>Email address <span>*</span><input name="email" type="email" autoComplete="email" required maxLength={254}/></label><label>Company <small>(optional)</small><input name="company" autoComplete="organization" maxLength={160}/></label><label>Phone <small>(optional)</small><input name="phone" type="tel" autoComplete="tel" maxLength={40}/></label></div>
      {topic==="existing"&&<label className="contact-order">Order number <span>*</span><input name="order" required maxLength={80} defaultValue={context.order}/></label>}
-     <label>Your message <span>*</span><textarea name="message" rows={5} required maxLength={5000} defaultValue={context.request?`I would like to request a ${context.request} for order ${context.order||""}.\nItems and reason: `:undefined} placeholder={topic==="existing"?"Tell us what you need help with regarding your order.":"Include product names, item numbers or quantities, if available."}/></label>
+     <label>Your message <span>*</span><textarea name="message" rows={5} required maxLength={5000} defaultValue={context.request?`I would like to request ${context.request==="cancel"?"cancellation":context.request==="edit"?"changes":context.request} for order ${context.order||""}.\nItems and reason: `:undefined} placeholder={topic==="existing"?"Tell us what you need help with regarding your order.":"Include product names, item numbers or quantities, if available."}/></label>
      <p className="contact-form-note" id="contact-delivery-note">Your inquiry will be sent to Artisan Mart customer service at email@artisanmart.site.</p>
      <button className="contact-primary" aria-describedby="contact-delivery-note" type="submit" disabled={!!ticket || sending}>{sending ? "Sending…" : ticket ? "Message sent" : "Send message"} <ArrowRight size={17} aria-hidden="true"/></button>
      {error&&<p className="contact-status contact-error" role="alert">{error} <a href="mailto:email@artisanmart.site">Email us directly</a>.</p>}
