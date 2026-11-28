@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
 import { customerPaymentMessage } from "@/lib/artisan-order-status";
 
+import { formatOrderNumber } from "@/lib/artisan-order-number";
+
 type Receipt={order_number:number;status:string;payment_status:string;total_cents:number};
 export const Route=createFileRoute("/order-confirmation")({
   component:OrderConfirmation,
@@ -48,7 +50,7 @@ function OrderConfirmation(){
    !user?.email_confirmed_at?<p>Sign in to view your order. <Link to="/login" className="text-primary underline">Sign in</Link></p>:
    error?<p role="alert" className="text-red-700">{error}</p>:
    receipt?<div className="mt-4 space-y-2">
-     <h2 className="text-xl font-semibold">Order #{receipt.order_number}</h2>
+     <h2 className="text-xl font-semibold">Order # {formatOrderNumber(receipt.order_number)}</h2>
      <p role="status" className={result?.confirmed?"text-green-700":"text-amber-700"}>{result?.confirmed?"Thank you for your order! ":""}{result?.message}</p>
      <p>Order status: {receipt.status.replaceAll("_"," ")}</p>
      <p>Payment status: {receipt.payment_status.replaceAll("_"," ")}</p>

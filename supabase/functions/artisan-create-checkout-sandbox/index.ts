@@ -1,3 +1,4 @@
+import { formatOrderNumber } from "../_shared/order-number.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.119.2";
 
 const PROJECT_URL = Deno.env.get("SUPABASE_URL") ?? "";
@@ -46,7 +47,7 @@ async function stripeRequest(path:string,method:"GET"|"POST",key:string,params?:
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get("origin")??"";
  let host="";try{host=new URL(origin).hostname;}catch{}
- const mode="test"; // Fixed, isolated test mode; never select live keys.
+ const mode="test"; // Isolated test account and stock only.
  const expectedAccount=mode==="test"?"acct_1Uf3Yu3sdabWE5fZ":"acct_1UfSeU3jvjbD68qx";
  if(!allowedOrigin(origin,mode)||!host.endsWith(".artisanmart-staging.pages.dev"))return new Response("Forbidden origin",{status:403});
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(origin)});
@@ -65,17 +66,17 @@ Deno.serve(async(req:Request)=>{
  });
  const admin=createClient(PROJECT_URL,SERVICE_KEY,{auth:{autoRefreshToken:false,persistSession:false}});
  try{
-  const {data:userData,error:userError}=await scoped.auth.getUser(token);
+  // Independent Auth and vault reads run together; no validation is skipped.
+  const [{data:userData,error:userError},{data:storedKey,error:secretError}]=await Promise.all([
+   scoped.auth.getUser(token),
+   admin.rpc("artisan_stripe_runtime_secret",{p_mode:mode,p_kind:"api_key"}),
+  ]);
   const user=userData?.user;
   if(userError||!user?.id||!user.email_confirmed_at)
    return respond(401,{error:"Verified customer login required"},origin);
-  // Reseller certificates are verified offline by the merchant. Only the
-  // server-managed app_metadata approval can authorize zero-tax live checkout.
-  if(!sandbox&&user.app_metadata?.artisan_reseller_approved!==true)
-   return respond(403,{error:"Reseller eligibility is not approved for checkout."},origin);
-  const {data:storedKey,error:secretError}=await admin.rpc("artisan_stripe_runtime_secret",{
-   p_mode:mode,p_kind:"api_key",
-  });
+  // The merchant verifies reseller documentation offline. Verified customer
+  // accounts may checkout without a second per-account reseller review.
+
   const key=typeof storedKey==="string"&&storedKey?
     storedKey:(Deno.env.get("ARTISAN_STRIPE_SECRET_KEY")??"");
   if(secretError||!requiredEnv(key,mode,expectedAccount))
@@ -85,7 +86,10 @@ Deno.serve(async(req:Request)=>{
       !Array.isArray(body.items)||body.items.length>100||
       !body.billing||!body.shipping)
    return respond(400,{error:"Invalid checkout details"},origin);
-  const {data:created,error:createError}=await admin.rpc(sandbox?"artisan_sandbox_begin_checkout":"artisan_begin_checkout_service",{ 
+  const states=new Set("AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY".split(" "));
+  if([body.billing,body.shipping].some(a=>a.country!=="US"||!states.has(a.state)||!/^\d{5}(-\d{4})?$/.test(a.postal_code??"")))
+   return respond(422,{error:"Enter a valid United States state and ZIP code."},origin);
+  const {data:created,error:createError}=await admin.rpc(sandbox?"artisan_sandbox_begin_checkout":"artisan_begin_checkout_service",{
    p_customer_id:user.id,
    p_idempotency_key:body.idempotencyKey,p_items:body.items,
    p_billing:body.billing,p_shipping:body.shipping,
@@ -111,29 +115,31 @@ Deno.serve(async(req:Request)=>{
 
   if(order.checkout_session_id){
    const previous=await stripeRequest("checkout/sessions/"+encodeURIComponent(order.checkout_session_id),"GET",key);
-   if(previous.status==="open"&&previous.client_secret&&previous.ui_mode==="custom"&&previous.client_reference_id===orderId &&
+   if(previous.status==="open"&&previous.client_secret&&previous.ui_mode==="elements"&&previous.payment_method_types?.length===1&&previous.payment_method_types[0]==="card"&&previous.client_reference_id===orderId &&
       previous.livemode===(mode==="live"))
-    return respond(200,{client_secret:previous.client_secret,session_id:previous.id,order_number:created.order_number,amount_total:previous.amount_total,currency:previous.currency,reused:true},origin);
+    return respond(200,{client_secret:previous.client_secret,session_id:previous.id,order_number:formatOrderNumber(created.order_number),amount_total:previous.amount_total,currency:previous.currency,reused:true},origin);
    return respond(409,{error:"Checkout session is no longer open. Please start a new order."},origin);
   }
 
-  const {data:items,error:itemsError}=sandbox
-   ? {data:order.items,error:null}
-   : await admin.from("artisan_order_items")
+  const [{data:items,error:itemsError},account]=await Promise.all([
+   sandbox ? Promise.resolve({data:order.items,error:null}) : admin.from("artisan_order_items")
       .select("sku,title_snapshot,quantity,unit_price_cents,line_total_cents")
-      .eq("order_id",orderId).order("sku");
+      .eq("order_id",orderId).order("sku"),
+   stripeRequest("account","GET",key),
+  ]);
   if(itemsError||!items?.length||items.reduce((n:number,it:{line_total_cents:number})=>n+it.line_total_cents,0)!==order.total_cents)
    return respond(409,{error:"Order amount could not be independently verified."},origin);
-  const account=await stripeRequest("account","GET",key);
   if(account.id!==expectedAccount||account.charges_enabled!==true)
    return respond(503,{error:"Payment account unavailable."},origin);
   const params=new URLSearchParams();
   params.set("mode","payment");
-  params.set("ui_mode","custom");
-  params.set("payment_method_types[0]","card");
+  params.set("ui_mode","elements");
+  // This checkout accepts card payments only, per merchant policy.
+  params.set("allowed_payment_method_types[0]","card");
   params.set("customer_email",String(user.email));
   // Stripe payment receipts go only to the verified Auth email.
   params.set("payment_intent_data[receipt_email]",String(user.email));
+  params.set("payment_intent_data[description]",`Artisan Mart order ${formatOrderNumber(created.order_number)}`);
   params.set("billing_address_collection","required");
   params.set("shipping_address_collection[allowed_countries][0]","US");
   const returnOrigin=mode==="test"?origin:PRODUCTION;
@@ -161,14 +167,18 @@ Deno.serve(async(req:Request)=>{
      "Idempotency-Key":"artisan-order-"+orderId},
     body:params.toString(),signal:AbortSignal.timeout(15000),
    });
-   if(!r.ok)throw new Error("Payment session request declined ("+r.status+").");
+   if(!r.ok){
+    const problem=await r.json().catch(()=>({}));
+    console.error("Stripe session setup failed",JSON.stringify({status:r.status,code:problem.error?.code,type:problem.error?.type,param:problem.error?.param,message:problem.error?.message}));
+    throw new Error("Payment session request declined ("+r.status+").");
+   }
    session=await r.json();
   }catch{
    if(sandbox)await admin.rpc("artisan_sandbox_cancel_unattached",{p_order:orderId});
    else await admin.rpc("artisan_cancel_pending_order_service",{p_order:orderId,p_customer_id:user.id});
    return respond(503,{error:"Secure payment session unavailable. Your stock reservation was not confirmed."},origin);
   }
-  if(session.livemode!==(mode==="live")||!session.id||!session.client_secret||session.ui_mode!=="custom"||
+  if(session.livemode!==(mode==="live")||!session.id||!session.client_secret||session.ui_mode!=="elements"||
      session.client_reference_id!==orderId||
      session.amount_total!==order.total_cents||session.currency!=="usd"){
    return respond(502,{error:"Payment session verification failed; do not retry this transaction."},origin);
@@ -182,7 +192,7 @@ Deno.serve(async(req:Request)=>{
    catch{/* Keep pending reservation: never release if Stripe expiry wasn't confirmed. */}
    return respond(503,{error:"Could not finalize payment session; please contact support before retrying."},origin);
   }
-  return respond(200,{client_secret:session.client_secret,session_id:session.id,order_number:created.order_number,amount_total:session.amount_total,currency:session.currency},origin);
+  return respond(200,{client_secret:session.client_secret,session_id:session.id,order_number:formatOrderNumber(created.order_number),amount_total:session.amount_total,currency:session.currency},origin);
  }catch{
   return respond(503,{error:"Checkout is temporarily unavailable. Please try again later."},origin);
  }

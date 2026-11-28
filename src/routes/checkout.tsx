@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { CheckoutElementsProvider, PaymentElement, useCheckoutElements } from "@stripe/react-stripe-js/checkout";
+import { CheckoutElementsProvider } from "@stripe/react-stripe-js/checkout";
 import { loadStripe } from "@stripe/stripe-js";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { ArrowLeft, LockKeyhole, ShieldCheck } from "lucide-react";
@@ -12,6 +12,8 @@ import { lineTotal, meetsMinimum, money } from "@/lib/wholesale";
 import "@/components/store/CheckoutPage.css";
 import { US_STATES, US_STATE_NAMES } from "@/lib/us-address";
 import { AddressAutocomplete, type AddressSuggestion } from "@/components/store/AddressAutocomplete";
+import { StripePayment } from "@/components/store/StripePayment";
+import { formatOrderNumber } from "@/lib/artisan-order-number";
 
 export const Route = createFileRoute("/checkout")({
  head: () => ({ meta: [
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/checkout")({
 });
 
 type Fields = {first_name:string;last_name:string;company:string;email:string;phone:string;line1:string;line2:string;city:string;state:string;postal_code:string;shipping_first_name:string;shipping_last_name:string;shipping_phone:string;shipping_line1:string;shipping_line2:string;shipping_city:string;shipping_state:string;shipping_postal_code:string};
-type Session = {client_secret:string;session_id:string;order_number:number;amount_total:number;currency:string};
+type Session = {client_secret:string;session_id:string;order_number:number|string;amount_total:number;currency:string};
 const inputClass = "mt-1.5 block min-h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-[15px] text-white outline-none transition placeholder:text-slate-500 focus:border-white focus:ring-2 focus:ring-white/10";
 const Field = ({label,name,value,onChange,type="text",required=true,autoComplete}:{label:string;name:string;value:string;onChange:(name:string,value:string)=>void;type?:string;required?:boolean;autoComplete?:string}) => {
  const shipping=name.startsWith("shipping_");
@@ -59,34 +61,6 @@ async function checkoutFailureMessage(error:unknown,data:unknown):Promise<string
   return "We could not reach secure checkout. Check your connection and try again. No payment was started.";
  return "Secure checkout could not start. Please try again or contact email@artisanmart.site. No payment was started.";
 }
-function StripePayment({sessionId,totalCents,billing,onError,onSuccess}:{sessionId:string;totalCents:number;billing:Fields;onError:(message:string)=>void;onSuccess:()=>void}){
- const result=useCheckoutElements();
- const [busy,setBusy]=useState(false);
- const checkout=result.type==="success"?result.checkout:null;
- const confirm=async()=>{
-  if(busy||!checkout)return;
-  setBusy(true);onError("");
-  try{
-   const response=await checkout.confirm({
-    returnUrl:`${window.location.origin}/order-confirmation?session_id=${encodeURIComponent(sessionId)}`,
-    redirect:"if_required",email:billing.email,phoneNumber:billing.phone,
-    billingAddress:{name:`${billing.first_name} ${billing.last_name}`.trim(),address:{country:"US",line1:billing.line1,line2:billing.line2,city:billing.city,state:billing.state,postal_code:billing.postal_code}},
-   });
-   if(response.type==="error")onError(response.error.message||"Your card payment could not be confirmed. Please check the details and try again.");
-   else onSuccess();
-  }catch(error){onError(error instanceof Error?error.message:"Your payment could not be confirmed. Please try again.");}
-  finally{setBusy(false);}
- };
- if(result.type==="loading")return <p role="status" className="mt-5 text-sm text-muted-foreground">Loading secure card fields…</p>;
- if(result.type==="error")return <p role="alert" className="mt-5 text-sm text-red-700">{result.error.message}</p>;
- return <div className="mt-6 border-t border-border pt-5">
-  <div className="mb-3 flex items-center gap-2"><LockKeyhole size={17} className="text-primary"/><h3 className="font-semibold">Card payment</h3></div>
-  <PaymentElement options={{layout:"tabs",paymentMethodOrder:["card"],wallets:{applePay:"never",googlePay:"never"}}} />
-  <button type="button" onClick={()=>void confirm()} disabled={busy||!checkout} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">
-   {busy?"Processing payment…":`Complete purchase · ${usd(totalCents)}`}
-  </button>
- </div>;
-}
 
 export function Checkout(){
  const {user,ready}=useArtisanAuth();
@@ -101,6 +75,7 @@ export function Checkout(){
  const [busy,setBusy]=useState(false);
  const [session,setSession]=useState<Session|null>(null);
  const pendingAttempt=useRef<{signature:string;key:string}|null>(null);
+ const summary=useRef<HTMLElement>(null);
  const sandboxPreview=typeof window!=="undefined"&&window.location.hostname.endsWith(".artisanmart-staging.pages.dev");
  const enabled=sandboxPreview?import.meta.env["VITE_ARTISAN_SANDBOX_CHECKOUT_ENABLED"]==="true":import.meta.env["VITE_ARTISAN_LIVE_CHECKOUT_ENABLED"]==="true";
   const publishableKey=import.meta.env["VITE_ARTISAN_STRIPE_PUBLISHABLE_KEY"];
@@ -134,13 +109,14 @@ export function Checkout(){
   if(!enabled||!stripePromise||!artisanSupabase||!user?.email_confirmed_at){setFormError("Secure card checkout is not available right now. Please try again shortly.");return;}
   if(busy)return;
   setBusy(true);
+  summary.current?.scrollIntoView?.({behavior:"smooth",block:"start"});
   try{
    const form=new FormData();
    for(const [name,value] of Object.entries(fields))form.set(name,value.trim());
    const signature=JSON.stringify({lines,coupon,values:Object.fromEntries(form.entries()),same});
    if(pendingAttempt.current?.signature!==signature)pendingAttempt.current={signature,key:crypto.randomUUID()};
    const payload=makeCheckoutRequest(form,lines,coupon,pendingAttempt.current.key,same);
-   const {data,error}=await artisanSupabase.functions.invoke("artisan-create-checkout",{body:payload});
+   const {data,error}=await artisanSupabase.functions.invoke(sandboxPreview?"artisan-create-checkout-sandbox":"artisan-create-checkout",{body:payload});
    if(error)throw Error(await checkoutFailureMessage(error,data));
    if(typeof data?.client_secret!=="string"||typeof data?.session_id!=="string"||!Number.isSafeInteger(data?.amount_total)||data?.currency!=="usd")
     throw Error(await checkoutFailureMessage(null,data));
@@ -173,6 +149,7 @@ export function Checkout(){
      <div className="sm:col-span-2"><Field label="Company" name="company" value={fields.company} onChange={updateField} required={false} autoComplete="organization"/></div>
      <Field label="Email" name="email" value={fields.email} onChange={updateField} type="email" autoComplete="email"/>
      <Field label="Phone" name="phone" value={fields.phone} onChange={updateField} type="tel" autoComplete="tel"/>
+     <label className="block text-sm font-medium sm:col-span-2">Country<input className={inputClass} value="United States" readOnly autoComplete="section-billing billing country-name"/></label>
      <div className="sm:col-span-2"><AddressAutocomplete name="line1" value={fields.line1} onChange={updateField} onSelect={address=>selectAddress("",address)} inputClass={inputClass}/></div>
      <div className="checkout-address-pair sm:col-span-2"><Field label="Apartment / Suite" name="line2" value={fields.line2} onChange={updateField} required={false} autoComplete="billing address-line2"/>
      <Field label="City" name="city" value={fields.city} onChange={updateField} autoComplete="billing address-level2"/></div>
@@ -196,7 +173,7 @@ export function Checkout(){
     {!session&&<button type="submit" className="sr-only" aria-hidden="true" tabIndex={-1} disabled={!enabled||!stripePromise||busy}>Prepare secure payment</button>}
     <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-500"><LockKeyhole size={14} className="mt-0.5 shrink-0"/>Card details are encrypted and handled by Stripe. Your card is charged only after you complete the purchase.</p>
    </form>
-   <aside className="min-w-0 lg:sticky lg:top-6">
+   <aside ref={summary} className="min-w-0 lg:sticky lg:top-6" aria-busy={busy}>
     <section className="min-w-0 rounded-2xl border border-slate-800 bg-[#111316] p-5 shadow-2xl sm:p-6" aria-labelledby="order-summary-title">
     <div className="flex items-baseline justify-between gap-3"><h2 id="order-summary-title" className="text-xl font-bold text-white">Order summary</h2><span className="text-xs font-medium text-slate-400">{lines.reduce((count,line)=>count+line.pieces,0)} items</span></div>
     <div className="mt-4 divide-y divide-slate-800 border-y border-slate-800">
@@ -204,7 +181,7 @@ export function Checkout(){
     </div>
     <label className="mt-4 block text-sm font-medium text-slate-300">Coupon or discount code<input className={inputClass} name="coupon" value={coupon} onChange={e=>{setCoupon(e.target.value);setSession(null);}} placeholder="Enter code" autoComplete="off"/></label>
     <div className="mt-5 flex items-end justify-between gap-3 border-t border-slate-800 pt-4"><span className="font-semibold text-slate-300">Total</span><span className="text-2xl font-bold text-white">{session?usd(session.amount_total):money(subtotal)}</span></div>
-    {session&&stripePromise?<><div className="mb-3 mt-5 flex items-center gap-2 text-sm font-medium text-emerald-300"><ShieldCheck size={17}/><span>Secure payment ready · Order #{session.order_number}</span></div><CheckoutElementsProvider stripe={stripePromise} options={{clientSecret:session.client_secret}}><StripePayment sessionId={session.session_id} totalCents={session.amount_total} billing={fields} onError={setPayError} onSuccess={()=>void navigate({to:"/order-confirmation",search:{session_id:session.session_id} as never})}/></CheckoutElementsProvider>{payError&&<p role="alert" className="mt-3 rounded-lg bg-red-950/50 px-3 py-2 text-sm text-red-200">{payError}</p>}</>:<button type="submit" form="checkout-form" disabled={!enabled||!stripePromise||busy} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal)}`:"Card checkout unavailable"}</button>}
+    {session&&stripePromise?<><div className="mb-3 mt-5 flex items-center gap-2 text-sm font-medium text-emerald-300"><ShieldCheck size={17}/><span>Secure payment ready · Order # {formatOrderNumber(session.order_number)}</span></div><CheckoutElementsProvider stripe={stripePromise} options={{clientSecret:session.client_secret}}><StripePayment same={same} totalCents={session.amount_total} billing={fields} onError={setPayError} onSuccess={()=>void navigate({to:"/order-confirmation",search:{session_id:session.session_id} as never})}/></CheckoutElementsProvider>{payError&&<p role="alert" className="mt-3 rounded-lg bg-red-950/50 px-3 py-2 text-sm text-red-200">{payError}</p>}</>:<button type="submit" form="checkout-form" disabled={!enabled||!stripePromise||busy} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal)}`:"Card checkout unavailable"}</button>}
     <div className="mt-4 flex items-center gap-2 text-xs text-slate-500"><LockKeyhole size={14}/>Card payment powered by Stripe</div>
     <p className="mt-4 text-xs leading-5 text-slate-500">By completing this purchase, you agree to the <Link to="/terms-of-sale" className="underline underline-offset-2 hover:text-slate-300">Terms of Sale</Link> and <Link to="/privacy" className="underline underline-offset-2 hover:text-slate-300">Privacy Policy</Link>.</p>
     </section>
