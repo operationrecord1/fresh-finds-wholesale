@@ -4,8 +4,9 @@ import { artisanSupabase, useArtisanAuth } from "@/lib/artisan-auth";
 import { customerPaymentMessage } from "@/lib/artisan-order-status";
 
 import { formatOrderNumber } from "@/lib/artisan-order-number";
+import { orderDate,paymentArrivalDate } from "@/lib/customer-order";
 
-type Receipt={order_number:number;status:string;payment_status:string;total_cents:number};
+type Receipt={order_number:number;status:string;payment_status:string;total_cents:number;payment_confirmed_at:string|null};
 export const Route=createFileRoute("/order-confirmation")({
   component:OrderConfirmation,
   head:()=>({meta:[{title:"Order Confirmation | Artisan Mart"}]}),
@@ -26,7 +27,7 @@ function OrderConfirmation(){
   }
   let active=true;
   Promise.resolve(artisanSupabase.from("artisan_orders")
-   .select("order_number,status,payment_status,total_cents")
+   .select("order_number,status,payment_status,total_cents,payment_confirmed_at")
    .eq("customer_id",user.id).eq("checkout_session_id",sessionId).maybeSingle())
    .then(({data,error:dbError})=>{
     if(!active)return;
@@ -54,6 +55,7 @@ function OrderConfirmation(){
      <p role="status" className={result?.confirmed?"text-green-700":"text-amber-700"}>{result?.confirmed?"Thank you for your order! ":""}{result?.message}</p>
      <p>Order status: {(receipt.status==="expired"?"cancelled":receipt.status.replaceAll("_"," "))}</p>
      <p>Payment status: {receipt.payment_status.replaceAll("_"," ")}</p>
+     {result?.confirmed&&receipt.payment_confirmed_at&&<p>Estimated delivery: {orderDate(paymentArrivalDate(receipt.payment_confirmed_at))}</p>}
      <p className="font-bold">Total: {new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(receipt.total_cents/100)}</p>
    </div>:null}
    <div className="mt-6 flex flex-wrap gap-3">

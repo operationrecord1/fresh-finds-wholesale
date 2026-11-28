@@ -10,6 +10,7 @@ import { QuickView } from "@/components/store/LazyQuickView";
 import { ProductImage } from "@/components/store/ProductCard";
 import { DemoCouponFeedback } from "@/components/store/DemoCouponFeedback";
 import { preserveCartForCheckout } from "@/lib/artisan-checkout-intent";
+import { couponDiscount } from "@/lib/demo-coupon";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [
@@ -23,6 +24,8 @@ export function CartPage() {
   const { lines, subtotal, requestRemove, requestClear } = useCart();
   const [edit, setEdit] = useState<{ p: Product; pieces: number } | null>(null);
   const [coupon, setCoupon] = useState("");
+  const [appliedCoupon,setAppliedCoupon]=useState("");
+  const discount=couponDiscount(subtotal,appliedCoupon);
   const { message, applyCoupon } = useDemoCouponFeedback();
   const ok = meetsMinimum(subtotal);
   return (
@@ -49,11 +52,12 @@ export function CartPage() {
       <aside className="cart-summary h-fit space-y-3">
         <h2 className="text-xl font-bold">Order Summary</h2>
         <div className="flex justify-between"><span>Subtotal</span><span>{money(subtotal)}</span></div>
-        <div className="cart-merchandise-total flex justify-between text-lg font-bold"><span>Merchandise total</span><span>{money(subtotal)}</span></div>
+        {discount>0&&<div className="flex justify-between"><span>ARTISAN · 5% off</span><span>−{money(discount)}</span></div>}
+        <div className="cart-merchandise-total flex justify-between text-lg font-bold"><span>Merchandise total</span><span>{money(subtotal-discount)}</span></div>
         <div className="cart-promo-block" style={{ marginBlockEnd: 0 }}><div className="flex gap-[15px]"><input aria-label="Promo code" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Promo code" className="min-w-0 flex-1 rounded border p-2" />
-          <button className="rounded bg-primary px-3 text-primary-foreground" onClick={() => applyCoupon(coupon)}>Apply</button></div>
+          <button className="rounded bg-primary px-3 text-primary-foreground" onClick={() => setAppliedCoupon(applyCoupon(coupon)?coupon.trim().toUpperCase():"")}>Apply</button></div>
         <DemoCouponFeedback message={message} /></div>
-        {ok ? <Link to="/checkout" onClick={()=>preserveCartForCheckout(lines,coupon)} className="block rounded-full bg-accent py-3 text-center font-bold text-accent-foreground">Proceed to Checkout</Link>
+        {ok ? <Link to="/checkout" onClick={()=>preserveCartForCheckout(lines,appliedCoupon)} className="block rounded-full bg-accent py-3 text-center font-bold text-accent-foreground">Proceed to Checkout</Link>
             : <button disabled className="w-full rounded-full bg-accent py-3 font-bold text-accent-foreground opacity-50">Proceed to Checkout</button>}
       </aside>
       <QuickView p={edit?.p ?? null} initialPieces={edit?.pieces} onClose={() => setEdit(null)} />

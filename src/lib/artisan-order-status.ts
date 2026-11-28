@@ -1,6 +1,6 @@
 /** Customer-visible status always comes from the webhook-settled database row. */
 export function customerPaymentMessage(status:string,paymentStatus:string):{message:string;confirmed:boolean}{
- if(status==="confirmed"&&paymentStatus==="paid")
+ if(["confirmed","fulfilling","fulfilled"].includes(status)&&paymentStatus==="paid")
   return {message:"Payment confirmed. Your order has been recorded.",confirmed:true};
  if(paymentStatus==="refunded")
   return {message:"This payment has been refunded. Review your order details in My Account.",confirmed:false};

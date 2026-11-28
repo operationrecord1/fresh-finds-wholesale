@@ -2,7 +2,8 @@
   "name": "artisanmart-contact",
   "main": "contact.js",
   "compatibility_date": "2026-11-27",
-  "routes": [{ "pattern": "artisanmart.site/api/contact", "zone_name": "artisanmart.site" }],
+  "routes": [{ "pattern": "artisanmart.site/api/contact", "zone_name": "artisanmart.site" },{ "pattern": "artisanmart.site/api/newsletter*", "zone_name": "artisanmart.site" }],
+  "kv_namespaces": [{"binding":"NEWSLETTER","id":"cc584cc61fa348db810aff1a05f03c5c"}],
   "send_email": [{
     "name": "EMAIL",
     "destination_address": "artisanmartllc@gmail.com",

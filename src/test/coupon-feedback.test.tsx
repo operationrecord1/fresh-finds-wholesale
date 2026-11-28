@@ -11,11 +11,11 @@ afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); });
 it("expires at exactly 20 seconds, including repeated identical invalid results", () => {
   const { result } = renderHook(useDemoCouponFeedback, { wrapper: StrictMode });
   expect(COUPON_ERROR_DURATION_MS).toBe(20_000);
-  act(() => { result.current.applyCoupon("artisan"); });
+  act(() => { result.current.applyCoupon("INVALID"); });
   expect(result.current.message).toBe(INVALID_COUPON_MESSAGE);
   act(() => vi.advanceTimersByTime(19_999));
   expect(result.current.message).toBe(INVALID_COUPON_MESSAGE);
-  act(() => { result.current.applyCoupon("artisan"); });
+  act(() => { result.current.applyCoupon("INVALID"); });
   act(() => vi.advanceTimersByTime(19_999));
   expect(result.current.message).toBe(INVALID_COUPON_MESSAGE);
   act(() => vi.advanceTimersByTime(1));

@@ -15,5 +15,5 @@ export function makeCheckoutRequest(f:FormData,cart:CartLine[],coupon:string,key
  if(new Set(items.map(x=>x.sku)).size!==items.length)throw Error("Duplicate product");
  const billing=address(f),shipping=same?{...billing}:address(f,"shipping_");
  if(coupon.length>80)throw Error("Invalid coupon");
- return {idempotencyKey:key,items,billing,shipping,coupon:coupon.trim()||null};
+ return {idempotencyKey:key,items,billing,shipping,coupon:coupon.trim().toUpperCase()||null};
 }

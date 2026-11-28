@@ -62,7 +62,7 @@ it("keeps a fixed-size red 10px promo error with 15px separation, without changi
   expect(screen.queryByRole("combobox", { name: "Sales representative" })).not.toBeInTheDocument();
   expect(screen.queryByText("Shipping and tax are not included.")).not.toBeInTheDocument();
   const apply = screen.getByRole("button", { name: "Apply" });
-  for (const code of ["artisan", "ARTISAN ", "VIP8", ""]) {
+  for (const code of ["INVALID", "VIP8", ""]) {
     fireEvent.change(field, { target: { value: code } });
     fireEvent.click(apply);
     expect(screen.getByRole("alert")).toHaveTextContent("Enter a valid coupon code.");
@@ -74,7 +74,7 @@ it("keeps a fixed-size red 10px promo error with 15px separation, without changi
   expect(screen.getByRole("alert")).toBeInTheDocument();
   expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
   fireEvent.click(apply);
-  expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
+  expect(screen.getByRole("status")).toHaveTextContent("ARTISAN applied: 5% off.");
   expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
 });
 
@@ -102,8 +102,8 @@ it("restarts a full 20-second error on every Apply and immediately accepts ARTIS
   fireEvent.change(field, { target: { value: "ARTISAN" } });
   fireEvent.click(apply);
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-  expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
+  expect(screen.getByRole("status")).toHaveTextContent("ARTISAN applied: 5% off.");
   act(() => vi.advanceTimersByTime(20_000));
-  expect(screen.getByRole("status")).toHaveTextContent("No discount has been applied.");
+  expect(screen.getByRole("status")).toHaveTextContent("ARTISAN applied: 5% off.");
   expect(screen.getByTestId("coupon-feedback-slot")).toBe(slot);
 });
