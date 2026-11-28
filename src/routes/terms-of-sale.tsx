@@ -6,12 +6,10 @@ const conditions = [
  "When offered Free Shipping is only valid within the contiguous 48 states unless expressed otherwise.",
  "Terms are prepaid unless open terms have been approved prior by our credit department.",
  "Online checkout currently accepts credit card payments only.",
- "Orders processed via credit card are subject to an immediate hold for the full amount of the order, including shipping. Once the order is shipped, the hold will be authorized and the charge will be validated. Artisan Mart is not responsible for any overage charges levied by the issuing credit card provider. If the card is declined at the time of purchase, the customer will be notified immediately.",
+ "Orders processed via credit card are subject to an immediate hold for the full amount of the order. Once the order is shipped, the hold will be authorized and the charge will be validated. Artisan Mart is not responsible for any overage charges levied by the issuing credit card provider. If the card is declined at the time of purchase, the customer will be notified immediately.",
  "Wire transfers, money orders and checks are accepted forms of payment for orders completed offline.",
  "Claims of shortages, damages or defective merchandise must be reported within 72 hours of receipt of order. No returns will be accepted without authorization.",
  "Artisan Mart offers shipping options of FedEx Ground Economy and FedEx Ground in addition to several LTL shipping methods.",
- "Artisan Mart does offer on-site pickup for orders placed online. Pickup’s must be organized and timed with the customer’s sales representative to allow our warehouse adequate time to prepare the order.",
- "Artisan Mart offers free shipment of orders of $2,500 or greater in the local area using Artisan Mart’ vehicles. Orders between $1,000 and $2,500 will have a $50 freight option. Valid within 30 miles of Artisan Mart physical location.",
  "Sales tax will be collected on all orders without a valid resale number.",
  "No returned products will be accepted without an authorized RA number. Shipping charges on returned products are the responsibility of the customer. At Artisan Mart discretion, a 20% restocking may be assessed to the returned order. Credits will be given 48 hours from the time of receiving product back or if product is deemed damaged.",
  "No Items will be returned for:",
@@ -23,4 +21,4 @@ const conditions = [
  "Coupons may be used up to the date of expiration. To redeem coupon code, enter the code into the area provided during checkout. Coupons must be redeemed at the time order is submitted.",
 ];
 const exclusions = ["Product returned is incomplete or defaced.","You do not have original order number or receipt.","Returned items have different serial number from what was originally sent.","Items that are opened and not in original packaging.","Warranty cards are filled out."];
-function Terms(){return <main className="terms-page"><nav aria-label="Breadcrumb"><Link to="/">Home</Link><span aria-hidden="true">/</span><span aria-current="page">Terms of Sale</span></nav><article><h1>Terms of Sale</h1><ol className="terms-conditions">{conditions.map((text,index)=><li key={index}>{text}{index===11&&<ul>{exclusions.map(item=><li key={item}>{item}</li>)}</ul>}</li>)}</ol></article></main>}
+function Terms(){return <main className="terms-page"><nav aria-label="Breadcrumb"><Link to="/">Home</Link><span aria-hidden="true">/</span><span aria-current="page">Terms of Sale</span></nav><article><h1>Terms of Sale</h1><ol className="terms-conditions">{conditions.map((text,index)=><li key={index}>{text}{index===9&&<ul>{exclusions.map(item=><li key={item}>{item}</li>)}</ul>}</li>)}</ol></article></main>}

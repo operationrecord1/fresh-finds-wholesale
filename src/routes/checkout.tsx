@@ -12,6 +12,7 @@ import "@/components/store/CheckoutPage.css";
 import { US_STATES, US_STATE_NAMES } from "@/lib/us-address";
 import { AddressAutocomplete, type AddressSuggestion } from "@/components/store/AddressAutocomplete";
 import { resumableCheckoutKey, type CheckoutAttempt } from "@/lib/artisan-checkout-resume";
+import { couponDiscount } from "@/lib/demo-coupon";
 import { loadPaymentPage, savePaymentPage } from "@/lib/artisan-payment-page";
 
 export const Route = createFileRoute("/checkout")({
@@ -65,6 +66,7 @@ export function Checkout(){
  const navigate=useNavigate();
  const [same,setSame]=useState(true);
  const [coupon,setCoupon]=useState(()=>loadCheckoutCoupon());
+ const discount=couponDiscount(subtotal,coupon);
  const [fields,setFields]=useState<Fields>({first_name:"",last_name:"",company:"",email:"",phone:"",line1:"",line2:"",city:"",state:"",postal_code:"",shipping_first_name:"",shipping_last_name:"",shipping_phone:"",shipping_line1:"",shipping_line2:"",shipping_city:"",shipping_state:"",shipping_postal_code:""});
  const [profileLoading,setProfileLoading]=useState(true);
  const [formError,setFormError]=useState("");
@@ -88,14 +90,14 @@ export function Checkout(){
   previousAttempt.current=null;
   if(!user?.id||!artisanSupabase)return;
   let active=true;
-  Promise.resolve(artisanSupabase.from("artisan_orders").select("idempotency_key,status,payment_status,reservation_expires_at,billing_address,shipping_address,artisan_order_items(sku,quantity,mode)").eq("customer_id",user.id).eq("status","pending_payment").eq("payment_status","unpaid").gt("reservation_expires_at",new Date().toISOString()).not("checkout_session_id","is",null).order("created_at",{ascending:false}).limit(1))
+  Promise.resolve(artisanSupabase.from("artisan_orders").select("idempotency_key,status,payment_status,reservation_expires_at,billing_address,shipping_address,coupon_code,artisan_order_items(sku,quantity,mode)").eq("customer_id",user.id).eq("status","pending_payment").eq("payment_status","unpaid").gt("reservation_expires_at",new Date().toISOString()).not("checkout_session_id","is",null).order("created_at",{ascending:false}).limit(1))
    .then(({data,error})=>{if(active&&!error)previousAttempt.current=data?.[0] as CheckoutAttempt??null;}).catch(()=>{/* Normal new checkout remains available. */});
   return()=>{active=false;};
  },[user?.id]);
  useEffect(()=>{
   if(!user||!artisanSupabase){setProfileLoading(false);return;}
   const saved=loadPaymentPage(user.id);
-  if(saved){setFields(saved.billing);setSame(saved.same);setProfileLoading(false);return;}
+  if(saved){setFields(saved.billing);setSame(saved.same);setCoupon(saved.coupon??loadCheckoutCoupon());setProfileLoading(false);return;}
   let alive=true;
   Promise.resolve(artisanSupabase.from("artisan_profiles").select("first_name,last_name,phone").eq("user_id",user.id).maybeSingle())
    .then(({data})=>{if(!alive)return;setFields(previous=>({...previous,first_name:data?.first_name??"",last_name:data?.last_name??"",phone:data?.phone??"",email:user.email??""}));})
@@ -126,7 +128,7 @@ export function Checkout(){
    if(error)throw Error(await checkoutFailureMessage(error,data));
    if(typeof data?.client_secret!=="string"||typeof data?.session_id!=="string"||!Number.isSafeInteger(data?.amount_total)||data?.currency!=="usd")
     throw Error(await checkoutFailureMessage(null,data));
-   savePaymentPage(user.id,{client_secret:data.client_secret,session_id:data.session_id,order_number:data.order_number,amount_total:data.amount_total,currency:data.currency},fields,same);
+   savePaymentPage(user.id,{client_secret:data.client_secret,session_id:data.session_id,order_number:data.order_number,amount_total:data.amount_total,currency:data.currency},fields,same,coupon.trim().toUpperCase()||null);
    await navigate({to:"/payment"});
   }catch(e){setFormError(e instanceof Error?e.message:"Secure checkout could not start. Please try again.");}
   finally{setBusy(false);}
@@ -187,8 +189,9 @@ export function Checkout(){
      {lines.map(line=>{const product=getProduct(line.sku);return product?<div key={line.sku} className="flex items-start justify-between gap-4 py-3 text-sm"><span className="min-w-0"><span className="block font-medium">{product.title}</span><span className="mt-0.5 block text-muted-foreground">Qty {line.pieces}</span></span><span className="shrink-0 font-medium">{money(lineTotal(line.pieces,product.price??0))}</span></div>:null;})}
     </div>
     <label className="mt-4 block text-sm font-medium text-slate-300">Coupon or discount code<input className={inputClass} name="coupon" value={coupon} onChange={e=>setCoupon(e.target.value)} placeholder="Enter code" autoComplete="off"/></label>
-    <div className="mt-5 flex items-end justify-between gap-3 border-t border-slate-800 pt-4"><span className="font-semibold text-slate-300">Total</span><span className="text-2xl font-bold text-white">{money(subtotal)}</span></div>
-    <button type="submit" form="checkout-form" disabled={!enabled||!stripePromise||busy} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal)}`:"Card checkout unavailable"}</button>
+    {discount>0&&<div className="mt-4 flex justify-between gap-3 text-sm"><span>ARTISAN · 5% off</span><span>−{money(discount)}</span></div>}
+    <div className="mt-5 flex items-end justify-between gap-3 border-t border-slate-800 pt-4"><span className="font-semibold text-slate-300">Total</span><span className="text-2xl font-bold text-white">{money(subtotal-discount)}</span></div>
+    <button type="submit" form="checkout-form" disabled={!enabled||!stripePromise||busy} className="mt-5 flex min-h-12 w-full items-center justify-center rounded-xl bg-white px-5 py-3 font-bold text-slate-950 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-55">{busy?"Preparing secure payment…":enabled&&stripePromise?`Continue to payment · ${money(subtotal-discount)}`:"Card checkout unavailable"}</button>
     <div className="mt-4 flex items-center gap-2 text-xs text-slate-500"><LockKeyhole size={14}/>Card payment powered by Stripe</div>
     <p className="mt-4 text-xs leading-5 text-slate-500">By completing this purchase, you agree to the <Link to="/terms-of-sale" className="underline underline-offset-2 hover:text-slate-300">Terms of Sale</Link> and <Link to="/privacy" className="underline underline-offset-2 hover:text-slate-300">Privacy Policy</Link>.</p>
     </section>

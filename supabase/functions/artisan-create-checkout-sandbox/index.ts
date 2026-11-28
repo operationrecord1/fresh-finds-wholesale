@@ -33,10 +33,10 @@ function requiredEnv(key:string,mode:string,account:string){
                   (mode==="live"&&(key.startsWith("sk_live_")||key.startsWith("rk_live_"))))&&
   (mode==="live"?account==="acct_1UfSeU3jvjbD68qx":account==="acct_1Uf3Yu3sdabWE5fZ");
 }
-async function stripeRequest(path:string,method:"GET"|"POST",key:string,params?:URLSearchParams){
+async function stripeRequest(path:string,method:"GET"|"POST",key:string,params?:URLSearchParams,idempotency?:string){
  const response=await fetch("https://api.stripe.com/v1/"+path,{
   method,headers:{"Authorization":"Bearer "+key,
-   ...(method==="POST"?{"Content-Type":"application/x-www-form-urlencoded"}:{})},
+   ...(method==="POST"?{"Content-Type":"application/x-www-form-urlencoded"}:{}),...(idempotency?{"Idempotency-Key":idempotency}:{})},
   ...(params?{body:params.toString()}:{}),
   signal:AbortSignal.timeout(12000),
  });
@@ -101,22 +101,23 @@ Deno.serve(async(req:Request)=>{
   const {data:order,error:orderError}=sandbox
    ? await admin.rpc("artisan_sandbox_order_details",{p_order:orderId})
    : await admin.from("artisan_orders")
-      .select("id,customer_id,total_cents,subtotal_cents,discount_cents,shipping_cents,tax_cents,currency,status,payment_status,checkout_session_id")
+      .select("id,customer_id,total_cents,subtotal_cents,discount_cents,coupon_code,shipping_cents,tax_cents,currency,status,payment_status,checkout_session_id")
       .eq("id",orderId).single();
   if(orderError||!order||order.customer_id!==user.id||
      order.status!=="pending_payment"||order.payment_status!=="unpaid"||
-     order.currency!=="usd"||order.total_cents<50000||
+     order.currency!=="usd"||order.subtotal_cents<50000||order.total_cents<=0||
      (!sandbox&&order.total_cents!==order.subtotal_cents-order.discount_cents+order.shipping_cents+order.tax_cents))
    return respond(409,{error:"Invalid reserved order."},origin);
   // No shipping or tax is silently invented. Configuration and policy
   // verification are release gates in the database.
-  if(!sandbox&&(order.discount_cents!==0||order.shipping_cents!==0||order.tax_cents!==0))
+  const expectedDiscount=order.coupon_code==="ARTISAN"?Math.round(order.subtotal_cents*5/100):0;
+  if(order.discount_cents!==expectedDiscount||order.shipping_cents!==0||order.tax_cents!==0)
    return respond(503,{error:"The secure shipping/tax quote is not available."},origin);
 
   if(order.checkout_session_id){
    const previous=await stripeRequest("checkout/sessions/"+encodeURIComponent(order.checkout_session_id),"GET",key);
    if(previous.status==="open"&&previous.client_secret&&previous.ui_mode==="elements"&&previous.payment_method_types?.length===1&&previous.payment_method_types[0]==="card"&&previous.client_reference_id===orderId &&
-      previous.livemode===(mode==="live"))
+      previous.livemode===(mode==="live")&&previous.amount_total===order.total_cents&&previous.currency==="usd")
     return respond(200,{client_secret:previous.client_secret,session_id:previous.id,order_number:formatOrderNumber(created.order_number),amount_total:previous.amount_total,currency:previous.currency,reused:true},origin);
    return respond(409,{error:"Checkout session is no longer open. Please start a new order."},origin);
   }
@@ -127,7 +128,7 @@ Deno.serve(async(req:Request)=>{
       .eq("order_id",orderId).order("sku"),
    stripeRequest("account","GET",key),
   ]);
-  if(itemsError||!items?.length||items.reduce((n:number,it:{line_total_cents:number})=>n+it.line_total_cents,0)!==order.total_cents)
+  if(itemsError||!items?.length||items.reduce((n:number,it:{line_total_cents:number})=>n+it.line_total_cents,0)!==order.subtotal_cents)
    return respond(409,{error:"Order amount could not be independently verified."},origin);
   if(account.id!==expectedAccount||account.charges_enabled!==true)
    return respond(503,{error:"Payment account unavailable."},origin);
@@ -161,6 +162,13 @@ Deno.serve(async(req:Request)=>{
   }
   let session;
   try{
+   if(order.discount_cents>0){
+    // Fixed cents derived from the server's 5% calculation avoids rounding drift.
+    const couponParams=new URLSearchParams({id:"artisan-order-"+orderId,amount_off:String(order.discount_cents),currency:"usd",duration:"once",name:"ARTISAN — 5% off",max_redemptions:"1"});
+    const coupon=await stripeRequest("coupons","POST",key,couponParams,"artisan-coupon-"+orderId);
+    if(coupon.amount_off!==order.discount_cents||coupon.currency!=="usd"||coupon.livemode!==(mode==="live"))throw Error("Discount verification failed");
+    params.set("discounts[0][coupon]",coupon.id);
+   }
    const r=await fetch("https://api.stripe.com/v1/checkout/sessions",{
     method:"POST",headers:{"Authorization":"Bearer "+key,
      "Content-Type":"application/x-www-form-urlencoded",

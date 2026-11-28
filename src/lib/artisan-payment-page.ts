@@ -1,13 +1,13 @@
 import type { PaymentBilling } from "@/components/store/StripePayment";
 
 export type PaymentPageSession = { client_secret:string;session_id:string;order_number:number|string;amount_total:number;currency:string };
-export type PaymentPageData = { owner:string;expires:number;session:PaymentPageSession;billing:PaymentBilling;same:boolean };
+export type PaymentPageData = { owner:string;expires:number;session:PaymentPageSession;billing:PaymentBilling;same:boolean;coupon?:string|null };
 const key="artisan-mart-payment-page";
 const billingKeys=["first_name","last_name","company","email","phone","line1","line2","city","state","postal_code","shipping_first_name","shipping_last_name","shipping_phone","shipping_line1","shipping_line2","shipping_city","shipping_state","shipping_postal_code"] as const;
 
 // Tab-scoped handoff only. Never store card details or put the client secret in a URL.
-export function savePaymentPage(owner:string,session:PaymentPageSession,billing:PaymentBilling,same:boolean){
- sessionStorage.setItem(key,JSON.stringify({owner,session,billing,same,expires:Date.now()+30*60*1000}));
+export function savePaymentPage(owner:string,session:PaymentPageSession,billing:PaymentBilling,same:boolean,coupon:string|null=null){
+ sessionStorage.setItem(key,JSON.stringify({owner,session,billing,same,coupon,expires:Date.now()+30*60*1000}));
 }
 export function clearPaymentPage(){sessionStorage.removeItem(key);}
 export function loadPaymentPage(owner:string):PaymentPageData|null{

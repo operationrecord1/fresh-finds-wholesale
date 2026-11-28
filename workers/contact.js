@@ -1,4 +1,5 @@
 // Verified inbox behind the email@artisanmart.site routing address.
+import { newsletter } from './newsletter.js';
 const inbox = "artisanmartllc@gmail.com";
 const sender = "inquiries@artisanmart.site";
 const origins = new Set(["https://artisanmart.site", "https://www.artisanmart.site"]);
@@ -7,6 +8,7 @@ const clean = (value, limit) => typeof value === "string" && value.length <= lim
 
 export default {
   async fetch(request, env) {
+    if(new URL(request.url).pathname.startsWith('/api/newsletter'))return newsletter(request,env);
     if (new URL(request.url).pathname !== "/api/contact") return json({ error: "Not found" }, 404);
     if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
     if (!origins.has(request.headers.get("Origin"))) return json({ error: "Invalid origin" }, 403);
