@@ -27,8 +27,8 @@
 .footer-brand-logo img{display:block;width:min(220px,100%);height:auto;pointer-events:none;user-select:none;-webkit-user-drag:none}
 .footer-contact address{font-style:normal;font-weight:600;line-height:1.65}
 .footer-contact-links{margin-top:14px}
-.footer-contact-links p{margin:5px 0}
-.footer-contact-links a{text-decoration:underline;overflow-wrap:anywhere}
+.footer-contact-links p{margin:5px 0;display:flex;flex-wrap:wrap;gap:0 4px}
+.footer-contact-links a{text-decoration:underline;white-space:nowrap;overflow-wrap:normal}
 .footer-top-row{display:flex;justify-content:flex-end;padding-bottom:12px}
 .footer-top-row button{display:flex;align-items:center;gap:5px;padding:8px;min-height:44px;background:none;border:0;cursor:pointer;font-size:12px;color:inherit}
 .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 24px;border-top:1px solid #e1e9ed;padding-block:18px 26px;font-size:12px}
@@ -61,7 +61,9 @@
 }
 
 @media(max-width:540px){
- .footer-newsletter{text-align:center}
- .footer-newsletter h2{justify-content:center;margin-inline:auto}
- .footer-social{justify-content:center}
+ .footer-newsletter{text-align:left}
 }
+
+.footer-newsletter h2{margin-inline:0}
+.artisan-footer .footer-subscribe{margin-left:32px;max-width:calc(100% - 32px)}
+.footer-social{margin-left:32px;justify-content:flex-start}

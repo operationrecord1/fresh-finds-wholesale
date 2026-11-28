@@ -26,7 +26,7 @@ export function SiteFooter() {
             <AboutLinks />
           </section>
           <section className="footer-newsletter" aria-labelledby="footer-newsletter-title">
-            <h2 id="footer-newsletter-title"><Megaphone aria-hidden="true" size={23} /> Join Our Newsletter To Get Exclusives</h2>
+            <h2 id="footer-newsletter-title"><Megaphone aria-hidden="true" size={23} /><span>Join Our Newsletter To Get Exclusives</span></h2>
             <Link to="/newsletter" className="footer-subscribe">Subscribe To Newsletter</Link>
             <div className="footer-social" aria-label="Social media">
               <a href="https://www.facebook.com/profile.php?id=61593310559477" aria-label="Artisan Mart on Facebook" target="_blank" rel="noopener noreferrer"><Facebook fill="currentColor" aria-hidden="true" /></a>
