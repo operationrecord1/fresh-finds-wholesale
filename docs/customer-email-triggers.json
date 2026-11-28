@@ -1,0 +1,101 @@
+[
+  {
+    "id": "verify-email",
+    "name": "Verify email",
+    "group": "Account & security",
+    "when": "Immediately after a customer creates an account, or requests a new confirmation email.",
+    "subject": "Confirm your email address",
+    "template": "confirm-signup.html",
+    "delivery": "Supabase Auth; activation must be independently verified"
+  },
+  {
+    "id": "welcome",
+    "name": "Account ready",
+    "group": "Account & security",
+    "when": "After email verification has completed successfully.",
+    "subject": "Your Artisan Mart account is ready",
+    "template": "welcome.html",
+    "delivery": "Prepared template; sending event is not connected by this release"
+  },
+  {
+    "id": "reset-password",
+    "name": "Reset password",
+    "group": "Account & security",
+    "when": "When a customer submits a password-reset request. Only send if an eligible account exists.",
+    "subject": "Reset your Artisan Mart password",
+    "template": "reset-password.html",
+    "delivery": "Supabase Auth; activation must be independently verified"
+  },
+  {
+    "id": "password-changed",
+    "name": "Password changed",
+    "group": "Account & security",
+    "when": "After a password change has completed successfully, never just after requesting a reset.",
+    "subject": "Your Artisan Mart password was changed",
+    "template": "password-changed.html",
+    "delivery": "Supabase Auth; activation must be independently verified"
+  },
+  {
+    "id": "email-change",
+    "name": "Confirm new email",
+    "group": "Account & security",
+    "when": "When a signed-in customer requests an email change. Follow the configured old/new address confirmation policy.",
+    "subject": "Confirm your new email address",
+    "template": "email-change.html",
+    "delivery": "Supabase Auth; activation must be independently verified"
+  },
+  {
+    "id": "order-confirmed",
+    "name": "Order confirmed",
+    "group": "Orders & delivery",
+    "when": "Only after the payment processor confirms successful payment and the order is committed.",
+    "subject": "Your order is confirmed · # {{order_number}}",
+    "template": "order-confirmed.html",
+    "delivery": "Prepared template; sending event is not connected by this release"
+  },
+  {
+    "id": "payment-declined",
+    "name": "Payment unsuccessful",
+    "group": "Orders & delivery",
+    "when": "After a verified failed payment attempt. Do not describe an unpaid order as confirmed.",
+    "subject": "Payment was not completed · # {{order_number}}",
+    "template": "payment-declined.html",
+    "delivery": "Prepared template; sending event is not connected by this release"
+  },
+  {
+    "id": "order-shipped",
+    "name": "Order shipped",
+    "group": "Orders & delivery",
+    "when": "After a real shipment is recorded. Include carrier and tracking only when those values are available.",
+    "subject": "Your order is on its way · # {{order_number}}",
+    "template": "order-shipped.html",
+    "delivery": "Prepared template; sending event is not connected by this release"
+  },
+  {
+    "id": "order-cancelled",
+    "name": "Order cancelled",
+    "group": "Orders & delivery",
+    "when": "Only after customer service has actually confirmed cancellation. A cancellation request alone does not trigger this message.",
+    "subject": "Your order was cancelled · # {{order_number}}",
+    "template": "order-cancelled.html",
+    "delivery": "Prepared template; sending event is not connected by this release"
+  },
+  {
+    "id": "refund-confirmed",
+    "name": "Refund processed",
+    "group": "Orders & delivery",
+    "when": "After the payment processor confirms the refund. Use the actual refunded amount, including for partial refunds.",
+    "subject": "Refund processed · # {{order_number}}",
+    "template": "refund-confirmed.html",
+    "delivery": "Prepared template; sending event is not connected by this release"
+  },
+  {
+    "id": "contact-received",
+    "name": "Inquiry received",
+    "group": "Customer service",
+    "when": "After the contact form inquiry has been stored and accepted successfully.",
+    "subject": "We received your inquiry · {{ticket_number}}",
+    "template": "contact-received.html",
+    "delivery": "Prepared template; sending event is not connected by this release"
+  }
+]
